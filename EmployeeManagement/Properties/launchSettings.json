@@ -16,7 +16,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "EmployeeManagement": {
+    "AndyTipsterPro": {
       "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {

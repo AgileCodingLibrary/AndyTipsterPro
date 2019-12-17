@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace EmployeeManagement.Migrations
+namespace AndyTipsterPro.Migrations
 {
     public partial class InitialMigration : Migration
     {

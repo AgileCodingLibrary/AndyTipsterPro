@@ -8,7 +8,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace EmployeeManagement.Models
+namespace AndyTipsterPro.Models
 {
     public class Employee
     {

@@ -1,6 +1,6 @@
-﻿using EmployeeManagement.Models;
-using EmployeeManagement.Security;
-using EmployeeManagement.ViewModels;
+﻿using AndyTipsterPro.Models;
+using AndyTipsterPro.Security;
+using AndyTipsterPro.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
@@ -12,7 +12,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace EmployeeManagement.Controllers
+namespace AndyTipsterPro.Controllers
 {
     [Authorize]
     public class HomeController : Controller

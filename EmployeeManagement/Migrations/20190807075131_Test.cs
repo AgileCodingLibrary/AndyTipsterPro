@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace EmployeeManagement.Migrations
+namespace AndyTipsterPro.Migrations
 {
     public partial class Test : Migration
     {

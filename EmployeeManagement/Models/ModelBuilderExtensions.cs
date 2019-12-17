@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace EmployeeManagement.Models
+namespace AndyTipsterPro.Models
 {
     public static class ModelBuilderExtensions
     {

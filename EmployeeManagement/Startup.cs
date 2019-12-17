@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using EmployeeManagement.Models;
-using EmployeeManagement.Security;
+using AndyTipsterPro.Models;
+using AndyTipsterPro.Security;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -15,7 +15,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace EmployeeManagement
+namespace AndyTipsterPro
 {
     public class Startup
     {
@@ -66,13 +66,13 @@ namespace EmployeeManagement
             services.AddAuthentication()
                 .AddGoogle(options =>
                 {
-                    options.ClientId = "";
-                    options.ClientSecret = "";
+                    options.ClientId = "asdf";
+                    options.ClientSecret = "asdf";
                 })
                 .AddFacebook(options =>
                 {
-                    options.AppId = "";
-                    options.AppSecret = "";
+                    options.AppId = "asdf";
+                    options.AppSecret = "asfd";
                 });
 
             services.ConfigureApplicationCookie(options =>

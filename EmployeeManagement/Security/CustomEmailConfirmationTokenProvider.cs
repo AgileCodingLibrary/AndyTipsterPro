@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace EmployeeManagement.Security
+namespace AndyTipsterPro.Security
 {
     public class CustomEmailConfirmationTokenProvider<TUser>
         : DataProtectorTokenProvider<TUser> where TUser : class

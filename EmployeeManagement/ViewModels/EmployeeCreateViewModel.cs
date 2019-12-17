@@ -1,4 +1,4 @@
-﻿using EmployeeManagement.Models;
+﻿using AndyTipsterPro.Models;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace EmployeeManagement.ViewModels
+namespace AndyTipsterPro.ViewModels
 {
     public class EmployeeCreateViewModel
     {

@@ -1,5 +1,5 @@
-﻿using EmployeeManagement.Models;
-using EmployeeManagement.ViewModels;
+﻿using AndyTipsterPro.Models;
+using AndyTipsterPro.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -11,7 +11,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
-namespace EmployeeManagement.Controllers
+namespace AndyTipsterPro.Controllers
 {
     //[Authorize(Policy = "AdminRolePolicy")]
     public class AdministrationController : Controller

@@ -6,7 +6,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
-namespace EmployeeManagement.Security
+namespace AndyTipsterPro.Security
 {
     public class CanEditOnlyOtherAdminRolesAndClaimsHandler :
         AuthorizationHandler<ManageAdminRolesAndClaimsRequirement>

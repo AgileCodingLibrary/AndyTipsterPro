@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
-namespace EmployeeManagement.Controllers
+namespace AndyTipsterPro.Controllers
 {
     public class ErrorController : Controller
     {

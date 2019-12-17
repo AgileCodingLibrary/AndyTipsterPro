@@ -9,7 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using NLog.Extensions.Logging;
 
-namespace EmployeeManagement
+namespace AndyTipsterPro
 {
     public class Program
     {

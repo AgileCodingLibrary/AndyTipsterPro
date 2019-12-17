@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace EmployeeManagement.Controllers
+namespace AndyTipsterPro.Controllers
 {
     public class DepartmentsController
     {
