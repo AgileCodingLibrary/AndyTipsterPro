@@ -12,9 +12,9 @@ namespace AndyTipsterPro.ViewModels
     {
         [Required]
         [EmailAddress]
-        [Remote(action: "IsEmailInUse", controller:"Account")]
-        [ValidEmailDomain(allowedDomain: "pragimtech.com", 
-            ErrorMessage ="Email domain must be pragimtech.com")]
+        //[Remote(action: "IsEmailInUse", controller:"Account")]
+        //[ValidEmailDomain(allowedDomain: "pragimtech.com", 
+        //    ErrorMessage ="Email domain must be pragimtech.com")]
         public string Email { get; set; }
 
         [Required]
