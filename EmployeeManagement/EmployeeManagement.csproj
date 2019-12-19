@@ -36,4 +36,68 @@
     </Content>
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="wwwroot\Template\css\color-blue.less" />
+    <None Include="wwwroot\Template\css\color-default.less" />
+    <None Include="wwwroot\Template\css\color-fuchsia.less" />
+    <None Include="wwwroot\Template\css\color-gold.less" />
+    <None Include="wwwroot\Template\css\color-grassgreen.less" />
+    <None Include="wwwroot\Template\css\color-green.less" />
+    <None Include="wwwroot\Template\css\color-intenseblue.less" />
+    <None Include="wwwroot\Template\css\color-niceblue.less" />
+    <None Include="wwwroot\Template\css\color-olive.less" />
+    <None Include="wwwroot\Template\css\color-orange.less" />
+    <None Include="wwwroot\Template\css\color-otherblue.less" />
+    <None Include="wwwroot\Template\css\color-pink.less" />
+    <None Include="wwwroot\Template\css\color-puregreen.less" />
+    <None Include="wwwroot\Template\css\color-red.less" />
+    <None Include="wwwroot\Template\css\color-violet.less" />
+    <None Include="wwwroot\Template\css\style.less" />
+    <None Include="wwwroot\Template\fonts\fontawesome-webfont.svg" />
+    <None Include="wwwroot\Template\fonts\glyphicons-halflings-regular.svg" />
+    <None Include="wwwroot\Template\img\slider-1-slide-1.psd" />
+    <None Include="wwwroot\Template\js\app.js" />
+    <None Include="wwwroot\Template\js\bootstrap.js" />
+    <None Include="wwwroot\Template\js\bootstrap.min.js" />
+    <None Include="wwwroot\Template\js\holder.js" />
+    <None Include="wwwroot\Template\js\html5shiv.js" />
+    <None Include="wwwroot\Template\js\jquery-1.10.2.min.js" />
+    <None Include="wwwroot\Template\js\jquery.cookie.js" />
+    <None Include="wwwroot\Template\js\jquery.countdown.js" />
+    <None Include="wwwroot\Template\js\jquery.countdown.min.js" />
+    <None Include="wwwroot\Template\js\jquery.mixitup.min.js" />
+    <None Include="wwwroot\Template\js\lightbox-2.6.min.js" />
+    <None Include="wwwroot\Template\js\modernizr.custom.js" />
+    <None Include="wwwroot\Template\js\respond.min.js" />
+    <None Include="wwwroot\Template\js\styleswitcher.js" />
+    <None Include="wwwroot\Template\js\syntax\shAutoloader.js" />
+    <None Include="wwwroot\Template\js\syntax\shBrushAppleScript.js" />
+    <None Include="wwwroot\Template\js\syntax\shBrushAS3.js" />
+    <None Include="wwwroot\Template\js\syntax\shBrushBash.js" />
+    <None Include="wwwroot\Template\js\syntax\shBrushColdFusion.js" />
+    <None Include="wwwroot\Template\js\syntax\shBrushCpp.js" />
+    <None Include="wwwroot\Template\js\syntax\shBrushCSharp.js" />
+    <None Include="wwwroot\Template\js\syntax\shBrushCss.js" />
+    <None Include="wwwroot\Template\js\syntax\shBrushDelphi.js" />
+    <None Include="wwwroot\Template\js\syntax\shBrushDiff.js" />
+    <None Include="wwwroot\Template\js\syntax\shBrushErlang.js" />
+    <None Include="wwwroot\Template\js\syntax\shBrushGroovy.js" />
+    <None Include="wwwroot\Template\js\syntax\shBrushJava.js" />
+    <None Include="wwwroot\Template\js\syntax\shBrushJavaFX.js" />
+    <None Include="wwwroot\Template\js\syntax\shBrushJScript.js" />
+    <None Include="wwwroot\Template\js\syntax\shBrushPerl.js" />
+    <None Include="wwwroot\Template\js\syntax\shBrushPhp.js" />
+    <None Include="wwwroot\Template\js\syntax\shBrushPlain.js" />
+    <None Include="wwwroot\Template\js\syntax\shBrushPowerShell.js" />
+    <None Include="wwwroot\Template\js\syntax\shBrushPython.js" />
+    <None Include="wwwroot\Template\js\syntax\shBrushRuby.js" />
+    <None Include="wwwroot\Template\js\syntax\shBrushSass.js" />
+    <None Include="wwwroot\Template\js\syntax\shBrushScala.js" />
+    <None Include="wwwroot\Template\js\syntax\shBrushSql.js" />
+    <None Include="wwwroot\Template\js\syntax\shBrushVb.js" />
+    <None Include="wwwroot\Template\js\syntax\shBrushXml.js" />
+    <None Include="wwwroot\Template\js\syntax\shCore.js" />
+    <None Include="wwwroot\Template\js\syntax\shLegacy.js" />
+  </ItemGroup>
+
 </Project>
