@@ -447,7 +447,7 @@ namespace AndyTipsterPro.Controllers
                 }
 
                 ViewBag.ErrorTitle = $"Email claim not received from: {info.LoginProvider}";
-                ViewBag.ErrorMessage = "Please contact support on Pragim@PragimTech.com";
+                ViewBag.ErrorMessage = "Please contact support.";
 
                 return View("Error");
             }

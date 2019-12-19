@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using AndyTipsterPro.Models;
+﻿using AndyTipsterPro.Models;
 using AndyTipsterPro.Security;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -13,7 +9,7 @@ using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
+using System;
 
 namespace AndyTipsterPro
 {
@@ -25,12 +21,10 @@ namespace AndyTipsterPro
         {
             _config = config;
         }
-        // This method gets called by the runtime. Use this method to add services to the container.
-        // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContextPool<AppDbContext>(
-                options => options.UseSqlServer(_config.GetConnectionString("EmployeeDBConnection")));
+                options => options.UseSqlServer(_config.GetConnectionString("AndyTipsterProDBConnection")));
 
             services.AddIdentity<ApplicationUser, IdentityRole>(options =>
             {
@@ -64,15 +58,15 @@ namespace AndyTipsterPro
             }).AddXmlSerializerFormatters();
 
             services.AddAuthentication()
-                .AddGoogle(options =>
-                {
-                    options.ClientId = "asdf";
-                    options.ClientSecret = "asdf";
-                })
+                //.AddGoogle(options =>
+                //{
+                //    options.ClientId = "asdf";
+                //    options.ClientSecret = "asdf";
+                //})
                 .AddFacebook(options =>
                 {
-                    options.AppId = "asdf";
-                    options.AppSecret = "asfd";
+                    options.AppId = "1410876402410582";
+                    options.AppSecret = "03df143c3bb7209088396c309afe2f45";
                 });
 
             services.ConfigureApplicationCookie(options =>
@@ -89,7 +83,7 @@ namespace AndyTipsterPro
                     policy => policy.AddRequirements(new ManageAdminRolesAndClaimsRequirement()));
 
                 options.AddPolicy("AdminRolePolicy",
-                    policy => policy.RequireRole("Admin"));
+                    policy => policy.RequireRole("SuperAdmin"));
             });
 
             services.AddScoped<IEmployeeRepository, SQLEmployeeRepository>();
