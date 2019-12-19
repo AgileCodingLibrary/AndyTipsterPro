@@ -45,6 +45,29 @@ namespace AndyTipsterPro.Controllers
             return View();
         }
 
+        [AllowAnonymous]
+        public ViewResult About()
+        {                   
+            return View();
+        }
+
+        [AllowAnonymous]
+        public ViewResult Subscribe()
+        {
+            return View();
+        }
+
+        [AllowAnonymous]
+        public ViewResult Faq()
+        {
+            return View();
+        }
+        [AllowAnonymous]
+        public ViewResult Contact()
+        {
+            return View();
+        }
+
         //[AllowAnonymous]
         //public ViewResult Details(string id)
         //{

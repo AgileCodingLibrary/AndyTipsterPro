@@ -1,0 +1,100 @@
+﻿
+@{
+    ViewData["Title"] = "Contact";
+}
+
+
+ <div class="container">
+
+    <div class="row">
+        <div class="col-md-8">
+            <section>
+                <h2 class="section-title">Send Message</h2>
+
+                <!-- <p>Lorem ipsum Ex aliqua tempor nisi laboris dolor id laborum irure minim tempor in sit dolore amet sit esse nostrud tempor nulla consequat aute in nostrud laboris sint ullamco amet nisi pariatur officia nulla pariatur in id et labore dolore ad sit.</p>-->
+
+
+
+                <form name="contactform" method="post" action="faz-send-form.php" accept-charset="UTF-8">
+
+
+
+                    <div class="form-group">
+                        <label for="InputName">First Name</label>
+                        <input type="text" class="form-control" id="first_name" name="first_name" maxlength="50" size="30">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="InputName">Last Name</label>
+                        <input type="text" class="form-control" id="last_name" name="last_name" maxlength="50" size="30">
+                    </div>
+
+
+                    <div class="form-group">
+                        <label for="InputName">Email Address</label>
+                        <input type="email" class="form-control" id="email" name="email" maxlength="80" size="30">
+                    </div>
+
+
+
+
+                    <!--   <div class="form-group">
+                           <label for="telephone">Telephone Number</label>
+                           <input type="text" class="form-control" id="telephone" name="telephone" maxlength="30" size="30">
+                       </div> -->
+
+
+                    <div class="form-group">
+                        <label for="comments">Comments</label>
+                        <textarea name="comments" id="comments" class="form-control" rows="5"></textarea>
+                    </div>
+
+
+
+                    <input type="submit" value="Submit">
+
+
+
+                </form>
+
+
+
+
+
+
+            </section>
+        </div>
+
+        <div class="col-md-4">
+            <section>
+                <div class="panel panel-primary">
+
+                    <div class="panel-body">
+                        <div id="fb-root"></div>
+                        <script>
+                            (function (d, s, id) {
+                                var js, fjs = d.getElementsByTagName(s)[0];
+                                if (d.getElementById(id)) return;
+                                js = d.createElement(s); js.id = id;
+                                js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.5&appId=910702312285636";
+                                fjs.parentNode.insertBefore(js, fjs);
+                            }(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+
+                        <div class="fb-page" data-href="https://www.facebook.com/Andy-Tipsters-Promotional-Page-560172880733598" data-tabs="timeline" data-width="500" data-height="600" data-small-header="false" data-adapt-container-width="true" data-hide-cover="false" data-show-facepile="true">
+                            <div class="fb-xfbml-parse-ignore"><blockquote cite="https://www.facebook.com/Andy-Tipsters-Promotional-Page-560172880733598"><a href="https://www.facebook.com/andy.tipster">Facebook</a></blockquote></div>
+                        </div>
+
+
+                    </div>
+
+                </div>
+        </div>
+        </section>
+    </div>
+
+
+</div>
+
