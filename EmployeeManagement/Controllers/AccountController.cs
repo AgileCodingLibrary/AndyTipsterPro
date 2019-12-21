@@ -83,7 +83,7 @@ namespace AndyTipsterPro.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model)
+        public async Task<IActionResult> ChangePassword(ViewModels.ChangePasswordViewModel model)
         {
             if (ModelState.IsValid)
             {
@@ -125,7 +125,7 @@ namespace AndyTipsterPro.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
+        public async Task<IActionResult> ResetPassword(ViewModels.ResetPasswordViewModel model)
         {
             if (ModelState.IsValid)
             {
@@ -166,7 +166,7 @@ namespace AndyTipsterPro.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
+        public async Task<IActionResult> ForgotPassword(ViewModels.ForgotPasswordViewModel model)
         {
             if (ModelState.IsValid)
             {
@@ -222,7 +222,7 @@ namespace AndyTipsterPro.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        public async Task<IActionResult> Register(RegisterViewModel model)
+        public async Task<IActionResult> Register(ViewModels.RegisterViewModel model)
         {
             if (ModelState.IsValid)
             {
@@ -296,7 +296,7 @@ namespace AndyTipsterPro.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Login(string returnUrl)
         {
-            LoginViewModel model = new LoginViewModel
+            ViewModels.LoginViewModel model = new ViewModels.LoginViewModel
             {
                 ReturnUrl = returnUrl,
                 ExternalLogins = (await signInManager.GetExternalAuthenticationSchemesAsync()).ToList()
@@ -307,7 +307,7 @@ namespace AndyTipsterPro.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        public async Task<IActionResult> Login(LoginViewModel model, string returnUrl)
+        public async Task<IActionResult> Login(ViewModels.LoginViewModel model, string returnUrl)
         {
             model.ExternalLogins = (await signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
 
@@ -367,7 +367,7 @@ namespace AndyTipsterPro.Controllers
         {
             returnUrl = returnUrl ?? Url.Content("~/");
 
-            LoginViewModel loginViewModel = new LoginViewModel
+            ViewModels.LoginViewModel loginViewModel = new ViewModels.LoginViewModel
             {
                 ReturnUrl = returnUrl,
                 ExternalLogins =
