@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using AndyTipsterPro.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PayPal.Api;
 using System;
@@ -9,8 +10,13 @@ namespace AndyTipsterPro.Controllers
     [Authorize(Roles = "Admin")]
     public class SubscribersController : Controller
     {
-        private Models.AppDbContext _dbContext => HttpContext.GetOwinContext().Get<Models.AppDbContext>();
+        //private Models.AppDbContext _dbContext => HttpContext.GetOwinContext().Get<Models.AppDbContext>();
+        public SubscribersController(AppDbContext context)
+        {
+            this._dbContext = context;
+        }
 
+        private readonly AppDbContext _dbContext;
         public ActionResult Index(string sortOrder, string currentFilter, string searchString, int? page)
         {
             ViewBag.CurrentSort = sortOrder;
@@ -64,13 +70,13 @@ namespace AndyTipsterPro.Controllers
                     break;
             }
 
-            int pageSize = 3;
-            int pageNumber = (page ?? 1);
-            return View(subscriptions.ToPagedList(pageNumber, pageSize));
+            //int pageSize = 3;
+            //int pageNumber = (page ?? 1);
+            //return View(subscriptions.ToPagedList(pageNumber, pageSize));
 
 
-            //var subscriptions = _dbContext.Subscriptions.OrderByDescending(x => x.StartDate).Take(50).ToList();
-            //return View(subscriptions);
+            var subscriptions1 = _dbContext.Subscriptions.OrderByDescending(x => x.StartDate).Take(50).ToList();
+            return View(subscriptions1);
         }
 
         public ActionResult Details(string id)

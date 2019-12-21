@@ -102,12 +102,12 @@ namespace AndyTipsterPro.Controllers
         {
             if (id == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return RedirectToAction("Index", "Home");
             }
             About about = db.Abouts.Find(id);
             if (about == null)
             {
-                return HttpNotFound();
+                return RedirectToAction("Index", "Home");
             }
             return View(about);
         }

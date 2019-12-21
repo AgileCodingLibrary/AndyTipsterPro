@@ -1,15 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.Entity;
-using System.Linq;
-using System.Net;
-using System.Web;
-using System.Web.Mvc;
-using AndyTipsterPro.Entities;
+﻿using AndyTipsterPro.Entities;
 using AndyTipsterPro.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace AndyTipsterPro.Controllers
 {

@@ -6,14 +6,19 @@ using Microsoft.AspNetCore.Mvc;
 using PayPal.Api;
 using System;
 using System.Linq;
+using System.Security.Claims;
 
 namespace AndyTipsterPro.Controllers
 {
     [Authorize]
     public class SubscriptionController : Controller
     {
+        public SubscriptionController(AppDbContext context)
+        {
+            this._dbContext = context;
+        }
 
-        private Models.AppDbContext _dbContext => HttpContext.GetOwinContext().Get<AppDbContext>();
+        private Models.AppDbContext _dbContext;
         public ActionResult Index()
         {
             var model = new IndexVm()
@@ -27,7 +32,9 @@ namespace AndyTipsterPro.Controllers
         public ActionResult Purchase(string id)
         {
 
-            var currentUserId = User.Identity.GetUserId();
+            //var currentUserId = User.Identity.   .GetUserId();
+            var currentUserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+
             var currentUser = _dbContext.Users.Where(x => x.Id == currentUserId).FirstOrDefault();
 
             if (currentUser.SubscriptionId != null)
@@ -90,7 +97,7 @@ namespace AndyTipsterPro.Controllers
         [HttpPost]
         public ActionResult Purchase(PurchaseVm model)
         {
-           
+
             var plan = Models.Subscription.Plan.Plans.FirstOrDefault(x => x.PayPalPlanId == model.Plan.PayPalPlanId);
 
 
@@ -168,7 +175,9 @@ namespace AndyTipsterPro.Controllers
 
             //update currently login user to add Paypal Subscription information.
 
-            var currentUserId = User.Identity.GetUserId();
+            //var currentUserId = User.Identity.GetUserId();
+
+            var currentUserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
             var currentUser = _dbContext.Users.Where(x => x.Id == currentUserId).FirstOrDefault();
             currentUser.SubscriptionId = executedAgreement.id;
             currentUser.SubscriptionState = executedAgreement.state;

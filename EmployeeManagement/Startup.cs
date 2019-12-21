@@ -38,13 +38,13 @@ namespace AndyTipsterPro
                 options.Lockout.MaxFailedAccessAttempts = 5;
                 options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
             })
-            .AddEntityFrameworkStores<AppDbContext>();
-            //.AddDefaultTokenProviders()
-            //.AddTokenProvider<CustomEmailConfirmationTokenProvider
-            //    <ApplicationUser>>("CustomEmailConfirmation");
+            .AddEntityFrameworkStores<AppDbContext>()
+            .AddDefaultTokenProviders()
+            .AddTokenProvider<CustomEmailConfirmationTokenProvider
+                <ApplicationUser>>("CustomEmailConfirmation");
 
-            //services.Configure<DataProtectionTokenProviderOptions>(o =>
-            //            o.TokenLifespan = TimeSpan.FromHours(5));
+            services.Configure<DataProtectionTokenProviderOptions>(o =>
+                        o.TokenLifespan = TimeSpan.FromHours(5));
 
             services.Configure<CustomEmailConfirmationTokenProviderOptions>(o =>
                         o.TokenLifespan = TimeSpan.FromDays(3));
