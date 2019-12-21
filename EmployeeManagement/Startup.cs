@@ -83,13 +83,13 @@ namespace AndyTipsterPro
                     policy => policy.AddRequirements(new ManageAdminRolesAndClaimsRequirement()));
 
                 options.AddPolicy("AdminRolePolicy",
-                    policy => policy.RequireRole("SuperAdmin"));
+                    policy => policy.RequireRole("Admin"));
             });
 
             services.AddScoped<IEmployeeRepository, SQLEmployeeRepository>();
 
             services.AddSingleton<IAuthorizationHandler, CanEditOnlyOtherAdminRolesAndClaimsHandler>();
-            services.AddSingleton<IAuthorizationHandler, SuperAdminHandler>();
+            services.AddSingleton<IAuthorizationHandler, AdminHandler>();
             services.AddSingleton<DataProtectionPurposeStrings>();
         }
 

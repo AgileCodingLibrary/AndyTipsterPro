@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace AndyTipsterPro.Controllers
 {
-    [Authorize(Roles = "Masteradmin")]
+    [Authorize(Roles = "Admin")]
     public class BillingPlansController : Controller
     {
         public ActionResult Index()

@@ -1,0 +1,42 @@
+﻿@model AndyTipsterPro.Entities.Tips
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Tips</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.AndyTipsterTips)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.AndyTipsterTips)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.IrishHorseTips)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.IrishHorseTips)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.UltimateTips)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.UltimateTips)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

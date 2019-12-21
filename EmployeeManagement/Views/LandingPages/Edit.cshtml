@@ -1,0 +1,40 @@
+﻿@model AndyTipsterPro.Entities.LandingPage
+
+@{
+    ViewBag.Title = "Edit";
+}
+
+    <div class="col-xs-12">
+        <p class="lead lead-lg text-center animated bounceInLeft animation-delay-12"><strong>You are editing contents of Home page. Your changes will only be saved, when you click <strong>save</strong> button at the end of page.</strong></p>
+
+    </div>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    
+    <div class="form-horizontal">
+       
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(model => model.Id)
+
+        <div class="form-group">       
+            <div class="col-md-12">
+                @Html.TextAreaFor(model => model.LandingPageHtml, new { name = "editor1", id = "editor1" })
+                @Html.ValidationMessageFor(model => model.LandingPageHtml, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Save" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+}
+
+
+
+<script>
+    CKEDITOR.replace('editor1');
+</script>

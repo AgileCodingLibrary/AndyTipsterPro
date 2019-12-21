@@ -1,0 +1,98 @@
+﻿@model AndyTipsterPro.Entities.About
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>About</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Header)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Header)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.FirstTopParagraph)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.FirstTopParagraph)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.SecondTopParagraph)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.SecondTopParagraph)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.PackagesTitle)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.PackagesTitle)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.PackageOneHeading)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.PackageOneHeading)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.PackageOneDetails)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.PackageOneDetails)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.PackageTwoHeading)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.PackageTwoHeading)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.PackageTWoDetails)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.PackageTWoDetails)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.PackageThreeHeading)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.PackageThreeHeading)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.PackageThreeDetails)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.PackageThreeDetails)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

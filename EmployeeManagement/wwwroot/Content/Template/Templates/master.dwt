@@ -1,0 +1,268 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+<meta name="description" content="Andy Tipster - The Number One in Sports Tips, Make The Most out of Your Bets.">
+<meta name="keywords" content="  Sports Betting, Horse Racing, Gambling, Tipster, Profit, Winners, Andy Tipster">
+<meta name="author" content="relaxcoding.com">
+    <!-- TemplateBeginEditable name="doctitle" -->
+    <title>www.andytipster.com</title>
+    <!-- TemplateEndEditable -->
+    <!-- CSS -->
+    <link href="../css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <link href="../css/font-awesome.min.css" rel="stylesheet" media="screen">
+    <link href="../css/animate.min.css" rel="stylesheet" media="screen">
+    <link href="../css/lightbox.css" rel="stylesheet" media="screen">
+    <link href="../css/syntax/shCore.css" rel="stylesheet"  media="screen">
+    <link href="../css/syntax/shThemeDefault.css" rel="stylesheet"  media="screen">
+
+    <link href="../css/style.css" rel="stylesheet" media="screen" title="default">
+    <link href="../css/color-default.css" rel="stylesheet" media="screen" title="default">
+    <link href="../css/width-full.css" rel="stylesheet" media="screen" title="default">
+    
+      <script src="//tinymce.cachefly.net/4.1/tinymce.min.js"></script>
+    <script>tinymce.init({ selector: 'textarea' });</script>
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="js/html5shiv.js"></script>
+        <script src="js/respond.min.js"></script>
+    <![endif]-->
+<!-- TemplateBeginEditable name="head" -->
+<!-- TemplateEndEditable -->
+</head>
+
+<body>
+
+<script>
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId      : '910702312285636',
+      xfbml      : true,
+      version    : 'v2.5'
+    });
+  };
+
+  (function(d, s, id){
+     var js, fjs = d.getElementsByTagName(s)[0];
+     if (d.getElementById(id)) {return;}
+     js = d.createElement(s); js.id = id;
+     js.src = "//connect.facebook.net/en_US/sdk.js";
+     fjs.parentNode.insertBefore(js, fjs);
+   }(document, 'script', 'facebook-jssdk'));
+</script>
+
+
+
+    <!-- Setting Options -->
+    <div id="color-switcher" class="animated fadeIn animation-dalay-10">
+        <div id="color-switcher-tab">
+            <i class="fa fa-gear fa fa-2x"></i>
+        </div>
+        <div id="color-switcher-content">
+            <h3>Color Selector</h3>
+            <a href="#" rel="color-default.css" class="color default">default</a>
+            <a href="#" rel="color-niceblue.css" class="color niceblue">niceblue</a>
+            <a href="#" rel="color-intenseblue.css" class="color intenseblue">intenseblue</a>
+            <a href="#" rel="color-otherblue.css" class="color otherblue">otherblue</a>
+            <a href="#" rel="color-blue.css" class="color blue">blue</a>
+            <a href="#" rel="color-puregreen.css" class="color puregreen">puregreen</a>
+            <a href="#" rel="color-grassgreen.css" class="color grassgreen">grassgreen</a>
+            <a href="#" rel="color-green.css" class="color green">green</a>        
+            <a href="#" rel="color-olive.css" class="color olive">olive</a>
+            <a href="#" rel="color-gold.css" class="color gold">gold</a>
+            <a href="#" rel="color-orange.css" class="color orange">orange</a>
+            <a href="#" rel="color-pink.css" class="color pink">pink</a>
+            <a href="#" rel="color-fuchsia.css" class="color fuchsia">fuchsia</a>
+            <a href="#" rel="color-violet.css" class="color violet">violet</a>
+            <a href="#" rel="color-red.css" class="color red">red</a>
+            
+
+            <h3>Container Selector</h3>
+            <div class="btn-group">
+                <button href="#" class="option btn btn-sm btn-primary" rel="width-boxed.css">Boxed</button>
+                <button href="#" class="option btn btn-sm btn-primary" rel="width-full.css">Full Width</button>
+            </div>
+        </div>
+    </div> <!-- color-switcher -->
+
+    <div class="boxed animated fadeIn animation-delay-5">
+
+        <header id="header" class="hidden-xs">
+            <div class="container">
+                <div id="header-title">
+                    <!--<h1 class="animated fadeInDown"><a href="../index.html">Andy<span>tipster</span></a></h1>-->
+                      <h1 class="animated "><a href="../index.html">Andy<span>Tipster</span></a></h1>
+                    <p class="animated fadeInLeft">The Number One in Sports Tips, Make The Most out of Your Bets.</p>
+                   
+                </div>
+
+             <!--   <div id="social-header" class="hidden-xs">
+                
+                    <a href="https://twitter.com/AndyTipster" class="social-icon soc-twitter animated fadeInDown animation-delay-1"><i class="fa fa-twitter"></i></a>
+                    <a href="#" class="social-icon soc-google-plus animated fadeInDown animation-delay-2"><i class="fa fa-google-plus"></i></a>
+                    <a href="https://www.facebook.com/andy.tipster" class="social-icon soc-facebook animated fadeInDown animation-delay-3"><i class="fa fa-facebook"></i></a>
+                    <a href="#" class="social-icon soc-instagram animated fadeInDown animation-delay-4"><i class="fa fa-instagram"></i></a>
+                    <a href="#" class="social-icon soc-pinterest animated fadeInDown animation-delay-5"><i class="fa fa-pinterest"></i></a>
+                    <a href="#" class="social-icon soc-linkedin animated fadeInDown animation-delay-6"><i class="fa fa-linkedin"></i></a>
+                    <a href="#" class="social-icon soc-github animated fadeInDown animation-delay-7"><i class="fa fa-github"></i></a>
+                </div>-->
+           
+
+           
+           
+           
+           
+           
+               <!-- <div id="search-header" class="hidden-xs animated bounceInRight">
+                 <div class="btn btn-warning"><a href="https://docs.google.com/spreadsheets/d/1LNXHFH6wEN4BHbb4jiFjzRAfZzeBHhH3I2ueORi8dxc/edit?pref=2&pli=1#gid=0">DAILY RESULTS</a></div> 
+                 <div class="btn btn-success"><a href="../winners.html">RECENT WINNERS</a></div> 
+                    <div class="input-group">-->
+
+                       <!-- <input type="text" class="form-control" placeholder="FREE TIPS >>> Register email">
+                        <span class="input-group-btn">
+                            <button class="btn btn-default" type="button"><i class="fa fa-search"></i></button>
+                        </span>-->
+                        
+                                   <!--         <center>
+<form action='http://hosting.heartinternet.uk/list.cgi' method='post'>
+<input type='hidden' name='list' value='Everyone'/>
+<input type='hidden' name='redirect-success' value='http://www.andytipster.com/thankyou.html'/>
+<input type="text" class="form-control" style="width: 280px;" placeholder="FREE TIPS >>> Register email" name='email'>
+<input type="hidden" name="action" value='add'/>
+<span class="input-group-btn">
+                           <input type='submit' value='Do it Now!'/>
+                        </span>-->
+<!--<input class='radio' type='radio' name='action' value='add' checked='checked'/>Subscribe
+<input class='radio' type='radio' name='action' value='delete'/>Unsubscribe<br/>-->
+
+<!--</form>
+                        
+                        
+                    </div>--><!-- /input-group -->
+               <!-- </div>-->
+               
+            </div> <!-- container -->
+        </header> <!-- header -->
+
+        <nav class="navbar navbar-static-top navbar-mind" role="navigation">
+            <div class="container">
+                <!-- Brand and toggle get grouped for better mobile display -->
+                <div class="navbar-header">
+                    <a class="navbar-brand visible-xs" href="../index.html">Andy<span>tipster</span></a>
+
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-mind-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <i class="fa fa-bars fa-inverse"></i>
+                    </button>
+                </div>
+                
+                <!-- Collect the nav links, forms, and other content for toggling -->
+                <div class="collapse navbar-collapse navbar-mind-collapse">
+                    <ul class="nav navbar-nav">
+                        <li class="dropdown ">
+                            <a href="../index.html">Home</a>
+                      </li> 
+                        <li class="dropdown ">
+                            <a href="../aboutus.html">About</a>                        
+                        </li> 
+ 					<!--	<li class="dropdown ">
+                            <a href="../freebets.html" >FreeBets</a>
+                        </li>-->
+                      <!--  <li class="dropdown ">
+                            <a href="http://fazistesting.blogspot.co.uk/" target="_blank">Blog</a>
+                        </li> -->
+                        
+                        <li class="dropdown ">
+                            <a href="../Members-chat-room.html" >ChatRoom</a>
+                        </li>
+                        
+
+                        <li class="dropdown ">
+                            <a href="../subscribe-now.html" >Subscribe</a>
+                        </li>
+                        <li class="dropdown ">
+                            <a href="../testimonials.html" >Testimonials</a>
+                        </li>
+                        <li class="dropdown ">
+                            <a href="../faq.html" >FAQ</a>
+                        </li>
+
+                        <li class="dropdown ">
+                            <a href="../contact.html">Contact Us</a>
+                        </li>
+
+                    </ul> <!-- nav nabvar-nav -->
+
+               
+                </div><!-- navbar-collapse -->
+            </div> <!-- container -->
+        </nav> <!-- navbar navbar-default -->
+
+             
+
+        <div >
+		
+		
+		<!-- TemplateBeginEditable name="contents" -->
+        
+        
+        
+        contents
+		
+		
+		<!-- TemplateEndEditable -->
+            
+
+        </div>
+
+       
+
+       
+
+        <aside id="footer-widgets">
+            <div class="container">
+            
+             </div> <!-- container -->
+        </aside> <!-- footer-widgets -->
+
+        <footer id="footer">
+
+            <p>&copy; 2016 <a href="#">www.andytipster.com</a>, inc. All rights reserved.</p>
+            <p>Designed and Maintained By <a href="http://www.relaxcoding.com/">relaxcoding.com: Where the heart is</a>.</p>
+        </footer>
+
+    </div> <!-- boxed -->
+
+    <div id="back-top">
+        <a href="#header"><i class="fa fa-chevron-up"></i></a>
+    </div>
+
+
+    <!-- Scripts -->
+    <script src="../js/jquery-1.10.2.min.js"></script>
+    <script src="../js/jquery.cookie.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/jquery.mixitup.min.js"></script>
+    <script src="../js/lightbox-2.6.min.js"></script>
+    <script src="../js/holder.js"></script>
+    <script src="../js/app.js"></script>
+    <script src="../js/styleswitcher.js"></script>
+
+    <script src="../js/syntax/shCore.js"></script>
+    <script src="../js/syntax/shBrushXml.js"></script>
+    <script src="../js/syntax/shBrushJScript.js"></script>
+
+    <script type="text/javascript">
+        SyntaxHighlighter.all()
+    </script>
+    
+    <!--chatme script-->
+    <script src="https://repository.chatwee.com/scripts/d0755815b0dd84cb0c18cf36b1b89171.js" type="text/javascript" charset="UTF-8"></script>
+</body>
+
+</html>

@@ -4,10 +4,11 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
+using System.Net;
 
 namespace AndyTipsterPro.Controllers
 {
-    [Authorize(Roles = "Masteradmin")]
+    [Authorize(Roles = "Admin")]
     public class AboutsController : Controller
     {
         public AboutsController(AppDbContext context)
@@ -18,48 +19,46 @@ namespace AndyTipsterPro.Controllers
         private readonly AppDbContext db;
 
 
-        //public ActionResult Index()
-        //{
-        //    return View(db.Abouts.ToList());
-        //}
+        public ActionResult Index()
+        {
+            return View(db.Abouts.ToList());
+        }
 
 
-        //public ActionResult Details(int? id)
-        //{
-        //    if (id == null)
-        //    {
-        //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-        //    }
-        //    About about = db.Abouts.Find(id);
-        //    if (about == null)
-        //    {
-        //        return HttpNotFound();
-        //    }
-        //    return View(about);
-        //}
+        public ActionResult Details(int? id)
+        {
+            if (id == null)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            About about = db.Abouts.Find(id);
+            if (about == null)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            return View(about);
+        }
 
 
-        //public ActionResult Create()
-        //{
-        //    return View();
-        //}
+        public ActionResult Create()
+        {
+            return View();
+        }
 
-        // POST: Abouts/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public ActionResult Create([Bind(Include = "Id,Header,FirstTopParagraph,SecondTopParagraph,PackagesTitle,PackageOneHeading,PackageOneDetails,PackageTwoHeading,PackageTWoDetails,PackageThreeHeading,PackageThreeDetails")] About about)
-        //{
-        //    if (ModelState.IsValid)
-        //    {
-        //        db.Abouts.Add(about);
-        //        db.SaveChanges();
-        //        return RedirectToAction("Index");
-        //    }
+        //POST: Abouts/Create       
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Create(About about)
+        {
+            if (ModelState.IsValid)
+            {
+                db.Abouts.Add(about);
+                db.SaveChanges();
+                return RedirectToAction("Index");
+            }
 
-        //    return View(about);
-        //}
+            return View(about);
+        }
 
 
         public ActionResult Edit(int? id)
@@ -98,31 +97,31 @@ namespace AndyTipsterPro.Controllers
             
         }
 
-     
-        //public ActionResult Delete(int? id)
-        //{
-        //    if (id == null)
-        //    {
-        //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-        //    }
-        //    About about = db.Abouts.Find(id);
-        //    if (about == null)
-        //    {
-        //        return HttpNotFound();
-        //    }
-        //    return View(about);
-        //}
 
-       
-        //[HttpPost, ActionName("Delete")]
-        //[ValidateAntiForgeryToken]
-        //public ActionResult DeleteConfirmed(int id)
-        //{
-        //    About about = db.Abouts.Find(id);
-        //    db.Abouts.Remove(about);
-        //    db.SaveChanges();
-        //    return RedirectToAction("Index");
-        //}
+        public ActionResult Delete(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            About about = db.Abouts.Find(id);
+            if (about == null)
+            {
+                return HttpNotFound();
+            }
+            return View(about);
+        }
+
+
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public ActionResult DeleteConfirmed(int id)
+        {
+            About about = db.Abouts.Find(id);
+            db.Abouts.Remove(about);
+            db.SaveChanges();
+            return RedirectToAction("Index");
+        }
 
         protected override void Dispose(bool disposing)
         {

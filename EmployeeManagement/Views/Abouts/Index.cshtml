@@ -1,0 +1,93 @@
+﻿@model IEnumerable<AndyTipsterPro.Entities.About>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+@if (Model.Count() > 0)
+{
+    <table class="table">
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Header)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FirstTopParagraph)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SecondTopParagraph)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PackagesTitle)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PackageOneHeading)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PackageOneDetails)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PackageTwoHeading)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PackageTWoDetails)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PackageThreeHeading)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PackageThreeDetails)
+            </th>
+            <th></th>
+        </tr>
+
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Header)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.FirstTopParagraph)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SecondTopParagraph)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PackagesTitle)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PackageOneHeading)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PackageOneDetails)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PackageTwoHeading)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PackageTWoDetails)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PackageThreeHeading)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PackageThreeDetails)
+                </td>
+                <td>
+                    @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
+                    @Html.ActionLink("Details", "Details", new { id = item.Id }) |
+                    @Html.ActionLink("Delete", "Delete", new { id = item.Id })
+                </td>
+            </tr>
+        }
+
+    </table>
+}
+
+

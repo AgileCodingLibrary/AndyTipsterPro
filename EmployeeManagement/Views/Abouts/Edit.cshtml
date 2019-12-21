@@ -1,0 +1,115 @@
+﻿@model AndyTipsterPro.Entities.About
+
+@{
+    ViewBag.Title = "Edit";
+}
+
+<div class="col-xs-12">
+    <p class="lead lead-lg text-center animated bounceInLeft animation-delay-12"><strong>You are editing contents of ABOUT page. Your changes will only be saved, when you click <strong>save</strong> button at the end of page.</strong></p>
+   
+</div>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(model => model.Id)
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Header, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Header, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Header, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.FirstTopParagraph, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextAreaFor(model => model.FirstTopParagraph, new { rows = "8", cols = "120" })
+                @* @Html.EditorFor(model => model.FirstTopParagraph, new { htmlAttributes = new { @class = "form-control" } })*@
+                @Html.ValidationMessageFor(model => model.FirstTopParagraph, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.SecondTopParagraph, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @*@Html.EditorFor(model => model.SecondTopParagraph, new { htmlAttributes = new { @class = "form-control" } })*@
+                @Html.TextAreaFor(model => model.SecondTopParagraph, new { rows = "8", cols = "120" })
+                @Html.ValidationMessageFor(model => model.SecondTopParagraph, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.PackagesTitle, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.PackagesTitle, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.PackagesTitle, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.PackageOneHeading, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.PackageOneHeading, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.PackageOneHeading, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.PackageOneDetails, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @* @Html.EditorFor(model => model.PackageOneDetails, new { htmlAttributes = new { @class = "form-control" } })*@
+                @Html.TextAreaFor(model => model.PackageOneDetails, new { rows = "8", cols = "120" })
+                @Html.ValidationMessageFor(model => model.PackageOneDetails, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.PackageTwoHeading, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.PackageTwoHeading, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.PackageTwoHeading, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.PackageTWoDetails, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @*  @Html.EditorFor(model => model.PackageTWoDetails, new { htmlAttributes = new { @class = "form-control" } })*@
+
+                @Html.TextAreaFor(model => model.PackageTWoDetails, new { rows = "8", cols = "120" })
+                @Html.ValidationMessageFor(model => model.PackageTWoDetails, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.PackageThreeHeading, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.PackageThreeHeading, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.PackageThreeHeading, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.PackageThreeDetails, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @*@Html.EditorFor(model => model.PackageThreeDetails, new { htmlAttributes = new { @class = "form-control" } })*@
+
+                @Html.TextAreaFor(model => model.PackageThreeDetails, new { rows = "8", cols = "120" })
+                @Html.ValidationMessageFor(model => model.PackageThreeDetails, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Save" class="btn btn-primary btn-lg" />
+            </div>
+        </div>
+    </div>
+}
+

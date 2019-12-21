@@ -1,0 +1,176 @@
+﻿@inject SignInManager<ApplicationUser> signInManager;
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <meta name="description" content="Andy Tipster - The Number One in Sports Tips, Make The Most out of Your Bets.">
+    <meta name="keywords" content="  Sports Betting, Horse Racing, Gambling, Tipster, Profit, Winners, Andy Tipster">
+    <meta name="author" content="relaxcoding.com">
+
+    <title>@ViewBag.Title</title>
+
+    <!-- CSS -->
+    <link href="~/Template/css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <link href="~/Template/css/font-awesome.min.css" rel="stylesheet" media="screen">
+    <link href="~/Template/css/animate.min.css" rel="stylesheet" media="screen">
+    <link href="~/Template/css/lightbox.css" rel="stylesheet" media="screen">
+    <link href="~/Template/css/syntax/shCore.css" rel="stylesheet" media="screen">
+    <link href="~/Template/css/syntax/shThemeDefault.css" rel="stylesheet" media="screen">
+
+    <link href="~/Template/css/style.css" rel="stylesheet" media="screen" title="default">
+    <link href="~/Template/css/color-default.css" rel="stylesheet" media="screen" title="default">
+    <link href="~/Template/css/width-full.css" rel="stylesheet" media="screen" title="default">
+
+    <script src="//tinymce.cachefly.net/4.1/tinymce.min.js"></script>
+
+</head>
+
+<body>
+
+    <div class="boxed animated fadeIn animation-delay-5">
+        <header id="header" class="hidden-xs">
+            <div class="container">
+                <div id="header-title">
+                    <h1 class="animated "><a href="index.html">Andy<span>Tipster</span></a></h1>
+                    <p class="animated fadeInLeft">The Number One in Sports Tips, Make The Most out of Your Bets.</p>
+                </div>
+            </div>
+        </header>
+
+        <nav class="navbar navbar-static-top navbar-mind" role="navigation">
+            <div class="container">
+                <div class="navbar-header">
+                    <a class="navbar-brand visible-xs" href="index.html">Andy<span>tipster</span></a>
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-mind-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <i class="fa fa-bars fa-inverse"></i>
+                    </button>
+                </div>
+
+
+                <div class="collapse navbar-collapse navbar-mind-collapse">
+                    <ul class="nav navbar-nav">
+                        <li class="nav-item">
+                            <a asp-action="index" asp-controller="home" class="nav-link">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a asp-action="about" asp-controller="home" class="nav-link">About</a>
+                        </li>
+                        <li class="nav-item">
+                            <a asp-action="subscribe" asp-controller="home" class="nav-link">Subscribe</a>
+                        </li>
+                        <li class="nav-item">
+                            <a asp-action="faq" asp-controller="home" class="nav-link">Faq</a>
+                        </li>
+                        <li class="nav-item">
+                            <a asp-action="contact" asp-controller="home" class="nav-link">Contact us</a>
+                        </li>
+
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink"
+                               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Super Admin
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                                <a class="dropdown-item" asp-controller="Administration"
+                                   asp-action="ListUsers">Users</a>
+                                <a class="dropdown-item" asp-controller="Administration"
+                                   asp-action="ListRoles">Roles</a>
+                                <a class="dropdown-item" asp-controller="Account"
+                                   asp-action="ChangePassword">Password</a>
+                            </div>
+                        </li>
+
+                    </ul>
+                    <ul class="navbar-nav ml-auto">
+                        @if (signInManager.IsSignedIn(User))
+                        {
+                            <li class="nav-item">
+                                <form method="post" asp-action="logout" asp-controller="account">
+                                    <button type="submit" class="nav-link btn btn-link py-0"
+                                            style="width:auto">
+                                        Logout @User.Identity.Name
+                                    </button>
+                                </form>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a asp-action="register" asp-controller="account" class="nav-link">Register</a>
+                            </li>
+                            <li class="nav-item">
+                                <a asp-action="login" asp-controller="account" class="nav-link">Login</a>
+                            </li>
+                        }
+
+                    </ul>
+
+                </div>
+            </div>
+        </nav>
+        <div>
+
+            <br />
+            <div class="row">
+                @RenderBody()
+            </div>
+
+
+
+
+
+            <aside id="footer-widgets">
+                <div class="container">
+
+                </div> <!-- container -->
+            </aside> <!-- footer-widgets -->
+
+            <footer id="footer">
+                <p>Footer goes here.</p>
+            </footer>
+
+        </div> <!-- boxed -->
+
+        <div id="back-top">
+            <a href="#header"><i class="fa fa-chevron-up"></i></a>
+        </div>
+
+
+        <!-- Scripts -->
+        <script src="~/Template/js/jquery-1.10.2.min.js"></script>
+        <script src="~/Template/js/jquery.cookie.js"></script>
+        <script src="~/Template/js/bootstrap.min.js"></script>
+        <script src="~/Template/js/jquery.mixitup.min.js"></script>
+        <script src="~/Template/js/lightbox-2.6.min.js"></script>
+        <script src="~/Template/js/holder.js"></script>
+        <script src="~/Template/js/app.js"></script>
+        <script src="~/Template/js/styleswitcher.js"></script>
+
+        <script src="~/Template/js/syntax/shCore.js"></script>
+        <script src="~/Template/js/syntax/shBrushXml.js"></script>
+        <script src="~/Template/js/syntax/shBrushJScript.js"></script>
+
+        <script type="text/javascript">
+            SyntaxHighlighter.all()
+        </script>
+
+        <!--chatme script-->
+        <script src="https://repository.chatwee.com/scripts/d0755815b0dd84cb0c18cf36b1b89171.js" type="text/javascript" charset="UTF-8"></script>
+
+        @if (IsSectionDefined("Scripts"))
+        {
+            @RenderSection("Scripts", required: true)
+        }
+</body>
+
+<!-- InstanceEnd -->
+</html>

@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace AndyTipsterPro.Controllers
 {
-    [Authorize(Roles = "Masteradmin")]
+    [Authorize(Roles = "Admin")]
     public class SubscribersController : Controller
     {
         private Models.AppDbContext _dbContext => HttpContext.GetOwinContext().Get<Models.AppDbContext>();

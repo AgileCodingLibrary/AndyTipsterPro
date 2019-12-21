@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace AndyTipsterPro.Security
 {
-    public class SuperAdminHandler : AuthorizationHandler<ManageAdminRolesAndClaimsRequirement>
+    public class AdminHandler : AuthorizationHandler<ManageAdminRolesAndClaimsRequirement>
     {
         protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, 
             ManageAdminRolesAndClaimsRequirement requirement)
