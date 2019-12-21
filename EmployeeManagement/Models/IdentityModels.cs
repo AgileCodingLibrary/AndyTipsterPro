@@ -24,22 +24,19 @@ namespace AndyTipsterPro.Models
 
     }
 
-    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
-    {
+    //public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
+    //{
 
-        public DbSet<Entities.Subscription> Subscriptions { get; set; }
-        public DbSet<Entities.Questions> Questions { get; set; }
-        public DbSet<About> Abouts { get; set; }
-        public DbSet<Tips> Tips { get; set; }
+    //    public DbSet<Entities.Subscription> Subscriptions { get; set; }
+    //    public DbSet<Entities.Questions> Questions { get; set; }
+    //    public DbSet<About> Abouts { get; set; }
+    //    public DbSet<Tips> Tips { get; set; }
 
-        public DbSet<LandingPage> LandingPages { get; set; }
-        //public ApplicationDbContext()
-        //    : base("DefaultConnection")
-        //{
-        //}
+    //    public DbSet<LandingPage> LandingPages { get; set; }
+    //    //public ApplicationDbContext()
+    //    //    : base("DefaultConnection")
+    //    //{
+    //    //}
 
-
-
-
-    }
+    //}
 }

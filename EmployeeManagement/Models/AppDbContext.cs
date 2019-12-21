@@ -11,12 +11,13 @@ namespace AndyTipsterPro.Models
             : base(options)
         { }
 
+        //remove after testing.
         public DbSet<Employee> Employees { get; set; }
+
         public DbSet<Entities.Subscription> Subscriptions { get; set; }
         public DbSet<Questions> Questions { get; set; }
         public DbSet<About> Abouts { get; set; }
         public DbSet<Tips> Tips { get; set; }
-
         public DbSet<LandingPage> LandingPages { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
