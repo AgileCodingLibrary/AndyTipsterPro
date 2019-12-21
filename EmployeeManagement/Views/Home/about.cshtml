@@ -1,39 +1,41 @@
-﻿
+﻿@model AndyTipsterPro.Entities.About
+
 @{
-    ViewData["Title"] = "about";
+    ViewBag.Title = "About";
 }
-    <div class="container">
+
+@if (Model != null)
+{ 
+    <div class="row">
         <div class="col-xs-12">
-            <p class="lead lead-lg text-center animated bounceInLeft animation-delay-12"></p>
+            <p class="lead lead-lg text-center animated bounceInLeft animation-delay-12"><strong>@Model.Header</strong></p>
         </div>
 
         <div class="col-md-12">
             <section class="animated fadeInDown animation-delay-8">
-                <h2 class="section-title">Daily tips, Cover multiple Sports with years of proven success</h2>
+                @*<h2 class="section-title">@Model.Header</h2>*@
 
                 <p class="p-lg">
 
-                    Since February 2013 I, Andy Tipster have continued to build my ever growing reputation as one of The best sports tipsters In the business, Not only just horse racing but other sports also.
-                    After a free month of tips for like minded punters which proved to be very successful and yielded a very healthy profit Andy Tipster was launched. I had been betting privately and successfully for a number of years and setting up my own tipping site Became Ever Popular within The social media community, the groups, Clientele and pages have continued to soar on a month on month basis and Continues to grow, with hundreds of private members, and thousands of members on our social pages and groups.  <br />
-                    I continue a hands on and professional approach which continues to prove that we keep members with a high % having stayed with me since day 1.
-                    I believe I offer my clients the best service around. I Tip daily, cover multiple sports and do all the work so you the client does not have too.
-                    <br />
+                    @Model.FirstTopParagraph  <br />
+                    @Model.SecondTopParagraph <br />
+
 
             </section>
             <section class="animated fadeIn animation-delay-10">
-                <h3 class="section-title">What I offer</h3>
+                <h3 class="section-title">@Model.PackagesTitle</h3>
                 <div class="panel-group" id="accordion">
                     <div class="panel panel-default">
                         <div class="panel-heading">
                             <h4 class="panel-title">
                                 <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
-                                    Andy Tipster Package
+                                    @Model.PackageOneHeading
                                 </a>
                             </h4>
                         </div>
                         <div id="collapseOne" class="panel-collapse collapse in">
                             <div class="panel-body">
-                                We have 2 Membership set ups, My main "Andy Tipster" Package which has changed for 2016 and for the better to keep up with the times, of being a sports tipster having moved over to a points system from a monetary one, It Specialises in UK Horse Racing mainly 4 horses daily with a mix of Singles and a Yankee bet, Other sports including football for example are included and American Sports are sent in a 2nd Email normally Around 7pm for Overnight.
+                                @Model.PackageOneDetails
                             </div>
                         </div>
                     </div>
@@ -41,13 +43,13 @@
                         <div class="panel-heading">
                             <h4 class="panel-title">
                                 <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" class="collapsed">
-                                    Irish Horse Racing Package
+                                    @Model.PackageTwoHeading
                                 </a>
                             </h4>
                         </div>
                         <div id="collapseTwo" class="panel-collapse collapse">
                             <div class="panel-body">
-                                The 'Irish Horse Racing Package' We started this in Dec 2013 on Facebook and very quickly became the biggest Irish racing page On Facebook we turned over massive profits from level Stakes on a daily and monthly basis, Always seen as the sister to Andy Tipster but certainty is not the understudy and just another way to hit winners on a regular basis. This Will Have a Daily Email Service When any Irish meeting is on, With tips throughout the Card/s and level Stakes Singles advised.
+                                @Model.PackageTWoDetails
                             </div>
                         </div>
                     </div>
@@ -55,13 +57,13 @@
                         <div class="panel-heading">
                             <h4 class="panel-title">
                                 <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" class="collapsed">
-                                    Daily Winners Section
+                                    @Model.PackageThreeHeading
                                 </a>
                             </h4>
                         </div>
                         <div id="collapseThree" class="panel-collapse collapse">
                             <div class="panel-body">
-                                Every tip has a staking amount and is always recorded on our Spreadsheets which you can Find under the Daily Winners Section. All our packages aim at long term profits and this is proven in our records time and time again, We can not promise overnight success this is gambling Except i take Great pride In Winning And winning consistently.
+                                @Model.PackageThreeDetails
                             </div>
                         </div>
                     </div>
@@ -70,4 +72,10 @@
         </div>
 
     </div>
+}
+else
+{
+    <h2>There is no information to display on this page.</h2>
+}
+
 

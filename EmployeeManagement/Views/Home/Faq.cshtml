@@ -1,10 +1,48 @@
-﻿
+﻿@model IEnumerable<AndyTipsterPro.Entities.Questions>
+
+
 @{
-    ViewData["Title"] = "Faq";
+    ViewBag.Title = "Frequently Asked Questions";
 }
 
-<div class="container">
-    <div class="row">
+
+<div class="row" style="margin-bottom:50px;">
+    <section>
+        <div class="col-xs-12"></div>
+    </section>
+    <div class="col-md-8">
+        <h2 class="section-title">@ViewBag.Title</h2>
+
+        @if (Model.Count() > 0)
+        {
+            foreach (var Question in Model)
+            {
+                <div class="panel-group" id="accordion1">
+                    <div class="panel">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion1" href="#@String.Concat("collapse_", Question.Id)">
+                                    @Question.Question
+                                </a>
+                            </h4>
+                        </div>
+                        <div id="@String.Concat("collapse_", Question.Id)" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                @Question.Answer
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>
+
+
+
+
+
+@*<div class="row">
         <section>
             <div class="col-xs-12">
             </div>
@@ -288,7 +326,4 @@
             </div>
         </div>
 
-    </div> <!-- row -->
-
-</div>
-
+    </div> <!-- row -->*@

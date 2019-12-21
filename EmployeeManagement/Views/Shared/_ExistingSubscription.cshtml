@@ -1,0 +1,39 @@
+﻿@model AndyTipsterPro.Models.Subscription.ExistingSubscriptionVM
+
+    @{
+        ViewBag.Title = "Existing Subscription Found";
+    }
+
+
+    <div class="heads">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <h1>You seem to already have a subscription.</h1>
+                    @*<h3>All our payments are through Paypal. You can use your Paypal account or a Debit Card on the next step.</h3>
+                    <h3>Please check your selected subscription and click payment button.</>*@
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row" style="margin-top:50px;">
+        <div class="col-md-6 col-sm-8">
+            <div class="pricign-box animated fadeInUp animation-delay-7">
+                <div class="pricing-box-header">
+                    <h2>@Model.PlanName</h2>
+                    @*<p>nisi anim mollit in labore ut esse</p>*@
+                </div>
+                
+                <div class="pricing-box-content">
+                    <ul>
+                        <li>Paypal Ref:  @Model.PaypalAgreement</li>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
