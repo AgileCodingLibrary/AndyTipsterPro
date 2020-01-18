@@ -17,46 +17,45 @@ namespace AndyTipsterPro.Controllers
 
         public ActionResult Index()
         {
-            //return View(db.Tips.ToList());
-            return RedirectToAction("Index");
+            return View();
         }
 
-        //public ActionResult Details(int? id)
-        //{
-        //    if (id == null)
-        //    {
-        //        return RedirectToAction("Index");
-        //    }
+        public ActionResult Details(int? id)
+        {
+            if (id == null)
+            {
+                return RedirectToAction("Index");
+            }
 
-        //    Tips tips = db.Tips.Find(id);
-        //    if (tips == null)
-        //    {
-        //        tips = db.Tips.FirstOrDefault();               
-        //    }
+            Tips tips = db.Tips.Find(id);
+            if (tips == null)
+            {
+                tips = db.Tips.FirstOrDefault();
+            }
 
-        //    return View(tips);
-        //}
-
-
-        //public ActionResult Create()
-        //{
-        //    return View();
-        //}
+            return View(tips);
+        }
 
 
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public ActionResult Create([Bind(Include = "Id,AndyTipsterTips,IrishHorseTips,UltimateTips")] Tips tips)
-        //{
-        //    if (ModelState.IsValid)
-        //    {
-        //        db.Tips.Add(tips);
-        //        db.SaveChanges();
-        //        return RedirectToAction("Index");
-        //    }
+        public ActionResult Create()
+        {
+            return View();
+        }
 
-        //    return View(tips);
-        //}
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Create(Tips tips)
+        {
+            if (ModelState.IsValid)
+            {
+                db.Tips.Add(tips);
+                db.SaveChanges();
+                return RedirectToAction("Index");
+            }
+
+            return View(tips);
+        }
 
         public ActionResult Edit(int? id)
         {
