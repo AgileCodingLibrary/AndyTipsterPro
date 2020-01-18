@@ -63,7 +63,9 @@ namespace AndyTipsterPro.Controllers
         [AllowAnonymous]
         public ViewResult Faq()
         {
-            return View();
+            var model = _context.Questions.ToList();
+            
+            return View(model);
         }
         [AllowAnonymous]
         public ViewResult Contact()

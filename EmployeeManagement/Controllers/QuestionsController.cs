@@ -8,7 +8,7 @@ using System.Net;
 
 namespace AndyTipsterPro.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    //[Authorize(Roles = "Admin")]
     public class QuestionsController : Controller
     {
         public QuestionsController(AppDbContext context)
@@ -20,7 +20,8 @@ namespace AndyTipsterPro.Controllers
         // GET: Questions
         public ActionResult Index()
         {
-            return View(db.Questions.ToList());
+            var model = db.Questions.ToList();
+            return View(model);
         }
 
         // GET: Questions/Details/5
