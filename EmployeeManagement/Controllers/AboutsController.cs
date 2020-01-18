@@ -8,7 +8,7 @@ using System.Net;
 
 namespace AndyTipsterPro.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    //[Authorize(Roles = "Admin")]
     public class AboutsController : Controller
     {
         public AboutsController(AppDbContext context)

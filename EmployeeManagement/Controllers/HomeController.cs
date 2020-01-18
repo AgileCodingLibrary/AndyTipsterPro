@@ -1,16 +1,9 @@
 ﻿using AndyTipsterPro.Models;
-using AndyTipsterPro.Security;
-using AndyTipsterPro.ViewModels;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace AndyTipsterPro.Controllers
 {
@@ -20,15 +13,17 @@ namespace AndyTipsterPro.Controllers
         private readonly IEmployeeRepository _employeeRepository;
         private readonly IHostingEnvironment hostingEnvironment;
         private readonly ILogger logger;
-        
+        private readonly AppDbContext _context;
 
         public HomeController(IEmployeeRepository employeeRepository,
                               IHostingEnvironment hostingEnvironment,
-                              ILogger<HomeController> logger)
+                              ILogger<HomeController> logger, 
+                              AppDbContext context)
         {
             _employeeRepository = employeeRepository;
             this.hostingEnvironment = hostingEnvironment;
             this.logger = logger;
+            _context = context;
         }
 
         [AllowAnonymous]
@@ -47,9 +42,17 @@ namespace AndyTipsterPro.Controllers
 
         [AllowAnonymous]
         public ViewResult About()
-        {                   
-            return View();
+        {
+            var model = _context.Abouts.FirstOrDefault();
+            if (model != null)
+            {
+                return View(model);
+            }
+
+            return View("Index");
         }
+
+            
 
         [AllowAnonymous]
         public ViewResult Subscribe()
