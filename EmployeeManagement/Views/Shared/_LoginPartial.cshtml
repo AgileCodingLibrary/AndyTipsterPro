@@ -10,7 +10,10 @@
                 @*@Html.ActionLink("User Profile", "Index", "Manage", routeValues: null, htmlAttributes: new { title = "Manage" })*@
                 <a asp-controller="Manage" asp-action="Index" asp-route-title="manage">User Profile</a>
             </li>
-            <li><a href="javascript:document.getElementById('logoutForm').submit()">Log off</a></li>
+            @*<li><a href="javascript:document.getElementById('logoutForm').submit()">Log off</a></li>*@
+            <li>
+                <a asp-controller="Account" asp-action="Logout">Log off</a>
+            </li>
         </ul>
     }
 }

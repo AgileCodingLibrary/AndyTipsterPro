@@ -1,5 +1,6 @@
 ﻿using AndyTipsterPro.Models;
 using AndyTipsterPro.ViewModels;
+using EmployeeManagement.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -190,11 +191,11 @@ namespace AndyTipsterPro.Controllers
             return View(model);
         }
 
-        [HttpPost]
+        [HttpGet]
         public async Task<IActionResult> Logout()
         {
             await signInManager.SignOutAsync();
-            return RedirectToAction("index", "home");
+            return RedirectToAction("Index", new { controller = "Home" });
         }
 
         [HttpGet]
@@ -242,7 +243,10 @@ namespace AndyTipsterPro.Controllers
                     var confirmationLink = Url.Action("ConfirmEmail", "Account",
                                             new { userId = user.Id, token = token }, Request.Scheme);
 
-                    logger.Log(LogLevel.Warning, confirmationLink);
+                    //string email, string subject, string htmlContent)
+                    await Emailer.SendEmail(user.Email, "AndyTipster: Please confirm your email", "<p>" + confirmationLink + "</p>");
+                    
+                    //logger.Log(LogLevel.Warning, confirmationLink);
 
                     if (signInManager.IsSignedIn(User) && User.IsInRole("Admin"))
                     {
