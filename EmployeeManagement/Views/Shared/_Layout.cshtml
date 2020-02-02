@@ -110,35 +110,49 @@
 
                         @if (User.Identity.IsAuthenticated)
                         {
-                            <li class="dropdown">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Tips<b class="caret"></b></a>
-                                <ul class="dropdown-menu">
-                                    <li><a asp-controller="Home" asp-action="AndyTipsterTips">AndyTipster Tips</a></li>
-                                    <li><a asp-controller="Home" asp-action="IrishRacingTips">Irish Racing Tips</a></li>
-                                    <li><a asp-controller="Home" asp-action="UltimatePackTips">Ultimate Pack Tips</a></li>
-                                </ul>
-                            </li>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Tips<b class="caret"></b></a>
+                            <ul class="dropdown-menu">
+                                <li><a asp-controller="Home" asp-action="AndyTipsterTips">AndyTipster Tips</a></li>
+                                <li><a asp-controller="Home" asp-action="IrishRacingTips">Irish Racing Tips</a></li>
+                                <li><a asp-controller="Home" asp-action="UltimatePackTips">Ultimate Pack Tips</a></li>
+                            </ul>
+                        </li>
                         }
 
 
                         @*@if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
-                        {*@
-                            <li class="dropdown">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Admin<b class="caret"></b></a>
-                                <ul class="dropdown-menu">
-
-                                    <li><a asp-controller="BillingPlans" asp-action="Index">Billing Plans</a></li>
-                                    <li><a asp-controller="Subscribers" asp-action="Index">Subscribers</a></li>
-                                    <li><a asp-controller="LandingPages" asp-action="Edit">Edit Home</a></li>
-                                    <li><a asp-controller="Abouts" asp-action="Edit" asp-route-id="1">Edit About</a></li>
-                                    <li><a asp-controller="Questions" asp-action="Index">Edit FAQ</a></li>
-                                    <li><a asp-controller="Tips" asp-action="Edit" asp-route-id="1">Edit Tips</a></li>
-                                    <li><a asp-controller="Tips" asp-action="Index">Create Tips</a></li>
-                                    <li><a asp-controller="Home" asp-action="EmailList">Download Emails</a></li>
-
-                                </ul>
-                            </li>
+                            {*@
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Admin<b class="caret"></b></a>
+                            <ul class="dropdown-menu">
+                                <li><a asp-controller="BillingPlans" asp-action="Index">Billing Plans</a></li>
+                                <li><a asp-controller="Subscribers" asp-action="Index">Subscribers</a></li>
+                                <li><a asp-controller="LandingPages" asp-action="Edit">Edit Home</a></li>
+                                <li><a asp-controller="Abouts" asp-action="Edit" asp-route-id="1">Edit About</a></li>
+                                <li><a asp-controller="Questions" asp-action="Index">Edit FAQ</a></li>
+                                <li><a asp-controller="Tips" asp-action="Edit" asp-route-id="1">Edit Tips</a></li>
+                                <li><a asp-controller="Tips" asp-action="Index">Create Tips</a></li>
+                                <li><a asp-controller="Home" asp-action="EmailList">Download Emails</a></li>
+                            </ul>
+                        </li>
                         @*}*@
+
+
+
+
+
+
+
+                        @if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+                            {
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Super Admin<b class="caret"></b></a>
+                            <ul class="dropdown-menu">
+                                <li><a asp-controller="Administration" asp-action="ManageUserRoles">Roles</a></li>
+                            </ul>
+                        </li>
+                        }
 
                     </ul>
 
@@ -164,7 +178,7 @@
 
             <footer id="footer" style="margin-top:50px;">
 
-                <p>&copy; 2016 <a href="#">www.andytipster.com</a>, inc. All rights reserved.</p>
+                <p>&copy; 2020 <a href="#">www.andytipsterpro.com</a>, inc. All rights reserved.</p>
                 <p>Designed and Maintained By <a href="http://www.agilecoding.com/">agilecoding.com: Simple but Smart</a>.</p>
             </footer>
 

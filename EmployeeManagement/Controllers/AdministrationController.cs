@@ -14,6 +14,8 @@ using System.Threading.Tasks;
 namespace AndyTipsterPro.Controllers
 {
     //[Authorize(Policy = "AdminRolePolicy")]
+
+        [Authorize]
     public class AdministrationController : Controller
     {
         private readonly RoleManager<IdentityRole> roleManager;
@@ -165,15 +167,17 @@ namespace AndyTipsterPro.Controllers
 
         [HttpGet]
         //[Authorize(Policy = "EditRolePolicy")]
-        public async Task<IActionResult> ManageUserRoles(string userId)
+        public async Task<IActionResult> ManageUserRoles()
         {
-            ViewBag.userId = userId;
+            
+            var currentUser = await userManager.GetUserAsync(HttpContext.User);
+            ViewBag.userId = currentUser.Id;
 
-            var user = await userManager.FindByIdAsync(userId);
+            var user = await userManager.FindByIdAsync(currentUser.Id);
 
             if (user == null)
             {
-                ViewBag.ErrorMessage = $"User with Id = {userId} cannot be found";
+                ViewBag.ErrorMessage = $"User cannot be found";
                 return View("NotFound");
             }
 
@@ -204,18 +208,18 @@ namespace AndyTipsterPro.Controllers
 
         [HttpPost]
         //[Authorize(Policy = "EditRolePolicy")]
-        public async Task<IActionResult> ManageUserRoles(List<UserRolesViewModel> model, string userId)
+        public async Task<IActionResult> ManageUserRoles(List<UserRolesViewModel> model)
         {
-            var user = await userManager.FindByIdAsync(userId);
+            var currentUser = await userManager.GetUserAsync(HttpContext.User);
 
-            if (user == null)
+            if (currentUser == null)
             {
-                ViewBag.ErrorMessage = $"User with Id = {userId} cannot be found";
+                ViewBag.ErrorMessage = $"User cannot be found";
                 return View("NotFound");
             }
 
-            var roles = await userManager.GetRolesAsync(user);
-            var result = await userManager.RemoveFromRolesAsync(user, roles);
+            var roles = await userManager.GetRolesAsync(currentUser);
+            var result = await userManager.RemoveFromRolesAsync(currentUser, roles);
 
             if (!result.Succeeded)
             {
@@ -223,7 +227,7 @@ namespace AndyTipsterPro.Controllers
                 return View(model);
             }
 
-            result = await userManager.AddToRolesAsync(user,
+            result = await userManager.AddToRolesAsync(currentUser,
         model.Where(x => x.IsSelected).Select(y => y.RoleName));
 
             if (!result.Succeeded)
@@ -232,7 +236,7 @@ namespace AndyTipsterPro.Controllers
                 return View(model);
             }
 
-            return RedirectToAction("EditUser", new { Id = userId });
+            return RedirectToAction("EditUser", new { Id = currentUser.Id });
         }
 
         [HttpPost]
