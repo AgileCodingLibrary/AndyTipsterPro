@@ -16,10 +16,10 @@ namespace AndyTipsterPro.Controllers
         private readonly AppDbContext db;
 
         // GET: LandingPages
-        //public ActionResult Index()
-        //{
-        //    return View(db.LandingPages.ToList());
-        //}
+        public ActionResult Index()
+        {
+            return View(db.LandingPages.ToList());
+        }
 
         // GET: LandingPages/Details/5
         //public ActionResult Details(int? id)
@@ -37,10 +37,10 @@ namespace AndyTipsterPro.Controllers
         //}
 
         // GET: LandingPages/Create
-        //public ActionResult Create()
-        //{
-        //    return View();
-        //}
+        public ActionResult Create()
+        {
+            return View();
+        }
 
         //// POST: LandingPages/Create
         //// To protect from overposting attacks, please enable the specific properties you want to bind to, for 
@@ -61,26 +61,26 @@ namespace AndyTipsterPro.Controllers
 
         // GET: LandingPages/Edit/5
 
-        public ActionResult Edit(int? id)
-        {
-            LandingPage landingPage = null;
+        //public ActionResult Edit(int? id)
+        //{
+        //    LandingPage landingPage = null;
 
-            if (id == null)
-            {
-                landingPage = db.LandingPages.FirstOrDefault();
-            }
-            else
-            {
-                landingPage = db.LandingPages.Find(id);
+        //    if (id == null)
+        //    {
+        //        landingPage = db.LandingPages.FirstOrDefault();
+        //    }
+        //    else
+        //    {
+        //        landingPage = db.LandingPages.Find(id);
 
-                if (landingPage == null)
-                {
-                    landingPage = db.LandingPages.FirstOrDefault();
-                }
-            }
+        //        if (landingPage == null)
+        //        {
+        //            landingPage = db.LandingPages.FirstOrDefault();
+        //        }
+        //    }
 
-            return View(landingPage);
-        }
+        //    return View(landingPage);
+        //}
 
         // POST: LandingPages/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
@@ -114,8 +114,8 @@ namespace AndyTipsterPro.Controllers
         //}
 
         // POST: LandingPages/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
+        //[HttpPost, ActionName("Delete")]
+        //[ValidateAntiForgeryToken]
         //public ActionResult DeleteConfirmed(int id)
         //{
         //    LandingPage landingPage = db.LandingPages.Find(id);

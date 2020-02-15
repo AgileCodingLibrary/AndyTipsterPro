@@ -9,20 +9,26 @@
 
         <div class="AW-Form-452195183"></div>
         <script type="text/javascript">
-                            (function (d, s, id) {
-                                var js, fjs = d.getElementsByTagName(s)[0];
-                                if (d.getElementById(id)) return;
-                                js = d.createElement(s); js.id = id;
-                                js.src = "//forms.aweber.com/form/83/452195183.js";
-                                fjs.parentNode.insertBefore(js, fjs);
-                            }(document, "script", "aweber-wjs-d93otjwlr"));
+            (function (d, s, id) {
+                var js, fjs = d.getElementsByTagName(s)[0];
+                if (d.getElementById(id)) return;
+                js = d.createElement(s); js.id = id;
+                js.src = "//forms.aweber.com/form/83/452195183.js";
+                fjs.parentNode.insertBefore(js, fjs);
+            }(document, "script", "aweber-wjs-d93otjwlr"));
         </script>
+
+
 
         <br />
     </div>
 </div>
 <div class="container">
 
+    <form>
+        <textarea cols="80" id="editor1" name="editor1" rows="10" data-sample-short>&lt;p&gt;This is some &lt;strong&gt;sample text&lt;/strong&gt;. You are using &lt;a href=&quot;https://ckeditor.com/&quot;&gt;CKEditor&lt;/a&gt;.&lt;/p&gt;</textarea>
+        
+    </form>
 
 
     <div class="col-md-6 col-sm-6">
@@ -199,3 +205,13 @@
     </div>
 
 </div>
+
+@section scripts {
+
+    <script>
+        CKEDITOR.replace('editor1', {
+            height: 400,
+            baseFloatZIndex: 10005
+        });
+    </script>
+}
