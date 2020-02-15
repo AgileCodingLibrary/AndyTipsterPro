@@ -4,6 +4,7 @@ using EmployeeManagement.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
@@ -17,14 +18,17 @@ namespace AndyTipsterPro.Controllers
         private readonly UserManager<ApplicationUser> userManager;
         private readonly SignInManager<ApplicationUser> signInManager;
         private readonly ILogger<AccountController> logger;
+        private readonly IConfiguration _configuration;
 
         public AccountController(UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
-            ILogger<AccountController> logger)
+            ILogger<AccountController> logger,
+            IConfiguration configuration)
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
             this.logger = logger;
+            this._configuration = configuration;
         }
 
         [HttpGet]
@@ -243,8 +247,11 @@ namespace AndyTipsterPro.Controllers
                     var confirmationLink = Url.Action("ConfirmEmail", "Account",
                                             new { userId = user.Id, token = token }, Request.Scheme);
 
+                    
+                    var sendGridKey = _configuration.GetValue<string>("SendGridApi");
+
                     //string email, string subject, string htmlContent)
-                    await Emailer.SendEmail(user.Email, "AndyTipster: Please confirm your email", "<p>" + confirmationLink + "</p>");
+                    await Emailer.SendEmail(user.Email, "AndyTipster: Please confirm your email", "<p>" + confirmationLink + "</p>", sendGridKey);
                     
                     //logger.Log(LogLevel.Warning, confirmationLink);
 

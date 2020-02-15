@@ -1,0 +1,12 @@
+﻿@model AndyTipsterPro.Entities.Contact
+
+@{ 
+    ViewBag.Title = "Message Received";
+}
+
+<h1>@Model.FirstName, Your Message have been received.</h1>
+<h3>One of our team member will reply to your message asap.</h3>
+
+<a asp-action="index" asp-controller="home">
+    Click here to navigate to the home page
+</a>

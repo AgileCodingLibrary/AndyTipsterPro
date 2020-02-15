@@ -8,7 +8,7 @@ using System.Net;
 
 namespace AndyTipsterPro.Controllers
 {
-    //[Authorize(Roles = "Admin")]
+    [Authorize(Roles = "superadmin, admin")]
     public class QuestionsController : Controller
     {
         public QuestionsController(AppDbContext context)
@@ -17,37 +17,39 @@ namespace AndyTipsterPro.Controllers
         }
         private readonly AppDbContext db;
 
-        // GET: Questions
+      
         public ActionResult Index()
         {
             var model = db.Questions.ToList();
+
             return View(model);
         }
 
-        // GET: Questions/Details/5
+       
         public ActionResult Details(int? id)
         {
             if (id == null)
             {
-                //return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return RedirectToAction("Index", "Home");
             }
+
             Questions questions = db.Questions.Find(id);
+
             if (questions == null)
             {
-                //return HttpNotFound();
+                return RedirectToAction("Index", "Home");
             }
+
             return View(questions);
         }
 
-        // GET: Questions/Create
+        
         public ActionResult Create()
         {
             return View();
         }
 
-        // POST: Questions/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
+       
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create(Questions questions)
@@ -55,31 +57,34 @@ namespace AndyTipsterPro.Controllers
             if (ModelState.IsValid)
             {
                 db.Questions.Add(questions);
+
                 db.SaveChanges();
+
                 return RedirectToAction("Index");
             }
 
             return View(questions);
         }
 
-        // GET: Questions/Edit/5
+       
         public ActionResult Edit(int? id)
         {
             if (id == null)
             {
-                //return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return RedirectToAction("Index", "Home");
             }
+
             Questions questions = db.Questions.Find(id);
+
             if (questions == null)
             {
-                //return HttpNotFound();
+                return RedirectToAction("Index", "Home");
             }
+
             return View(questions);
         }
 
-        // POST: Questions/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
+      
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit(Questions questions)
@@ -87,35 +92,44 @@ namespace AndyTipsterPro.Controllers
             if (ModelState.IsValid)
             {
                 db.Entry(questions).State = EntityState.Modified;
+
                 db.SaveChanges();
+
                 return RedirectToAction("Index");
             }
+
             return View(questions);
         }
 
-        // GET: Questions/Delete/5
+        
         public ActionResult Delete(int? id)
         {
             if (id == null)
             {
-                //return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return RedirectToAction("Index", "Home");
             }
+
             Questions questions = db.Questions.Find(id);
+
             if (questions == null)
             {
-                //return HttpNotFound();
+                return RedirectToAction("Index", "Home");
             }
+
             return View(questions);
         }
 
-        // POST: Questions/Delete/5
+        
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
             Questions questions = db.Questions.Find(id);
+
             db.Questions.Remove(questions);
+
             db.SaveChanges();
+
             return RedirectToAction("Index");
         }
 

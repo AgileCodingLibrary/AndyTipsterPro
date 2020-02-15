@@ -11,9 +11,10 @@ namespace EmployeeManagement.Helpers
     public static class Emailer
     {
 
-        public static async Task SendEmail(string email, string subject, string htmlContent)
+        public static async Task SendEmail(string email, string subject, string htmlContent, string sendGridKey)
         {
-            var apiKey = "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";
+            var apiKey = sendGridKey;
+
             var client = new SendGridClient(apiKey);
             var from = new EmailAddress("fazahmed786@hotmail.com", "Support");
             var to = new EmailAddress(email);

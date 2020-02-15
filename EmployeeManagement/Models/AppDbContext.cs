@@ -19,6 +19,7 @@ namespace AndyTipsterPro.Models
         public DbSet<About> Abouts { get; set; }
         public DbSet<Tips> Tips { get; set; }
         public DbSet<LandingPage> LandingPages { get; set; }
+        public DbSet<Contact> Contacts { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
