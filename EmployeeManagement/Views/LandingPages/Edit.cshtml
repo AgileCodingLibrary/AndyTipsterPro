@@ -4,21 +4,21 @@
     ViewBag.Title = "Edit";
 }
 
-    <div class="col-xs-12">
-        <p class="lead lead-lg text-center animated bounceInLeft animation-delay-12"><strong>You are editing contents of Home page. Your changes will only be saved, when you click <strong>save</strong> button at the end of page.</strong></p>
+<div class="col-xs-12">
+    <p class="lead lead-lg text-center animated bounceInLeft animation-delay-12"><strong>You are editing contents of Home page. Your changes will only be saved, when you click <strong>save</strong> button at the end of page.</strong></p>
 
-    </div>
+</div>
 
 @using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
-    
+
     <div class="form-horizontal">
-       
+
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
         @Html.HiddenFor(model => model.Id)
 
-        <div class="form-group">       
+        <div class="form-group">
             <div class="col-md-12">
                 @Html.TextAreaFor(model => model.LandingPageHtml, new { name = "editor1", id = "editor1" })
                 @Html.ValidationMessageFor(model => model.LandingPageHtml, "", new { @class = "text-danger" })
@@ -35,6 +35,15 @@
 
 
 
-<script>
-    CKEDITOR.replace('editor1');
-</script>
+@section scripts {
+
+    <script>
+        CKEDITOR.replace('editor1', {
+            height: 400,
+            baseFloatZIndex: 10005
+        });
+    </script>
+}
+
+
+@*<textarea cols="80" id="editor1" name="editor1" rows="10" data-sample-short>&lt;p&gt;This is some &lt;strong&gt;sample text&lt;/strong&gt;. You are using &lt;a href=&quot;https://ckeditor.com/&quot;&gt;CKEditor&lt;/a&gt;.&lt;/p&gt;</textarea>*@

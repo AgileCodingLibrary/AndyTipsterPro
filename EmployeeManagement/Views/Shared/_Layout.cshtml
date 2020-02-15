@@ -125,26 +125,20 @@
                         }
 
 
-                        @*@if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
-                            {*@
-                        <li class="dropdown">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Admin<b class="caret"></b></a>
-                            <ul class="dropdown-menu">
-                                <li><a asp-controller="BillingPlans" asp-action="Index">Billing Plans</a></li>
-                                <li><a asp-controller="Subscribers" asp-action="Index">Subscribers</a></li>
-                                <li><a asp-controller="LandingPages" asp-action="Edit">Edit Home</a></li>
-                                <li><a asp-controller="Abouts" asp-action="Edit" asp-route-id="1">Edit About</a></li>
-                                <li><a asp-controller="Questions" asp-action="Index">Edit FAQ</a></li>
-                                <li><a asp-controller="Tips" asp-action="Edit" asp-route-id="1">Edit Tips</a></li>
-                                <li><a asp-controller="Tips" asp-action="Index">Create Tips</a></li>
-                                <li><a asp-controller="Home" asp-action="EmailList">Download Emails</a></li>
-                            </ul>
-                        </li>
-                        @*}*@
-
-
-
-
+                        @if (User.Identity.IsAuthenticated && ( User.IsInRole("superadmin") || User.IsInRole("admin")))
+                        {
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Admin<b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                    <li><a asp-controller="LandingPages" asp-action="Edit">Edit Home</a></li>
+                                    <li><a asp-controller="Abouts" asp-action="Edit" asp-route-id="1">Edit About</a></li>
+                                    <li><a asp-controller="Questions" asp-action="Index">Edit FAQ</a></li>
+                                    <li><a asp-controller="Tips" asp-action="Edit" asp-route-id="1">Edit Tips</a></li>
+                                    <li><a asp-controller="Tips" asp-action="Index">Create Tips</a></li>
+                                    <li><a asp-controller="Home" asp-action="EmailList">Download Emails</a></li>
+                                </ul>
+                            </li>
+                        }
 
 
 
@@ -164,6 +158,16 @@
                                     <li>
                                         <a class="dropdown-item" asp-controller="Account"
                                            asp-action="ChangePassword">Password</a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" asp-controller="LandingPages"
+                                           asp-action="index">Landing Pages</a>
+                                    </li>
+                                    <li>
+                                        <a asp-controller="BillingPlans" asp-action="Index">Billing Plans</a>
+                                    </li>
+                                    <li>
+                                        <a asp-controller="Subscribers" asp-action="Index">Subscribers</a>
                                     </li>
                                 </ul>
                             </li>

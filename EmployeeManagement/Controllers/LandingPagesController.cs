@@ -15,114 +15,147 @@ namespace AndyTipsterPro.Controllers
 
         private readonly AppDbContext db;
 
-        // GET: LandingPages
+
         public ActionResult Index()
         {
-            return View(db.LandingPages.ToList());
+            var model = db.LandingPages.ToList();
+
+            return View(model);
         }
 
-        // GET: LandingPages/Details/5
-        //public ActionResult Details(int? id)
-        //{
-        //    if (id == null)
-        //    {
-        //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-        //    }
-        //    LandingPage landingPage = db.LandingPages.Find(id);
-        //    if (landingPage == null)
-        //    {
-        //        return HttpNotFound();
-        //    }
-        //    return View(landingPage);
-        //}
 
-        // GET: LandingPages/Create
+        public ActionResult Details(int? id)
+        {
+            if (id == null)
+            {
+                return RedirectToAction("Index");
+            }
+
+            var model = db.LandingPages.Find(id);
+
+            if (model == null)
+            {
+                return RedirectToAction("Index");
+            }
+
+            return View(model);
+        }
+
+
         public ActionResult Create()
         {
             return View();
         }
 
-        //// POST: LandingPages/Create
-        //// To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        //// more details see https://go.microsoft.com/fwlink/?LinkId=317598.
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public ActionResult Create([Bind(Include = "Id,LandingPageHtml")] LandingPage landingPage)
-        //{
-        //    if (ModelState.IsValid)
-        //    {
-        //        db.LandingPages.Add(landingPage);
-        //        db.SaveChanges();
-        //        return RedirectToAction("Index");
-        //    }
 
-        //    return View(landingPage);
-        //}
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Create(LandingPage landingPage)
+        {
 
-        // GET: LandingPages/Edit/5
+            if (ModelState.IsValid)
+            {
+                db.LandingPages.Add(landingPage);
 
-        //public ActionResult Edit(int? id)
-        //{
-        //    LandingPage landingPage = null;
+                db.SaveChanges();
 
-        //    if (id == null)
-        //    {
-        //        landingPage = db.LandingPages.FirstOrDefault();
-        //    }
-        //    else
-        //    {
-        //        landingPage = db.LandingPages.Find(id);
+                return RedirectToAction("Index");
 
-        //        if (landingPage == null)
-        //        {
-        //            landingPage = db.LandingPages.FirstOrDefault();
-        //        }
-        //    }
+            }
 
-        //    return View(landingPage);
-        //}
+            return View(landingPage);
+        }
 
-        // POST: LandingPages/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
+
+
+        public ActionResult Edit(int? id)
+        {
+
+            LandingPage landingPage = null;
+
+            //super admin can edit more than one record.
+            if (User.Identity.IsAuthenticated && User.IsInRole("superadmin"))
+            {
+
+                if (id == null)
+                {
+                    landingPage = db.LandingPages.FirstOrDefault();
+                }
+                else
+                {
+                    landingPage = db.LandingPages.Find(id);
+
+                    if (landingPage == null)
+                    {
+                        landingPage = db.LandingPages.FirstOrDefault();
+                    }
+                }
+            }
+            else // user can only edit one record.
+            {
+                landingPage = db.LandingPages.FirstOrDefault();
+
+                if (landingPage == null)
+                {
+                    return RedirectToAction("Index", new { controller = "Home" });
+                }
+            }
+
+
+            return View(landingPage);
+        }
+
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit(LandingPage landingPage)
         {
+
             if (ModelState.IsValid)
             {
                 db.Entry(landingPage).State = EntityState.Modified;
+
                 db.SaveChanges();
+
                 return RedirectToAction("Index", new { controller = "Home" });
+
             }
+
             return View(landingPage);
         }
 
-        // GET: LandingPages/Delete/5
-        //public ActionResult Delete(int? id)
-        //{
-        //    if (id == null)
-        //    {
-        //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-        //    }
-        //    LandingPage landingPage = db.LandingPages.Find(id);
-        //    if (landingPage == null)
-        //    {
-        //        return HttpNotFound();
-        //    }
-        //    return View(landingPage);
-        //}
 
-        // POST: LandingPages/Delete/5
-        //[HttpPost, ActionName("Delete")]
-        //[ValidateAntiForgeryToken]
-        //public ActionResult DeleteConfirmed(int id)
-        //{
-        //    LandingPage landingPage = db.LandingPages.Find(id);
-        //    db.LandingPages.Remove(landingPage);
-        //    db.SaveChanges();
-        //    return RedirectToAction("Index");
-        //}
+        public ActionResult Delete(int? id)
+        {
+            if (id == null)
+            {
+                return RedirectToAction("Index");
+            }
+
+            var model = db.LandingPages.Find(id);
+
+            if (model == null)
+            {
+                return RedirectToAction("Index");
+            }
+
+            return View(model);
+        }
+
+
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public ActionResult DeleteConfirmed(int id)
+        {
+            LandingPage landingPage = db.LandingPages.Find(id);
+
+            db.LandingPages.Remove(landingPage);
+
+            db.SaveChanges();
+
+            return RedirectToAction("Index");
+
+        }
 
         protected override void Dispose(bool disposing)
         {
