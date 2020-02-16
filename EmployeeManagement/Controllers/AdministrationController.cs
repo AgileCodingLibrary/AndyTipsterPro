@@ -13,9 +13,9 @@ using System.Threading.Tasks;
 
 namespace AndyTipsterPro.Controllers
 {
-    //[Authorize(Policy = "AdminRolePolicy")]
 
-        [Authorize]
+
+    [Authorize]
     public class AdministrationController : Controller
     {
         private readonly RoleManager<IdentityRole> roleManager;
@@ -39,6 +39,7 @@ namespace AndyTipsterPro.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "superadmin")]
         public async Task<IActionResult> EditRole(string id)
         {
             var role = await roleManager.FindByIdAsync(id);
@@ -67,6 +68,7 @@ namespace AndyTipsterPro.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "superadmin")]
         public async Task<IActionResult> EditRole(EditRoleViewModel model)
         {
             var role = await roleManager.FindByIdAsync(model.Id);
@@ -96,6 +98,7 @@ namespace AndyTipsterPro.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "superadmin")]
         public async Task<IActionResult> ManageUserClaims(string userId)
         {
             var user = await userManager.FindByIdAsync(userId);
@@ -134,6 +137,7 @@ namespace AndyTipsterPro.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "superadmin")]
         public async Task<IActionResult> ManageUserClaims(UserClaimsViewModel model)
         {
             var user = await userManager.FindByIdAsync(model.UserId);
@@ -166,10 +170,10 @@ namespace AndyTipsterPro.Controllers
         }
 
         [HttpGet]
-        //[Authorize(Policy = "EditRolePolicy")]
+        [Authorize(Roles = "superadmin")]
         public async Task<IActionResult> ManageUserRoles()
         {
-            
+
             var currentUser = await userManager.GetUserAsync(HttpContext.User);
             ViewBag.userId = currentUser.Id;
 
@@ -183,7 +187,7 @@ namespace AndyTipsterPro.Controllers
 
             var model = new List<UserRolesViewModel>();
 
-            foreach(var role in roleManager.Roles)
+            foreach (var role in roleManager.Roles)
             {
                 var userRolesViewModel = new UserRolesViewModel
                 {
@@ -207,7 +211,7 @@ namespace AndyTipsterPro.Controllers
         }
 
         [HttpPost]
-        //[Authorize(Policy = "EditRolePolicy")]
+        [Authorize(Roles = "superadmin")]
         public async Task<IActionResult> ManageUserRoles(List<UserRolesViewModel> model)
         {
             var currentUser = await userManager.GetUserAsync(HttpContext.User);
@@ -240,6 +244,7 @@ namespace AndyTipsterPro.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "superadmin")]
         public async Task<IActionResult> DeleteUser(string id)
         {
             var user = await userManager.FindByIdAsync(id);
@@ -268,7 +273,7 @@ namespace AndyTipsterPro.Controllers
         }
 
         [HttpPost]
-        [Authorize(Policy = "DeleteRolePolicy")]
+        [Authorize(Roles = "superadmin")]
         public async Task<IActionResult> DeleteRole(string id)
         {
             var role = await roleManager.FindByIdAsync(id);
@@ -298,7 +303,7 @@ namespace AndyTipsterPro.Controllers
 
                     return View("ListRoles");
                 }
-                catch(DbUpdateException ex)
+                catch (DbUpdateException ex)
                 {
                     logger.LogError($"Error deleting role {ex}");
 
@@ -312,11 +317,73 @@ namespace AndyTipsterPro.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "superadmin")]
         public IActionResult ListUsers()
         {
             var users = userManager.Users;
             return View(users);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> EditUserProfile()
+        {
+
+            var user = await userManager.GetUserAsync(HttpContext.User);
+
+            if (user == null)
+            {
+                ViewBag.ErrorMessage = $"User cannot be found";
+                return View("NotFound");
+            }
+
+
+            var model = new EditUserProfileViewModel
+            {
+                Id = user.Id,
+                Email = user.Email,
+                UserName = user.UserName,
+                City = user.City,
+                SendEmails = user.SendEmails
+            };
+
+            return View(model);
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> EditUserProfile(EditUserProfileViewModel model)
+        {
+            var user = await userManager.GetUserAsync(HttpContext.User);
+
+            if (user == null)
+            {
+                ViewBag.ErrorMessage = $"User cannot be found";
+                return View("NotFound");
+            }
+            else
+            {
+                user.Email = model.Email;
+                user.UserName = model.UserName;
+                user.City = model.City;
+                user.SendEmails = model.SendEmails;
+
+                var result = await userManager.UpdateAsync(user);
+
+                if (result.Succeeded)
+                {
+                    return RedirectToAction("EditUserProfile");
+                }
+
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError("", error.Description);
+                }
+
+                return View(model);
+            }
+        }
+
+
 
         [HttpGet]
         public async Task<IActionResult> EditUser(string id)
