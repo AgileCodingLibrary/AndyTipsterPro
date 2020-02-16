@@ -184,6 +184,12 @@ namespace AndyTipsterPro.Controllers
                     var passwordResetLink = Url.Action("ResetPassword", "Account",
                             new { email = model.Email, token = token }, Request.Scheme);
 
+                    var sendGridKey = _configuration.GetValue<string>("SendGridApi");
+
+                    //string email, string subject, string htmlContent)
+                    await Emailer.SendEmail(user.Email, "AndyTipster: Please reset your password as requested", "<p>" + passwordResetLink + "</p>", sendGridKey);
+
+
                     logger.Log(LogLevel.Warning, passwordResetLink);
 
                     return View("ForgotPasswordConfirmation");
@@ -253,7 +259,7 @@ namespace AndyTipsterPro.Controllers
                     //string email, string subject, string htmlContent)
                     await Emailer.SendEmail(user.Email, "AndyTipster: Please confirm your email", "<p>" + confirmationLink + "</p>", sendGridKey);
                     
-                    //logger.Log(LogLevel.Warning, confirmationLink);
+                    logger.Log(LogLevel.Warning, confirmationLink);
 
                     if (signInManager.IsSignedIn(User) && User.IsInRole("Admin"))
                     {
