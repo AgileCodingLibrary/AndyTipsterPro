@@ -46,6 +46,7 @@ namespace AndyTipsterPro.Controllers
             return View(about);
         }
 
+
         [Authorize(Roles = "superadmin")]
         public ActionResult Create()
         {
@@ -151,8 +152,11 @@ namespace AndyTipsterPro.Controllers
         public ActionResult DeleteConfirmed(int id)
         {
             About about = db.Abouts.Find(id);
+
             db.Abouts.Remove(about);
+
             db.SaveChanges();
+
             return RedirectToAction("Index");
         }
 

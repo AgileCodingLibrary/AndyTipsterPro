@@ -133,7 +133,7 @@
                                     <li><a asp-controller="LandingPages" asp-action="Edit">Edit Home</a></li>
                                     <li><a asp-controller="Abouts" asp-action="Edit">Edit About</a></li>
                                     <li><a asp-controller="Questions" asp-action="Index">Edit FAQ</a></li>
-                                    <li><a asp-controller="Tips" asp-action="Edit" asp-route-id="1">Edit Tips</a></li>
+                                    <li><a asp-controller="Tips" asp-action="Edit" >Edit Tips</a></li>
                                     <li><a asp-controller="Tips" asp-action="Index">Create Tips</a></li>
                                     <li><a asp-controller="Home" asp-action="EmailList">Download Emails</a></li>
                                 </ul>
@@ -166,6 +166,10 @@
                                     <li>
                                         <a class="dropdown-item" asp-controller="Abouts"
                                            asp-action="index">About Pages</a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" asp-controller="Tips"
+                                           asp-action="index">Tips Pages</a>
                                     </li>
                                     <li>
                                         <a asp-controller="BillingPlans" asp-action="Index">Billing Plans</a>
