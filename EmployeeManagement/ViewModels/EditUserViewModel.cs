@@ -28,6 +28,9 @@ namespace AndyTipsterPro.ViewModels
         public List<string> Claims { get; set; }
 
         public IList<string> Roles { get; set; }
+
+        
+
     }
 
 

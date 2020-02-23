@@ -340,7 +340,8 @@ namespace AndyTipsterPro.Controllers
             var model = new EditUserProfileViewModel
             {
                 Id = user.Id,
-                Email = user.Email,
+                FirstName = user.FirstName,
+                LastName = user.LastName,                
                 UserName = user.UserName,
                 City = user.City,
                 SendEmails = user.SendEmails
@@ -362,10 +363,20 @@ namespace AndyTipsterPro.Controllers
             }
             else
             {
-                user.Email = model.Email;
+                user.FirstName = model.FirstName;
+                user.LastName = model.LastName;                
                 user.UserName = model.UserName;
                 user.City = model.City;
                 user.SendEmails = model.SendEmails;
+                user.SubscriptionId = model.SubscriptionId;
+                user.SubscriptionDescription = model.SubscriptionDescription;
+                user.SubscriptionState = model.SubscriptionState;
+                user.SubscriptionEmail = model.SubscriptionEmail;
+                user.SubscriptionFirstName = model.SubscriptionFirstName;
+                user.SubscriptionLastName = model.SubscriptionLastName;
+                user.SubscriptionPostalCode = model.SubscriptionPostalCode;
+                user.PayPalAgreementId = model.PayPalAgreementId;
+         
 
                 var result = await userManager.UpdateAsync(user);
 
@@ -426,7 +437,7 @@ namespace AndyTipsterPro.Controllers
             {
                 user.Email = model.Email;
                 user.UserName = model.UserName;
-                user.City = model.City;
+                user.City = model.City;                
 
                 var result = await userManager.UpdateAsync(user);
 

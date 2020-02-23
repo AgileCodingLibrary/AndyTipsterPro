@@ -1,5 +1,6 @@
 ﻿using AndyTipsterPro.Entities;
 using AndyTipsterPro.Models;
+using AndyTipsterPro.ViewModels;
 using EmployeeManagement.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
@@ -7,7 +8,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace AndyTipsterPro.Controllers
@@ -123,6 +127,46 @@ namespace AndyTipsterPro.Controllers
         public ActionResult ComingSoon()
         {
             return View();
+        }
+
+
+        [Authorize(Roles = "superadmin, admin")]
+        [HttpGet]
+        public FileContentResult EmailList()
+        {
+            var csvString = GenerateCSVString();
+            var fileName = "AndyTipsterEmails " + DateTime.Now.ToString() + ".csv";
+            return File(new System.Text.UTF8Encoding().GetBytes(csvString), "text/csv", fileName);
+        }
+
+        private string GenerateCSVString()
+        {
+            List<EmailListViewModel> users = _db.Users.ToList().Select(x =>
+          new EmailListViewModel()
+          {
+
+              FirstName = x.FirstName,
+              LastName = x.LastName,
+              Email = x.Email
+          }).ToList();
+
+            StringBuilder sb = new StringBuilder();
+            sb.Append("FirstName");
+            sb.Append(",");
+            sb.Append("LastName");
+            sb.Append(",");
+            sb.Append("Email");
+            sb.AppendLine();
+            foreach (var user in users)
+            {
+                sb.Append(user.FirstName != null ? user.FirstName : "Not given");
+                sb.Append(",");
+                sb.Append(user.LastName != null ? user.LastName : "Not given");
+                sb.Append(",");
+                sb.Append(user.Email);
+                sb.AppendLine();
+            }
+            return sb.ToString();
         }
 
 

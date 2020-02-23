@@ -6,20 +6,41 @@
 
 <h1>Edit Profile</h1>
 
-<form method="post" class="mt-3">
-    <div class="form-group row">
+@using (Html.BeginForm())
+{
+@Html.AntiForgeryToken()
+
+<div class="form-horizontal">
+    <div class="form-group row" style="display:none;">
         <label asp-for="Id" class="col-sm-2 col-form-label"></label>
         <div class="col-sm-10">
             <input asp-for="Id" disabled class="form-control">
         </div>
     </div>
+
     <div class="form-group row">
-        <label asp-for="Email" class="col-sm-2 col-form-label"></label>
+        <label asp-for="FirstName" class="col-sm-2 col-form-label"></label>
         <div class="col-sm-10">
-            <input asp-for="Email" disabled class="form-control">
-            @*<span asp-validation-for="Email" class="text-danger"></span>*@
+            <input asp-for="FirstName" class="form-control">
+            <span asp-validation-for="FirstName" class="text-danger"></span>
         </div>
     </div>
+
+    <div class="form-group row">
+        <label asp-for="LastName" class="col-sm-2 col-form-label"></label>
+        <div class="col-sm-10">
+            <input asp-for="LastName" class="form-control">
+            <span asp-validation-for="LastName" class="text-danger"></span>
+        </div>
+    </div>
+    @*<div class="form-group row">
+            <label asp-for="Email" class="col-sm-2 col-form-label"></label>
+            <div class="col-sm-10">
+                <input asp-for="Email" disabled class="form-control">
+                <span asp-validation-for="Email" class="text-danger"></span>
+
+            </div>
+        </div>*@
     <div class="form-group row">
         <label asp-for="UserName" class="col-sm-2 col-form-label"></label>
         <div class="col-sm-10">
@@ -41,7 +62,6 @@
         </label>
     </div>
 
-
     <div asp-validation-summary="All" class="text-danger"></div>
 
     <div class="form-group row">
@@ -51,6 +71,59 @@
         </div>
     </div>
 
-</form>
+</div>
+}
+
+<div class="row">
+    <a asp-controller="Account" asp-action="ChangePassword" class="btn btn-default">Update your Pasword</a>
+</div>
+
+@*hide this if subscription has expired!*@
+
+@if (Model.SubscriptionId != null)
+{
+<div class="row">
+
+    <div class="col-md-12">
+        <section class="animated fadeIn animation-delay-10">
+
+            <div class="panel-group" id="accordion">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
+                                @Model.SubscriptionDescription
+                            </a>
+                        </h4>
+                    </div>
+                    <div id="collapseOne" class="panel-collapse collapse in">
+                        <div class="panel-body">
+
+                            <section class="animated fadeInDown animation-delay-8">
+                                <h2>Subscription (via PayPal) Details</h2>
+                                <p>PayPal has provided us following details.</p>
+                            </section>
+
+                            <ul>
+                                <li>PayPal First Name:    @Model.SubscriptionFirstName</li>
+                                <li>PayPal Last Name:     @Model.SubscriptionLastName</li>
+                                <li>PayPal Email:         @Model.SubscriptionEmail</li>
+                                <li>PayPal PostCode:      @Model.SubscriptionPostalCode</li>
+                                <li>PayPal Subscription:  @Model.SubscriptionId</li>
+                                <li>PayPal Agreement:     @Model.PayPalAgreementId</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+    </div>
+</div>
+}
+
+
+
+
 
 
