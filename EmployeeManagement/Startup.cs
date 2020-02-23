@@ -1,5 +1,6 @@
 ﻿using AndyTipsterPro.Models;
 using AndyTipsterPro.Security;
+using EmployeeManagement.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -56,6 +57,14 @@ namespace AndyTipsterPro
                                 .Build();
                 options.Filters.Add(new AuthorizeFilter(policy));
             }).AddXmlSerializerFormatters();
+
+
+            // Add PayPal client factory.
+            services.AddSingleton(factory => new PayPalHttpClientFactory(
+                _config["PayPal:ClientId"],
+                _config["PayPal:ClientSecret"],
+                Convert.ToBoolean(_config["PayPal:IsLive"]))); // Is Live Environment?
+
 
             services.AddAuthentication()
                 //.AddGoogle(options =>
