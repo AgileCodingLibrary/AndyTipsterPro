@@ -23,7 +23,6 @@
 
   <ItemGroup>
     <Compile Remove="Controllers\SubscribersController.cs" />
-    <Compile Remove="Controllers\SubscriptionController.cs" />
     <Compile Remove="Migrations\20190429172047_TestMigration.cs" />
     <Compile Remove="Migrations\20190429172047_TestMigration.Designer.cs" />
     <Compile Remove="Migrations\20190430052340_Test.cs" />

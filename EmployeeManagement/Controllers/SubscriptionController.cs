@@ -1,210 +1,137 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using AndyTipsterPro.Models;
+using AndyTipsterPro.Models.Subscription;
+using EmployeeManagement.Helpers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.WebUtilities;
+using PayPal.v1.BillingAgreements;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace AndyTipsterPro.Controllers
 {
-    [Authorize]
-    public class SubscriptionController : Controller
-    {
-        //public SubscriptionController(AppDbContext context)
-        //{
-        //    this._dbContext = context;
-        //}
+    //[Authorize(Roles = "superadmin")]
+    //public class SubscriptionController : Controller
+    //{
+    //    private readonly AppDbContext _dbContext;
+    //    private readonly PayPalHttpClientFactory _clientFactory;
 
-        //private Models.AppDbContext _dbContext;
-        //public ActionResult Index()
-        //{
-        //    var model = new IndexVm()
-        //    {
-        //        Plans = Models.Subscription.Plan.Plans
-        //    };
+    //    public SubscriptionController(AppDbContext dbContext, PayPalHttpClientFactory clientFactory)
+    //    {
+    //        _dbContext = dbContext;
+    //        _clientFactory = clientFactory;
+    //    }
 
-        //    return View(model);
-        //}
+    //    public ActionResult Index()
+    //    {
+    //        var model = new IndexVm()
+    //        {
+    //            Plans = _dbContext.BillingPlans.ToList()
+    //        };
 
-        //public ActionResult Purchase(string id)
-        //{
+    //        return View(model);
+    //    }
 
-        //    //var currentUserId = User.Identity.   .GetUserId();
-        //    var currentUserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+    //    public ActionResult Purchase(string id)
+    //    {
+    //        var model = new PurchaseVm()
+    //        {
+    //            Plan = _dbContext.BillingPlans.FirstOrDefault(x => x.PayPalPlanId == id)
+    //        };
 
-        //    var currentUser = _dbContext.Users.Where(x => x.Id == currentUserId).FirstOrDefault();
+    //        return View(model);
+    //    }
 
-        //    if (currentUser.SubscriptionId != null)
-        //    {
-        //        if (currentUser.SubscriptionState.ToLower() == "active" || currentUser.SubscriptionState.ToLower() == "pending")
-        //        {
+    //    [HttpPost]
+    //    public async Task<IActionResult> Purchase(PurchaseVm model)
+    //    {
+    //        var plan = _dbContext.BillingPlans.FirstOrDefault(x => x.PayPalPlanId == model.Plan.PayPalPlanId);
 
-        //            var existingSubscription = new ExistingSubscriptionVM
-        //            {
-        //                //Plan = Models.Subscription.Plan.Plans.FirstOrDefault(x => x.PayPalPlanId == id),
-        //                FirstName = currentUser.FirstName,
-        //                LastName = currentUser.LastName,
-        //                Email = currentUser.Email,
-        //                PlanName = currentUser.SubscriptionDescription,
-        //                PaypalAgreement = currentUser.PayPalAgreementId
-        //            };
+    //        if (ModelState.IsValid && plan != null)
+    //        {
+    //            // Since we take an Initial Payment (instant payment), the start date of the recurring payments will be next month.
+    //            var startDate = DateTime.UtcNow.AddMonths(1);
 
-        //            return View("_ExistingSubscription", existingSubscription);
+    //            var subscription = new Subscription()
+    //            {
+    //                FirstName = model.FirstName,
+    //                LastName = model.LastName,
+    //                Email = model.Email,
+    //                StartDate = startDate,
+    //                PayPalPlanId = plan.PayPalPlanId
+    //            };
+    //            _dbContext.Subscriptions.Add(subscription);
+    //            _dbContext.SaveChanges();
 
-        //            ////check which subscription current user has
-        //            //if (currentUser.SubscriptionDescription == "AndyTipster Monthly Package")
-        //            //{
-        //            //    //user has Andy Tipster regular package
-        //            //    return View("_ExistingSubscription", existingSubscription);
+    //            var agreement = new Agreement()
+    //            {
+    //                Name = plan.Name,
+    //                Description = $"{plan.NumberOfBeers} beer(s) delivered for ${(plan.Price / 100M).ToString("0.00")} each month.",
+    //                StartDate = startDate.ToString("yyyy-MM-ddTHH:mm:ssZ"),
+    //                Plan = new global::PayPal.BillingAgreements.Plan()
+    //                {
+    //                    Id = plan.PayPalPlanId
+    //                },
+    //                Payer = new Payer()
+    //                {
+    //                    PaymentMethod = "paypal"
+    //                }
+    //            };
 
-        //            //}
-        //            //else if (currentUser.SubscriptionDescription == "AndyTipster Three Months Package")
-        //            //{
-        //            //    //user has Andy Tipster 3 months package
-        //            //}
-        //            //else if (currentUser.SubscriptionDescription == "Irish Horse Racing - Monthly Subscription")
-        //            //{
-        //            //    //user has Irish Racing regular package
-        //            //}
-        //            //else if (currentUser.SubscriptionDescription == "Irish Horse Racing - Three Months Subscription")
-        //            //{
-        //            //    //user has Irish 3 months package
-        //            //}
-        //            //else if (currentUser.SubscriptionDescription == "Ultimate pack - Monthly Subscription")
-        //            //{
-        //            //    //user has Ultimate regular package
-        //            //}
-        //            //else if (currentUser.SubscriptionDescription == "Ultimate pack - Three Months Subscription")
-        //            //{
-        //            //    //user has Ultimate 3 months package
-        //            //}
-        //        }
-        //    }
-        //    var model = new PurchaseVm()
-        //    {
-        //        Plan = Models.Subscription.Plan.Plans.FirstOrDefault(x => x.PayPalPlanId == id),
-        //        FirstName = currentUser.FirstName,
-        //        LastName = currentUser.LastName,
-        //        Email = currentUser.Email
-        //    };
+    //            // Send the agreement to PayPal
+    //            var client = _clientFactory.GetClient();
+    //            var request = new AgreementCreateRequest()
+    //                .RequestBody(agreement);
+    //            var result = await client.Execute(request);
+    //            var createdAgreement = result.Result<Agreement>();
 
-        //    return View(model);
-        //}
+    //            // Find the Approval URL to send our user to (also contains the token)
+    //            var approvalUrl =
+    //                createdAgreement.Links.FirstOrDefault(
+    //                    x => x.Rel.Equals("approval_url", StringComparison.OrdinalIgnoreCase));
 
-        //[HttpPost]
-        //public ActionResult Purchase(PurchaseVm model)
-        //{
+    //            var token = QueryHelpers.ParseQuery(approvalUrl?.Href)["token"].First();
 
-        //    var plan = Models.Subscription.Plan.Plans.FirstOrDefault(x => x.PayPalPlanId == model.Plan.PayPalPlanId);
+    //            // Save the token so we can match the returned request to our subscription.
+    //            subscription.PayPalAgreementToken = token;
+    //            _dbContext.SaveChanges();
 
+    //            // Send the user to PayPal to approve the payment
+    //            return Redirect(approvalUrl.Href);
+    //        }
 
-        //    if (ModelState.IsValid)
-        //    {
-        //        // Since we take an Initial Payment (instant payment), the start date of the recurring payments will be next month.
-        //        var startDate = DateTime.UtcNow.AddMonths(1);
+    //        model.Plan = plan;
+    //        return View(model);
+    //    }
 
-        //        var apiContext = GetApiContext();
+    //    public async Task<IActionResult> Return(string token)
+    //    {
+    //        var subscription = _dbContext.Subscriptions.FirstOrDefault(x => x.PayPalAgreementToken == token);
 
-        //        var subscription = new Subscription()
-        //        {
-        //            FirstName = model.FirstName,
-        //            LastName = model.LastName,
-        //            Email = model.Email,
-        //            StartDate = startDate,
-        //            PayPalPlanId = plan.PayPalPlanId
-        //        };
-        //        _dbContext.Subscriptions.Add(subscription);
-        //        _dbContext.SaveChanges();
+    //        var client = _clientFactory.GetClient();
 
-        //        var agreement = new Agreement()
-        //        {
-        //            name = plan.Name,
-        //            description = plan.Description,
-        //            start_date = startDate.ToString("yyyy-MM-ddTHH:mm:ssZ"),
-        //            plan = new PayPal.Api.Plan()
-        //            {
-        //                id = plan.PayPalPlanId
-        //            },
-        //            payer = new Payer()
-        //            {
-        //                payment_method = "paypal"
-        //            }
-        //        };
+    //        var request = new AgreementExecuteRequest(token);
+    //        request.Body = "{}"; // Bug: Stupid hack workaround for a bug. Lost an hour to this.
+    //        var result = await client.Execute(request);
 
-        //        // Send the agreement to PayPal
-        //        var createdAgreement = agreement.Create(apiContext);
+    //        var executedAgreement = result.Result<Agreement>();
 
-        //        // Save the token so we can match the returned request to our subscription.
-        //        subscription.PayPalAgreementToken = createdAgreement.token;
-        //        subscription.PayPalPlanName = createdAgreement.name;
+    //        // Save the PayPal agreement in our subscription so we can look it up later.
+    //        subscription.PayPalAgreementId = executedAgreement.Id;
+    //        _dbContext.SaveChanges();
 
-        //        _dbContext.SaveChanges();
+    //        return RedirectToAction("Thankyou");
+    //    }
 
-        //        // Find the Approval URL to send our user to
-        //        var approvalUrl =
-        //            createdAgreement.links.FirstOrDefault(
-        //                x => x.rel.Equals("approval_url", StringComparison.OrdinalIgnoreCase));
+    //    public ActionResult Cancel()
+    //    {
+    //        return View();
+    //    }
 
-        //        // Send the user to PayPal to approve the payment
-        //        return Redirect(approvalUrl.href);
-        //    }
-
-        //    model.Plan = plan;
-        //    return View(model);
-        //}
-
-        //public ActionResult Return(string token)
-        //{
-        //    var subscription = _dbContext.Subscriptions.FirstOrDefault(x => x.PayPalAgreementToken == token);
-
-        //    var apiContext = GetApiContext();
-
-        //    var agreement = new Agreement()
-        //    {
-        //        token = token
-        //    };
-
-        //    var executedAgreement = agreement.Execute(apiContext);
-
-        //    // Save the PayPal agreement in our subscription so we can look it up later.
-        //    subscription.PayPalAgreementId = executedAgreement.id;
-        //    subscription.PayPalPaymentEmail = executedAgreement.payer.payer_info.email;
-
-        //    //update currently login user to add Paypal Subscription information.
-
-        //    //var currentUserId = User.Identity.GetUserId();
-
-        //    var currentUserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
-        //    var currentUser = _dbContext.Users.Where(x => x.Id == currentUserId).FirstOrDefault();
-        //    currentUser.SubscriptionId = executedAgreement.id;
-        //    currentUser.SubscriptionState = executedAgreement.state;
-        //    currentUser.SubscriptionFirstName = executedAgreement.payer.payer_info.first_name;
-        //    currentUser.SubscriptionLastName = executedAgreement.payer.payer_info.last_name;
-        //    currentUser.SubscriptionEmail = executedAgreement.payer.payer_info.email;
-        //    currentUser.SubscriptionDescription = subscription.PayPalPlanName;
-        //    currentUser.PayPalAgreementId = subscription.PayPalAgreementId;
-
-        //    //user might not have a postal address.
-        //    //currentUser.SubscriptionPostalCode = executedAgreement.payer.payer_info.billing_address.postal_code;
-
-        //    _dbContext.SaveChanges();
-
-        //    return RedirectToAction("Thankyou");
-        //}
-
-        //public ActionResult Cancel()
-        //{
-        //    return View();
-        //}
-
-        //public ActionResult ThankYou()
-        //{
-        //    return View();
-        //}
-
-        //private APIContext GetApiContext()
-        //{
-        //    // Authenticate with PayPal
-        //    var config = ConfigManager.Instance.GetProperties();
-        //    var accessToken = new OAuthTokenCredential(config).GetAccessToken();
-        //    var apiContext = new APIContext(accessToken);
-        //    return apiContext;
-        //}
-    }
+    //    public ActionResult ThankYou()
+    //    {
+    //        return View();
+    //    }
+    //}
 }

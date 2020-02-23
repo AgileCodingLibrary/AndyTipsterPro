@@ -1,15 +1,18 @@
 ﻿using AndyTipsterPro.Models;
 using EmployeeManagement.Helpers;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using PayPal.v1.BillingPlans;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
+
 namespace AndyTipsterPro.Controllers
 {
-    //[Authorize(Roles = "superadmin, admin")]
+    //[Authorize(Roles = "superadmin")]
     //public class BillingPlansController : Controller
     //{
     //    private readonly PayPalHttpClientFactory _clientFactory;
@@ -42,40 +45,40 @@ namespace AndyTipsterPro.Controllers
     //        return View(list);
     //    }
 
-    //    //public ActionResult Delete(string id)
-    //    //{
-    //    //    var client = _clientFactory.GetClient();
+    //    public ActionResult Delete(string id)
+    //    {
+    //        var client = _clientFactory.GetClient();
 
-    //    //    var request = new PlanUpdateRequest(id)
-    //    //    var plan = new Plan()
-    //    //    {
-    //    //        id = id
-    //    //    };
+    //        var request = new PlanUpdateRequest(id)
+    //        var plan = new Plan()
+    //        {
+    //            id = id
+    //        };
 
-    //    //    plan.Delete(apiContext);
+    //        plan.Delete(apiContext);
 
-    //    //    return RedirectToAction("Index");
-    //    //}
+    //        return RedirectToAction("Index");
+    //    }
 
-    //    //public ActionResult DeleteAll()
-    //    //{
-    //    //    var apiContext = GetApiContext();
+    //    public ActionResult DeleteAll()
+    //    {
+    //        var apiContext = GetApiContext();
 
-    //    //    PayPal.BillingPlans.PlanListRequest
-    //    //    var list = PayPal.BillingPlans.Plan.List(apiContext, status: "ACTIVE");
+    //        //PayPal.BillingPlans.PlanListRequest
+    //        var list = PayPal.BillingPlans.Plan.List(apiContext, status: "ACTIVE");
 
-    //    //    foreach (var plan in list.plans)
-    //    //    {
-    //    //        var deletePlan = new Plan()
-    //    //        {
-    //    //            id = plan.id
-    //    //        };
+    //        foreach (var plan in list.plans)
+    //        {
+    //            var deletePlan = new Plan()
+    //            {
+    //                id = plan.id
+    //            };
 
-    //    //        deletePlan.Delete(apiContext);
-    //    //    }
+    //            deletePlan.Delete(apiContext);
+    //        }
 
-    //    //    return RedirectToAction("Index");
-    //    //}
+    //        return RedirectToAction("Index");
+    //    }
 
     //    /// <summary>
     //    /// Create the default billing plans for this example website
@@ -85,8 +88,8 @@ namespace AndyTipsterPro.Controllers
     //        var client = _clientFactory.GetClient();
 
     //        foreach (var plan in BillingPlanSeed.PayPalPlans(
-    //            Url.Action("Return", "Subscription", null, Request.GetUri().Scheme),
-    //            Url.Action("Cancel", "Subscription", null, Request.GetUri().Scheme)))
+    //            Url.Action("Return", "Subscription"),
+    //            Url.Action("Cancel", "Subscription")))
     //        {
     //            // Create Plan
     //            var request = new PlanCreateRequest().RequestBody(plan);
