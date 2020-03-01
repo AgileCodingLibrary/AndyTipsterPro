@@ -1,5 +1,5 @@
-﻿using AndyTipsterPro.Models;
-using AndyTipsterPro.Models.Subscription;
+﻿using AndyTipsterPro.Entities;
+using AndyTipsterPro.Models;
 using EmployeeManagement.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

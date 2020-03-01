@@ -1,8 +1,5 @@
 ﻿using PayPal.v1.BillingPlans;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace EmployeeManagement.Helpers
 {
@@ -46,8 +43,7 @@ namespace EmployeeManagement.Helpers
                     CancelUrl = cancelUrl
                 }
             },
-
-             new Plan()
+            new Plan()
             {
                 Name = "Andy Tipster Package - 3 Months",
                 Description = "Specialising in UK Racing and American Sports",
@@ -81,7 +77,7 @@ namespace EmployeeManagement.Helpers
                     CancelUrl = cancelUrl
                 }
             },
-             new Plan()
+            new Plan()
             {
                 Name = "Irish Horse Racing - Monthly",
                 Description = "Solely Irish Horse Racing Tips",
@@ -115,8 +111,7 @@ namespace EmployeeManagement.Helpers
                     CancelUrl = cancelUrl
                 }
             },
-
-              new Plan()
+            new Plan()
             {
                 Name = "Irish Horse Racing -  3 Months",
                 Description = "Solely Irish Horse Racing Tips",
@@ -184,7 +179,7 @@ namespace EmployeeManagement.Helpers
                     CancelUrl = cancelUrl
                 }
             },
-               new Plan()
+            new Plan()
             {
                 Name = "Ultimate pack - 3 Months",
                 Description = "Enjoy The 2 Brands For Less, The ultimate pack for the ultimate Deal",
