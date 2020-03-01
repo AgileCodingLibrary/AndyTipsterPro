@@ -7,16 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Views\BillingPlans\**" />
     <Compile Remove="Views\Subscribers\**" />
     <Compile Remove="Views\Subscription\**" />
-    <Content Remove="Views\BillingPlans\**" />
     <Content Remove="Views\Subscribers\**" />
     <Content Remove="Views\Subscription\**" />
-    <EmbeddedResource Remove="Views\BillingPlans\**" />
     <EmbeddedResource Remove="Views\Subscribers\**" />
     <EmbeddedResource Remove="Views\Subscription\**" />
-    <None Remove="Views\BillingPlans\**" />
     <None Remove="Views\Subscribers\**" />
     <None Remove="Views\Subscription\**" />
   </ItemGroup>
@@ -57,6 +53,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="Views\BillingPlans\Index.cshtml" />
     <None Include="wwwroot\Content\bootstrap-theme.css.map" />
     <None Include="wwwroot\Content\bootstrap-theme.min.css.map" />
     <None Include="wwwroot\Content\bootstrap.css.map" />

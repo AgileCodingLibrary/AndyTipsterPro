@@ -1,5 +1,5 @@
 ﻿@using Newtonsoft.Json
-@model PayPal.Api.PlanList
+@model PayPal.v1.BillingPlans.PlanList
 
 @{
     ViewBag.Title = "Billing Plans";
@@ -23,8 +23,9 @@
                 <table class="table">
                     <thead>
                         <tr>
-                            <th>ID</th>
+                            <th>Id</th>
                             <th>Name</th>
+                            <th>Description</th>
                             <th>Type</th>
                             <th>State</th>
                             <th>Payment Definitions</th>
@@ -32,15 +33,16 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var plan in Model.plans)
+                        @foreach (var plan in Model.Plans)
                         {
                             <tr>
-                                <td>@plan.id</td>
-                                <td>@plan.name</td>
-                                <td>@plan.type</td>
-                                <td>@plan.state</td>
-                                <td>@JsonConvert.SerializeObject(plan.payment_definitions)</td>
-                                <td>@JsonConvert.SerializeObject(plan.merchant_preferences)</td>
+                                <td>@plan.Id</td>
+                                <td>@plan.Name</td>
+                                <td>@plan.Description</td>
+                                <td>@plan.Type</td>
+                                <td>@plan.State</td>
+                                <td>@JsonConvert.SerializeObject(plan.PaymentDefinitions)</td>
+                                <td>@JsonConvert.SerializeObject(plan.MerchantPreferences)</td>
                             </tr>
                         }
                     </tbody>

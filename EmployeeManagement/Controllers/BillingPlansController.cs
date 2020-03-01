@@ -38,7 +38,7 @@ namespace AndyTipsterPro.Controllers
                 .PageSize("20");
 
             var result = await client.Execute(request);
-            var list = result.Result<PlanList>();
+            PlanList list = result.Result<PlanList>();
 
             return View(list);
         }
