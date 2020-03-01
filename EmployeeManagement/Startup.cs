@@ -61,9 +61,9 @@ namespace AndyTipsterPro
 
             // Add PayPal client factory.
             services.AddSingleton(factory => new PayPalHttpClientFactory(
-                _config["PayPal:ClientId"],
-                _config["PayPal:ClientSecret"],
-                Convert.ToBoolean(_config["PayPal:IsLive"]))); // Is Live Environment?
+                _config["PayPalClientId"],
+                _config["PayPalSecret"],
+                Convert.ToBoolean(_config["PayPalIsLive"]))); // Is Live Environment?
 
 
             services.AddAuthentication()
