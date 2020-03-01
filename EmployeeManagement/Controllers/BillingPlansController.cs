@@ -24,11 +24,21 @@ namespace AndyTipsterPro.Controllers
 
         public async Task<IActionResult> Index()
         {
-            // Check for database records and add new plans if missing
-            var hasMissingPayPalPlans = _dbContext.BillingPlans.Any(x => string.IsNullOrEmpty(x.PayPalPlanId));
-            if (hasMissingPayPalPlans)
+
+            var hasAnyExistingPlans = _dbContext.BillingPlans.Any();
+
+            if (!hasAnyExistingPlans)
             {
                 await SeedBillingPlans();
+
+            }
+            else
+            {
+                var hasMissingPayPalPlans = _dbContext.BillingPlans.Any(x => string.IsNullOrEmpty(x.PayPalPlanId));
+                if (hasMissingPayPalPlans || hasAnyExistingPlans)
+                {
+                    await SeedBillingPlans();
+                }
             }
 
             var client = _clientFactory.GetClient();
