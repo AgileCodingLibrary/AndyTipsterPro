@@ -11,8 +11,8 @@ namespace EmployeeManagement.Helpers
         {
             new Plan()
             {
-                Name = "Andy Tipster Package - Monthly",
-                Description = "Specialising in UK Racing and American Sports",
+                Name = "Elite Package - Monthly",
+                Description = "The combination of UK/IRE & International Racing Tips Daily.",
                 Type = "infinite",
                 State = "ACTIVE",
                 PaymentDefinitions = new List<PaymentDefinition>()
@@ -26,7 +26,7 @@ namespace EmployeeManagement.Helpers
                         Amount = new Currency()
                         {
                             CurrencyCode = "GBP",
-                            Value = "15.00"
+                            Value = "28.00"
                         },
                         Cycles = "0"
                     }
@@ -37,7 +37,7 @@ namespace EmployeeManagement.Helpers
                     SetupFee = new Currency()
                     {
                         CurrencyCode = "GBP",
-                        Value = "15.00"
+                        Value = "28.00"
                     },
                     ReturnUrl = returnUrl,
                     CancelUrl = cancelUrl
@@ -45,8 +45,8 @@ namespace EmployeeManagement.Helpers
             },
             new Plan()
             {
-                Name = "Andy Tipster Package - 3 Months",
-                Description = "Specialising in UK Racing and American Sports",
+                Name = "Elite Package - 3 Months",
+                Description = "The combination of UK/IRE & International Racing Tips Daily.",
                 Type = "infinite",
                 State = "ACTIVE",
                 PaymentDefinitions = new List<PaymentDefinition>()
@@ -60,7 +60,7 @@ namespace EmployeeManagement.Helpers
                         Amount = new Currency()
                         {
                             CurrencyCode = "GBP",
-                            Value = "40.00"
+                            Value = "70.00"
                         },
                         Cycles = "0"
                     }
@@ -71,7 +71,7 @@ namespace EmployeeManagement.Helpers
                     SetupFee = new Currency()
                     {
                         CurrencyCode = "GBP",
-                        Value = "40.00"
+                        Value = "70.00"
                     },
                     ReturnUrl = returnUrl,
                     CancelUrl = cancelUrl
@@ -79,8 +79,8 @@ namespace EmployeeManagement.Helpers
             },
             new Plan()
             {
-                Name = "Irish Horse Racing - Monthly",
-                Description = "Solely Irish Horse Racing Tips",
+                Name = "Combination Package UK/IRE - Monthly",
+                Description = "The UK package but with Irish Racing Tips included",
                 Type = "infinite",
                 State = "ACTIVE",
                 PaymentDefinitions = new List<PaymentDefinition>()
@@ -94,7 +94,7 @@ namespace EmployeeManagement.Helpers
                         Amount = new Currency()
                         {
                             CurrencyCode = "GBP",
-                            Value = "13.00"
+                            Value = "24.00"
                         },
                         Cycles = "0"
                     }
@@ -105,7 +105,7 @@ namespace EmployeeManagement.Helpers
                     SetupFee = new Currency()
                     {
                         CurrencyCode = "GBP",
-                        Value = "13.00"
+                        Value = "24.00"
                     },
                     ReturnUrl = returnUrl,
                     CancelUrl = cancelUrl
@@ -113,8 +113,8 @@ namespace EmployeeManagement.Helpers
             },
             new Plan()
             {
-                Name = "Irish Horse Racing -  3 Months",
-                Description = "Solely Irish Horse Racing Tips",
+                Name = "Combination Package UK/IRE -  3 Months",
+                Description = "The UK package but with Irish Racing Tips included",
                 Type = "infinite",
                 State = "ACTIVE",
                 PaymentDefinitions = new List<PaymentDefinition>()
@@ -128,7 +128,7 @@ namespace EmployeeManagement.Helpers
                         Amount = new Currency()
                         {
                             CurrencyCode = "GBP",
-                            Value = "35.00"
+                            Value = "60.00"
                         },
                         Cycles = "0"
                     }
@@ -139,7 +139,7 @@ namespace EmployeeManagement.Helpers
                     SetupFee = new Currency()
                     {
                         CurrencyCode = "GBP",
-                        Value = "35.00"
+                        Value = "60.00"
                     },
                     ReturnUrl = returnUrl,
                     CancelUrl = cancelUrl
@@ -147,8 +147,8 @@ namespace EmployeeManagement.Helpers
             },
             new Plan()
             {
-                Name = "Ultimate pack - Monthly",
-                Description = "Enjoy The 2 Brands For Less, The ultimate pack for the ultimate Deal",
+                Name = "UK Racing Only Package - Monthly",
+                Description = "Specialising in UK Racing Tips Daily",
                 Type = "infinite",
                 State = "ACTIVE",
                 PaymentDefinitions = new List<PaymentDefinition>()
@@ -162,7 +162,7 @@ namespace EmployeeManagement.Helpers
                         Amount = new Currency()
                         {
                             CurrencyCode = "GBP",
-                            Value = "19.99"
+                            Value = "19.00"
                         },
                         Cycles = "0"
                     }
@@ -173,7 +173,7 @@ namespace EmployeeManagement.Helpers
                     SetupFee = new Currency()
                     {
                         CurrencyCode = "GBP",
-                        Value = "19.99"
+                        Value = "19.00"
                     },
                     ReturnUrl = returnUrl,
                     CancelUrl = cancelUrl
@@ -181,8 +181,8 @@ namespace EmployeeManagement.Helpers
             },
             new Plan()
             {
-                Name = "Ultimate pack - 3 Months",
-                Description = "Enjoy The 2 Brands For Less, The ultimate pack for the ultimate Deal",
+                Name = "UK Racing Only Package - 3 Months",
+                Description = "Specialising in UK Racing Tips Daily",
                 Type = "infinite",
                 State = "ACTIVE",
                 PaymentDefinitions = new List<PaymentDefinition>()
