@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace EmployeeManagement.Helpers
+namespace AndyTipsterPro.Helpers
 {
     public static class Emailer
     {

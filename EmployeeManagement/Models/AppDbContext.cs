@@ -1,5 +1,4 @@
 ﻿using AndyTipsterPro.Entities;
-using EmployeeManagement.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
@@ -21,6 +20,8 @@ namespace AndyTipsterPro.Models
         public DbSet<LandingPage> LandingPages { get; set; }
         public DbSet<Contact> Contacts { get; set; }
         public DbSet<BillingPlan> BillingPlans { get; set; }
+
+        public DbSet<Product> Products { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

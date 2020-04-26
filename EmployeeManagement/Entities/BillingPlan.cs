@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
 
-namespace EmployeeManagement.Entities
+namespace AndyTipsterPro.Entities
 {
     public class BillingPlan : BaseEntity
     {

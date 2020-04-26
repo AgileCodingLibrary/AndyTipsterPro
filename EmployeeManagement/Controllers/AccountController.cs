@@ -1,6 +1,6 @@
 ﻿using AndyTipsterPro.Models;
 using AndyTipsterPro.ViewModels;
-using EmployeeManagement.Helpers;
+using AndyTipsterPro.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;

@@ -8,13 +8,9 @@
 
   <ItemGroup>
     <Compile Remove="Views\Subscribers\**" />
-    <Compile Remove="Views\Subscription\**" />
     <Content Remove="Views\Subscribers\**" />
-    <Content Remove="Views\Subscription\**" />
     <EmbeddedResource Remove="Views\Subscribers\**" />
-    <EmbeddedResource Remove="Views\Subscription\**" />
     <None Remove="Views\Subscribers\**" />
-    <None Remove="Views\Subscription\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -55,6 +51,10 @@
 
   <ItemGroup>
     <None Include="Views\BillingPlans\Index.cshtml" />
+    <None Include="Views\Subscription\Cancel.cshtml" />
+    <None Include="Views\Subscription\Index.cshtml" />
+    <None Include="Views\Subscription\Purchase.cshtml" />
+    <None Include="Views\Subscription\ThankYou.cshtml" />
     <None Include="wwwroot\Content\bootstrap-theme.css.map" />
     <None Include="wwwroot\Content\bootstrap-theme.min.css.map" />
     <None Include="wwwroot\Content\bootstrap.css.map" />

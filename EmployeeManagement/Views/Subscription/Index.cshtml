@@ -1,4 +1,4 @@
-﻿@model AndyTipsterPro.Models.Subscription.IndexVm
+﻿@*@model EmployeeManagement.ViewModels.IndexVm
 
 @{
     ViewBag.Title = "Subscription Plans";
@@ -8,9 +8,8 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-12">
-                    <h2>AndyTipster Tips Paypal Subscriptions</h2>
-                    <p>Once subscribe you will be able to manage them in your PapPal account.</p>
-                    
+                    <h2>Andy Tipster Subscriptions</h2>
+                    <p>Once subscribe you will be able to manage them in your PapPal account.</p>                    
                 </div>
             </div>
         </div>
@@ -30,7 +29,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var item in Model.Plans)
+                        @foreach (var item in Model.BillingPlans)
                         {
                             <tr>
                                 <td>@item.Name</td>
@@ -46,5 +45,5 @@
             </div>
         </div>
     </div>
-</div>
+</div>*@
 

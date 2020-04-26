@@ -1,7 +1,7 @@
 ﻿using PayPal.v1.BillingPlans;
 using System.Collections.Generic;
 
-namespace EmployeeManagement.Helpers
+namespace AndyTipsterPro.Helpers
 {
     public static class BillingPlanSeed
     {

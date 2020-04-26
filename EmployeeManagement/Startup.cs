@@ -1,6 +1,6 @@
 ﻿using AndyTipsterPro.Models;
 using AndyTipsterPro.Security;
-using EmployeeManagement.Helpers;
+using AndyTipsterPro.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;

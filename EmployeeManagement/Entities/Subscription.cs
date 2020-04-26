@@ -16,3 +16,4 @@ namespace AndyTipsterPro.Entities
         public string PayPalPaymentEmail { get; set; }
     }
 }
+

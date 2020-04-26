@@ -1,6 +1,6 @@
 ﻿using AndyTipsterPro.Models;
-using EmployeeManagement.Entities;
-using EmployeeManagement.Helpers;
+using AndyTipsterPro.Entities;
+using AndyTipsterPro.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PayPal;
@@ -40,10 +40,14 @@ namespace AndyTipsterPro.Controllers
 
             var hasAnyExistingPlans = _dbContext.BillingPlans.Any();
 
+            var hasAnyProducts = _dbContext.Products.Any();
+
             if (!hasAnyExistingPlans && list.Plans.Count() > 0)
             {
                 foreach (var plan in list.Plans)
                 {
+
+                    //add Paypal plans in the database
                     var billingPlan = new BillingPlan();
 
                     billingPlan.PayPalPlanId = plan.Id;
@@ -68,9 +72,8 @@ namespace AndyTipsterPro.Controllers
                     billingPlan.CreateTime = plan.CreateTime;
                     billingPlan.UpdateTime = plan.UpdateTime;
 
-
-
                     _dbContext.BillingPlans.Add(billingPlan);
+
                 }
 
                 await _dbContext.SaveChangesAsync();
@@ -80,6 +83,67 @@ namespace AndyTipsterPro.Controllers
             return View(list);
         }
 
+
+        //public async Task<ActionResult> SeedProduct()
+        //{
+        //    List<Product> products = new List<Product>()
+        //{
+        //    new Product()
+        //    {
+        //        Name = "Elite Package - Monthly",
+        //        Description = "The combination of UK/IRE & International Racing Tips Daily.",
+        //        PayPalPlanId = "P-01H67865SG822584NWXTXUVI",
+        //        Price = 2800,
+        //        PaymentFrequency = "1 Month"
+        //    },
+        //    new Product()
+        //    {
+        //        Name = "Elite Package - 3 Months",
+        //        Description = "The combination of UK/IRE & International Racing Tips Daily.",
+        //        PayPalPlanId = "P-33Y52169CA6617927WXTXX4Y",
+        //        Price = 7000,
+        //        PaymentFrequency = "3 Months"
+        //    },
+        //     new Product()
+        //    {
+        //        Name = "Combination Package UK/IRE - Monthly",
+        //        Description = "The UK package but with Irish Racing Tips included",
+        //        PayPalPlanId = "P-4PX56472M3478614BWXTX3DA",
+        //        Price = 2400,
+        //        PaymentFrequency = "1 Month"
+        //    },
+        //       new Product()
+        //    {
+        //        Name = "Combination Package UK/IRE -  3 Months",
+        //        Description = "The UK package but with Irish Racing Tips included",
+        //        PayPalPlanId = "P-4LL517486K0601123WXTX6JA",
+        //        Price = 6000,
+        //        PaymentFrequency = "3 Months"
+        //    },
+        //            new Product()
+        //    {
+        //        Name = "UK Racing Only Package - Monthly",
+        //        Description = "Specialising in UK Racing Tips Daily",
+        //        PayPalPlanId = "P-07569959YM054623FWXTYBWA",
+        //        Price = 1900,
+        //        PaymentFrequency = "1 Month"
+        //    },
+        //                      new Product()
+        //    {
+        //        Name = "UK Racing Only Package - 3 Months",
+        //        Description = "Specialising in UK Racing Tips Daily",
+        //        PayPalPlanId = "P-9LD18441MG843805VWXTYX2Y",
+        //        Price = 5000,
+        //        PaymentFrequency = "3 Months"
+        //    }
+
+        //};
+
+        //    _dbContext.Products.AddRange(products);
+        //    await _dbContext.SaveChangesAsync();
+
+        //    return View("Index");
+        //}
 
         private APIContext GetApiContext()
         {

@@ -1,4 +1,4 @@
-﻿@model AndyTipsterPro.Models.Subscription.PurchaseVm
+﻿@*@model AndyTipsterPro.Models.Subscription.PurchaseVm
 
 @{
     ViewBag.Title = "Subscription";
@@ -23,7 +23,7 @@
                 <div class="pricign-box animated fadeInUp animation-delay-7">
                     <div class="pricing-box-header">
                         <h2>@Model.Plan.Name</h2>
-                        @*<p>nisi anim mollit in labore ut esse</p>*@
+                        <p>nisi anim mollit in labore ut esse</p>
                     </div>
                     <div class="pricing-box-price">
                         <h3>£@((Model.Plan.Price / 100M).ToString("0.00")) <sub>/ month</sub> </h3>
@@ -31,14 +31,14 @@
                     <div class="pricing-box-content">
                         <ul>
                             <li> @Model.Plan.Description</li>
-                            @*<li><i class="fa fa-cloud-download"></i> Exercitation in id in officia.</li>
+                            <li><i class="fa fa-cloud-download"></i> Exercitation in id in officia.</li>
                             <li><i class="fa fa-dashboard"></i> Exercitation in id in officia.</li>
                             <li><i class="fa fa-sitemap"></i> Exercitation in id in officia.</li>
-                            <li><i class="fa fa-shopping-cart"></i> Exercitation in id in officia.</li>*@
+                            <li><i class="fa fa-shopping-cart"></i> Exercitation in id in officia.</li>
                         </ul>
                     </div>
                     <div class="pricing-box-footer">
-                        @*<a href="#" class="btn btn-default">Order Now</a>*@
+                        <a href="#" class="btn btn-default">Order Now</a>
                         @using (Html.BeginForm("Purchase", "Subscription", FormMethod.Post, new { @class = "form-horizontal" }))
                         {
                             @Html.HiddenFor(x => x.Plan.PayPalPlanId)
@@ -50,6 +50,6 @@
                         </div>
                 </div>
             </div>
-        </div>
+        </div>*@
 
 
