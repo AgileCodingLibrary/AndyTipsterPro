@@ -1,7 +1,10 @@
 ﻿using AndyTipsterPro.Models;
+using EmployeeManagement.Entities;
 using EmployeeManagement.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using PayPal;
+using PayPal.Manager;
 using PayPal.v1.BillingPlans;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,89 +28,66 @@ namespace AndyTipsterPro.Controllers
         public async Task<IActionResult> Index()
         {
 
-            var hasAnyExistingPlans = _dbContext.BillingPlans.Any();
-
-            if (!hasAnyExistingPlans)
-            {
-                await SeedBillingPlans();
-
-            }
-            else
-            {
-                var hasMissingPayPalPlans = _dbContext.BillingPlans.Any(x => string.IsNullOrEmpty(x.PayPalPlanId));
-                if (hasMissingPayPalPlans || hasAnyExistingPlans)
-                {
-                    await SeedBillingPlans();
-                }
-            }
-
             var client = _clientFactory.GetClient();
 
             var request = new PlanListRequest()
                 .Status("ACTIVE")
                 .PageSize("20");
 
+
             var result = await client.Execute(request);
             PlanList list = result.Result<PlanList>();
+
+            var hasAnyExistingPlans = _dbContext.BillingPlans.Any();
+
+            if (!hasAnyExistingPlans && list.Plans.Count() > 0)
+            {
+                foreach (var plan in list.Plans)
+                {
+                    var billingPlan = new BillingPlan();
+
+                    billingPlan.PayPalPlanId = plan.Id;
+                    billingPlan.Type = plan.Type;
+                    billingPlan.Name = plan.Name;
+                    billingPlan.Description = plan.Description;
+                    billingPlan.State = plan.State;
+
+                    if (plan.PaymentDefinitions != null)
+                    {
+                        billingPlan.PaymentFrequency = plan.PaymentDefinitions.FirstOrDefault().Frequency;
+                        billingPlan.PaymentInterval = plan.PaymentDefinitions.FirstOrDefault().FrequencyInterval;
+                    }
+                    else
+                    {
+                        billingPlan.PaymentFrequency = "Not Provided";
+                        billingPlan.PaymentInterval = "Not Provided";
+                    }
+
+                    billingPlan.ReturnURL = "https://www.andytipsterpro.com/";
+                    billingPlan.CancelURL = "https://www.andytipsterpro.com/";
+                    billingPlan.CreateTime = plan.CreateTime;
+                    billingPlan.UpdateTime = plan.UpdateTime;
+
+
+
+                    _dbContext.BillingPlans.Add(billingPlan);
+                }
+
+                await _dbContext.SaveChangesAsync();
+
+            };
 
             return View(list);
         }
 
 
-
-        /// <summary>
-        /// Create the default billing plans for this example website
-        /// </summary>
-        private async Task SeedBillingPlans()
+        private APIContext GetApiContext()
         {
-            var client = _clientFactory.GetClient();
-
-            //foreach (var plan in BillingPlanSeed.PayPalPlans(
-            //    Url.Action("Return", "Subscription", null, Request.GetUri().Scheme),
-            //    Url.Action("Cancel", "Subscription", null, Request.GetUri().Scheme)))
-
-            foreach (var plan in BillingPlanSeed.PayPalPlans(
-              "https://www.andytipsterpro.com/",
-              "https://www.andytipsterpro.com/"))
-            {
-                // Create Plan
-                var request = new PlanCreateRequest().RequestBody(plan);
-                var result = await client.Execute(request);
-                var obj = result.Result<Plan>();
-
-                // Activate Plan
-                var activateRequest = new PlanUpdateRequest<Plan>(obj.Id)
-                    .RequestBody(GetActivatePlanBody());
-                await client.Execute(activateRequest);
-
-                // Add to database record
-                var dbPlan = _dbContext.BillingPlans.FirstOrDefault(x =>
-                    x.Name == obj.Name);
-
-                if (dbPlan != null && string.IsNullOrEmpty(dbPlan.PayPalPlanId))
-                {
-                    dbPlan.PayPalPlanId = obj.Id;
-                    await _dbContext.SaveChangesAsync();
-                }
-            }
-
-
-        }
-
-        private static List<JsonPatch<Plan>> GetActivatePlanBody()
-        {
-            return new List<JsonPatch<Plan>>()
-            {
-                new JsonPatch<Plan>()
-                {
-                    Op = "replace",
-                    Path = "/",
-                    Value = new Plan()
-                    {
-                        State = "ACTIVE"
-                    }
-                }
-            };
+            // Authenticate with PayPal
+            var config = ConfigManager.Instance.GetProperties();
+            var accessToken = new OAuthTokenCredential("", "").GetAccessToken();
+            var apiContext = new APIContext(accessToken);
+            return apiContext;
         }
     }
 }

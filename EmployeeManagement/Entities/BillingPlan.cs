@@ -1,5 +1,8 @@
 ﻿using AndyTipsterPro.Entities;
+using PayPal.v1.BillingPlans;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Runtime.Serialization;
 
 namespace EmployeeManagement.Entities
 {
