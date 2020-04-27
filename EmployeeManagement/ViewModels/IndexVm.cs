@@ -9,6 +9,7 @@ namespace AndyTipsterPro.ViewModels
     public class IndexVm
     {
         public List<BillingPlan> BillingPlans { get; set; } = new List<BillingPlan>();
+        public List<Product> Products { get; set; } = new List<Product>();
         public List<Entities.Subscription> Subscriptions { get; set; } = new List<Entities.Subscription>();
     }
 }

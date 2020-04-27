@@ -9,6 +9,8 @@ using PayPal.v1.BillingAgreements;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using PayPal.v1.BillingPlans;
+using Microsoft.AspNetCore.Identity;
 
 namespace AndyTipsterPro.Controllers
 {
@@ -17,94 +19,105 @@ namespace AndyTipsterPro.Controllers
     {
         private readonly AppDbContext _dbContext;
         private readonly PayPalHttpClientFactory _clientFactory;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public SubscriptionController(AppDbContext dbContext, PayPalHttpClientFactory clientFactory)
+        public SubscriptionController(AppDbContext dbContext, PayPalHttpClientFactory clientFactory, UserManager<ApplicationUser> userManager)
         {
             _dbContext = dbContext;
             _clientFactory = clientFactory;
+            _userManager = userManager;
         }
 
         public ActionResult Index()
         {
             var model = new IndexVm()
             {
-                BillingPlans = _dbContext.BillingPlans.ToList()
+                BillingPlans = _dbContext.BillingPlans.ToList(),
+                Products = _dbContext.Products.ToList()
             };
 
             return View(model);
         }
 
+        [HttpGet]
         public ActionResult Purchase(string id)
         {
             var model = new PurchaseVm()
             {
-                Plan = _dbContext.BillingPlans.FirstOrDefault(x => x.PayPalPlanId == id)
+                Plan = _dbContext.BillingPlans.FirstOrDefault(x => x.PayPalPlanId == id),
+                Product = _dbContext.Products.FirstOrDefault(x=>x.PayPalPlanId == id)
             };
 
             return View(model);
         }
 
         [HttpPost]
-        //public async Task<IActionResult> Purchase(PurchaseVm model)
-        //{
-        //    var plan = _dbContext.BillingPlans.FirstOrDefault(x => x.PayPalPlanId == model.Plan.PayPalPlanId);
+        public async Task<IActionResult> Purchase(PurchaseVm model)
+        {
+            var plan = _dbContext.BillingPlans.FirstOrDefault(x => x.PayPalPlanId == model.Product.PayPalPlanId);
+            var product = _dbContext.Products.FirstOrDefault(x => x.PayPalPlanId == model.Product.PayPalPlanId);
 
-        //    if (ModelState.IsValid && plan != null)
-        //    {
-        //        // Since we take an Initial Payment (instant payment), the start date of the recurring payments will be next month.
-        //        var startDate = DateTime.UtcNow.AddMonths(1);
+            var currentUser = await _userManager.GetUserAsync(User);
 
-        //        var subscription = new Subscription()
-        //        {
-        //            FirstName = model.FirstName,
-        //            LastName = model.LastName,
-        //            Email = model.Email,
-        //            StartDate = startDate,
-        //            PayPalPlanId = plan.PayPalPlanId
-        //        };
-        //        _dbContext.Subscriptions.Add(subscription);
-        //        _dbContext.SaveChanges();
+            if (ModelState.IsValid && plan != null)
+            {
+                // Since we take an Initial Payment (instant payment), the start date of the recurring payments will be next month.
+                var startDate = DateTime.UtcNow.AddMonths(1);
 
-        //        var agreement = new Agreement()
-        //        {
-        //            Name = plan.Name,
-        //            Description = $"{plan.NumberOfBeers} beer(s) delivered for ${(plan.Price / 100M).ToString("0.00")} each month.",
-        //            StartDate = startDate.ToString("yyyy-MM-ddTHH:mm:ssZ"),
-        //            Plan = new global::PayPal.BillingAgreements.Plan()
-        //            {
-        //                Id = plan.PayPalPlanId
-        //            },
-        //            Payer = new Payer()
-        //            {
-        //                PaymentMethod = "paypal"
-        //            }
-        //        };
+                var subscription = new Subscription()
+                {
+                    FirstName = currentUser.FirstName,
+                    LastName = currentUser.LastName,
+                    Email = currentUser.Email,
+                    StartDate = startDate,
+                    PayPalPlanId = plan.PayPalPlanId
+                };
+                _dbContext.Subscriptions.Add(subscription);
+                _dbContext.SaveChanges();
 
-        //        // Send the agreement to PayPal
-        //        var client = _clientFactory.GetClient();
-        //        var request = new AgreementCreateRequest()
-        //            .RequestBody(agreement);
-        //        var result = await client.Execute(request);
-        //        var createdAgreement = result.Result<Agreement>();
+                var agreement = new Agreement()
+                {
+                    Name = plan.Name,
+                    Description = plan.Description,
+                    StartDate = startDate.ToString("yyyy-MM-ddTHH:mm:ssZ"),
+                    Plan = new PlanWithId() { Id = Convert.ToString(plan.PayPalPlanId)},
+                    //Plan = new global::PayPal.BillingAgreements.Plan()
+                    //{
+                    //    Id = plan.PayPalPlanId
+                    //},
+                    Payer = new Payer()
+                    {
+                        PaymentMethod = "paypal"
+                    }
+                };
 
-        //        // Find the Approval URL to send our user to (also contains the token)
-        //        var approvalUrl =
-        //            createdAgreement.Links.FirstOrDefault(
-        //                x => x.Rel.Equals("approval_url", StringComparison.OrdinalIgnoreCase));
 
-        //        var token = QueryHelpers.ParseQuery(approvalUrl?.Href)["token"].First();
 
-        //        // Save the token so we can match the returned request to our subscription.
-        //        subscription.PayPalAgreementToken = token;
-        //        _dbContext.SaveChanges();
+                // Send the agreement to PayPal
+                var client = _clientFactory.GetClient();
+                var request = new AgreementCreateRequest()
+                    .RequestBody(agreement);
+                var result = await client.Execute(request);
+                var createdAgreement = result.Result<Agreement>();
 
-        //        // Send the user to PayPal to approve the payment
-        //        return Redirect(approvalUrl.Href);
-        //    }
+                // Find the Approval URL to send our user to (also contains the token)
+                var approvalUrl =
+                    createdAgreement.Links.FirstOrDefault(
+                        x => x.Rel.Equals("approval_url", StringComparison.OrdinalIgnoreCase));
 
-        //    model.Plan = plan;
-        //    return View(model);
-        //}
+                var token = QueryHelpers.ParseQuery(approvalUrl?.Href)["token"].First();
+
+                // Save the token so we can match the returned request to our subscription.
+                subscription.PayPalAgreementToken = token;
+                _dbContext.SaveChanges();
+
+                // Send the user to PayPal to approve the payment
+                return Redirect(approvalUrl.Href);
+            }
+
+            model.Product = product;
+            return View(model);
+        }
 
         public async Task<IActionResult> Return(string token)
         {
