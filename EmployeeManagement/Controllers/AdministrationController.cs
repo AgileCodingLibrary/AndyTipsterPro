@@ -341,10 +341,18 @@ namespace AndyTipsterPro.Controllers
             {
                 Id = user.Id,
                 FirstName = user.FirstName,
-                LastName = user.LastName,                
+                LastName = user.LastName,
                 UserName = user.UserName,
                 City = user.City,
-                SendEmails = user.SendEmails
+                SendEmails = user.SendEmails,
+                SubscriptionId = user.SubscriptionId,
+                SubscriptionDescription = user.SubscriptionDescription,
+                SubscriptionState = user.SubscriptionState,
+                SubscriptionEmail = user.SubscriptionEmail,
+                SubscriptionFirstName = user.SubscriptionFirstName,
+                SubscriptionLastName = user.SubscriptionLastName,
+                SubscriptionPostalCode = user.SubscriptionPostalCode
+
             };
 
             return View(model);
@@ -364,7 +372,7 @@ namespace AndyTipsterPro.Controllers
             else
             {
                 user.FirstName = model.FirstName;
-                user.LastName = model.LastName;                
+                user.LastName = model.LastName;
                 user.UserName = model.UserName;
                 user.City = model.City;
                 user.SendEmails = model.SendEmails;
@@ -376,7 +384,7 @@ namespace AndyTipsterPro.Controllers
                 user.SubscriptionLastName = model.SubscriptionLastName;
                 user.SubscriptionPostalCode = model.SubscriptionPostalCode;
                 user.PayPalAgreementId = model.PayPalAgreementId;
-         
+
 
                 var result = await userManager.UpdateAsync(user);
 
@@ -437,7 +445,7 @@ namespace AndyTipsterPro.Controllers
             {
                 user.Email = model.Email;
                 user.UserName = model.UserName;
-                user.City = model.City;                
+                user.City = model.City;
 
                 var result = await userManager.UpdateAsync(user);
 

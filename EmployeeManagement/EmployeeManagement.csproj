@@ -7,14 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Views\Subscribers\**" />
-    <Content Remove="Views\Subscribers\**" />
-    <EmbeddedResource Remove="Views\Subscribers\**" />
-    <None Remove="Views\Subscribers\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Remove="Controllers\SubscribersController.cs" />
     <Compile Remove="Migrations\20190429172047_TestMigration.cs" />
     <Compile Remove="Migrations\20190429172047_TestMigration.Designer.cs" />
     <Compile Remove="Migrations\20190430052340_Test.cs" />
@@ -51,6 +43,8 @@
 
   <ItemGroup>
     <None Include="Views\BillingPlans\Index.cshtml" />
+    <None Include="Views\Subscribers\Details.cshtml" />
+    <None Include="Views\Subscribers\Index.cshtml" />
     <None Include="Views\Subscription\Cancel.cshtml" />
     <None Include="Views\Subscription\Index.cshtml" />
     <None Include="Views\Subscription\Purchase.cshtml" />

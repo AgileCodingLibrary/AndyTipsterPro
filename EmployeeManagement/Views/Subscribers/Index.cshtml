@@ -1,161 +1,49 @@
-﻿@*@using AndyTipsterPro.Models.Subscription
-    @model List<AndyTipsterPro.Entities.Subscription>*@
-
-
-@using AndyTipsterPro.Models.Subscription
-@*@model PagedList.IPagedList<AndyTipsterPro.Entities.Subscription>
-@using PagedList.Mvc;*@
-<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
+﻿@model AndyTipsterPro.ViewModels.IndexVm
 
 @{
     ViewBag.Title = "Subscribers";
 }
 
-@*<div class="heads" style="background: url(/public/img/brewery-back1.jpg) 50% 27%;">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-12">
-                    <h2><span>//</span> Subscribers</h2>
-                </div>
+<div class="heads" style="background: url(/img/brewery-back1.jpg) 50% 27%;">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <h2><span>//</span> Subscribers</h2>
             </div>
         </div>
     </div>
+</div>
 
-    <div class="page-content">
-        <div class="container">
-            <div class="row confirm">
-                <div class="col-md-12">
-                    <table class="table">
-                        <thead>
+<div class="page-content">
+    <div class="container">
+        <div class="row confirm">
+            <div class="col-md-12">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Created Date</th>
+                            <th>Plan</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.Subscriptions)
+                        {
                             <tr>
-                                <th>Email</th>
-                                <th>First Name</th>
-                                <th>Last Name</th>
-                                <th>Paypal Email</th>
-                                <th>PayPal Agreement</th>
-                                <th>Created Date</th>
-                                <th>Plan</th>
-                                <th></th>
+                                <td>@item.PayPalAgreementId</td>
+                                <td>@item.StartDate</td>
+                                <td>@(Model.BillingPlans.FirstOrDefault(x => x.PayPalPlanId == item.PayPalPlanId)?.Name ?? "[Deleted Plan]")</td>
+                                <td class="text-right">
+                                    <a href="@Url.Action("Details", "Subscribers" ,new {id=item.PayPalAgreementId})">View Details</a>
+                                </td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var item in Model)
-                            {
-                                if ((Plan.Plans.FirstOrDefault(x => x.PayPalPlanId == item.PayPalPlanId)?.Name ?? "[Deleted Plan]") != "[Deleted Plan]")
-                                {
-                                    <tr>
-                                        <td>@item.Email</td>
-                                        <td>@item.FirstName</td>
-                                        <td>@item.LastName</td>
-                                        <td>@item.PayPalPaymentEmail</td>
-                                        <td>@item.PayPalAgreementId</td>
-                                        <td>@item.StartDate</td>
-                                        <td>@(Plan.Plans.FirstOrDefault(x => x.PayPalPlanId == item.PayPalPlanId)?.Name ?? "[Deleted Plan]")</td>
-                                        <td class="text-right">
-                                            <a href="@Url.Action("Details", "Subscribers" ,new {id=item.PayPalAgreementId})">View Details</a>
-                                        </td>
-                                    </tr>
-                                }
-                            }
-                        </tbody>
-
-                    </table>
-                </div>
+                        }
+                    </tbody>
+                </table>
             </div>
         </div>
-    </div>*@
-
-
-@using (Html.BeginForm("Index", "Subscribers", FormMethod.Get))
-{
-    <p>
-        Find by name: @Html.TextBox("SearchString", ViewBag.CurrentFilter as string)
-        <input type="submit" value="Search" />
-    </p>
-}
-<table class="table">
-    <tr>
-        <th> @Html.ActionLink("Start Date", "Index", new { sortOrder = "StartDate", currentFilter = ViewBag.CurrentFilter })</th>
-        <th> @Html.ActionLink("Email", "Index", new { sortOrder = "Email", currentFilter = ViewBag.CurrentFilter })</th>
-        <th> @Html.ActionLink("First Name", "Index", new { sortOrder = "FirstName", currentFilter = ViewBag.CurrentFilter })</th>
-        <th> @Html.ActionLink("Last Name", "Index", new { sortOrder = "LastName", currentFilter = ViewBag.CurrentFilter })</th>
-        <th> @Html.ActionLink("Paypal Email", "Index", new { sortOrder = "PayPalPaymentEmail", currentFilter = ViewBag.CurrentFilter })</th>
-        <th>PayPal Agreement</th>
-        <th>Plan</th>
-        <th> @Html.ActionLink("Plan", "Index", new { sortOrder = "PayPalPlanName", currentFilter = ViewBag.CurrentFilter })</th>
-        <th></th>
-    </tr>
-
-    @foreach (var item in Model)
-    {
-
-        <tr>
-            <td>@item.StartDate</td>
-            <td>@item.Email</td>
-            <td>@item.FirstName</td>
-            <td>@item.LastName</td>
-            <td>@item.PayPalPaymentEmail</td>
-            <td>@item.PayPalAgreementId</td>
-
-            <td>@(Plan.Plans.FirstOrDefault(x => x.PayPalPlanId == item.PayPalPlanId)?.Name ?? "[Deleted Plan]")</td>
-            <td class="text-right">
-                <a href="@Url.Action("Details", "Subscribers" ,new {id=item.PayPalAgreementId})">View Details</a>
-            </td>
-        </tr>
-
-    }
-
-
-    @*case "Email":
-        subscriptions = subscriptions.OrderByDescending(s => s.Email);
-        break;
-        case "PayPalEmail":
-        subscriptions = subscriptions.OrderByDescending(s => s.PayPalPaymentEmail);
-        break;
-        case "FirstName":
-        subscriptions = subscriptions.OrderByDescending(s => s.FirstName);
-        break;
-        case "LastName":
-        subscriptions = subscriptions.OrderByDescending(s => s.LastName);
-        break;
-        case "CreatedDate":
-        subscriptions = subscriptions.OrderByDescending(s => s.StartDate);
-        break;
-        case "Plan":
-        subscriptions = subscriptions.OrderByDescending(s => s.PayPalPlanName);
-        break;
-        default:  // Name ascending
-        subscriptions = subscriptions.OrderByDescending(s => s.StartDate);
-        break;*@
-
-
-
-
-    @*@foreach (var item in Model)
-        {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.LastName)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.LastName)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.EnrollmentDate)
-                </td>
-                <td>
-                    @Html.ActionLink("Edit", "Edit", new { id = item.ID }) |
-                    @Html.ActionLink("Details", "Details", new { id = item.ID }) |
-                    @Html.ActionLink("Delete", "Delete", new { id = item.ID })
-                </td>
-            </tr>
-        }*@
-
-</table>
-<br />
-@*Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
-
-@Html.PagedListPager(Model, page => Url.Action("Index",
-    new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }))*@
+    </div>
+</div>
 
 

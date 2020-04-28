@@ -33,14 +33,7 @@
             <span asp-validation-for="LastName" class="text-danger"></span>
         </div>
     </div>
-    @*<div class="form-group row">
-            <label asp-for="Email" class="col-sm-2 col-form-label"></label>
-            <div class="col-sm-10">
-                <input asp-for="Email" disabled class="form-control">
-                <span asp-validation-for="Email" class="text-danger"></span>
 
-            </div>
-        </div>*@
     <div class="form-group row" style="display:none;">
         <label asp-for="UserName" class="col-sm-2 col-form-label" ></label>
         <div class="col-sm-10">
@@ -74,14 +67,14 @@
 </div>
 }
 
-<div class="row">
+<div class="row" style="margin-bottom:30px;">
     <a asp-controller="Account" asp-action="ChangePassword" class="btn btn-default">Update your Pasword</a>
 </div>
 
 @*hide this if subscription has expired!*@
 
-@if (Model.SubscriptionId != null)
-{
+@*@if (Model.SubscriptionId != null)
+{*@
 <div class="row">
 
     <div class="col-md-12">
@@ -105,12 +98,13 @@
                             </section>
 
                             <ul>
-                                <li>PayPal First Name:    @Model.SubscriptionFirstName</li>
-                                <li>PayPal Last Name:     @Model.SubscriptionLastName</li>
-                                <li>PayPal Email:         @Model.SubscriptionEmail</li>
-                                <li>PayPal PostCode:      @Model.SubscriptionPostalCode</li>
-                                <li>PayPal Subscription:  @Model.SubscriptionId</li>
+                                <li>PayPal Subscription:  @Model.SubscriptionDescription</li>
                                 <li>PayPal Agreement:     @Model.PayPalAgreementId</li>
+                                <li>Payer First Name:    @Model.SubscriptionFirstName</li>
+                                <li>Payer Last Name:     @Model.SubscriptionLastName</li>
+                                <li>Payer Email:         @Model.SubscriptionEmail</li>
+                                <li>Payer PostCode:      @Model.SubscriptionPostalCode</li>
+
                             </ul>
                         </div>
                     </div>
@@ -120,7 +114,7 @@
         </section>
     </div>
 </div>
-}
+@*}*@
 
 
 

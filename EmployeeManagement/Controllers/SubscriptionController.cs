@@ -45,7 +45,7 @@ namespace AndyTipsterPro.Controllers
             var model = new PurchaseVm()
             {
                 Plan = _dbContext.BillingPlans.FirstOrDefault(x => x.PayPalPlanId == id),
-                Product = _dbContext.Products.FirstOrDefault(x=>x.PayPalPlanId == id)
+                Product = _dbContext.Products.FirstOrDefault(x => x.PayPalPlanId == id)
             };
 
             return View(model);
@@ -58,6 +58,24 @@ namespace AndyTipsterPro.Controllers
             var product = _dbContext.Products.FirstOrDefault(x => x.PayPalPlanId == model.Product.PayPalPlanId);
 
             var currentUser = await _userManager.GetUserAsync(User);
+
+            //check if user already has this subscription
+
+            if (!String.IsNullOrEmpty(currentUser.PayPalAgreementId))
+            {
+                //get user subscritions
+                var client = _clientFactory.GetClient();
+                AgreementGetRequest request = new AgreementGetRequest(currentUser.PayPalAgreementId);
+                BraintreeHttp.HttpResponse result = await client.Execute(request);
+                var agreement = result.Result<Agreement>();
+
+                if (agreement.Plan.Id == model.Product.PayPalPlanId && agreement.State == "ACTIVE")
+                {
+                    //tell user they already have this subscription.
+                    return RedirectToAction("DuplicateSubscriptionFound");
+                }
+            }
+
 
             if (ModelState.IsValid && plan != null)
             {
@@ -80,7 +98,7 @@ namespace AndyTipsterPro.Controllers
                     Name = plan.Name,
                     Description = plan.Description,
                     StartDate = startDate.ToString("yyyy-MM-ddTHH:mm:ssZ"),
-                    Plan = new PlanWithId() { Id = Convert.ToString(plan.PayPalPlanId)},
+                    Plan = new PlanWithId() { Id = Convert.ToString(plan.PayPalPlanId) },
                     //Plan = new global::PayPal.BillingAgreements.Plan()
                     //{
                     //    Id = plan.PayPalPlanId
@@ -98,7 +116,7 @@ namespace AndyTipsterPro.Controllers
                 var request = new AgreementCreateRequest()
                     .RequestBody(agreement);
                 var result = await client.Execute(request);
-                var createdAgreement = result.Result<Agreement>();
+                Agreement createdAgreement = result.Result<Agreement>();
 
                 // Find the Approval URL to send our user to (also contains the token)
                 var approvalUrl =
@@ -109,10 +127,14 @@ namespace AndyTipsterPro.Controllers
 
                 // Save the token so we can match the returned request to our subscription.
                 subscription.PayPalAgreementToken = token;
+
+                //UpdateUserProfileForSubscriptions(createdAgreement).Wait();
+
                 _dbContext.SaveChanges();
 
                 // Send the user to PayPal to approve the payment
                 return Redirect(approvalUrl.Href);
+
             }
 
             model.Product = product;
@@ -146,6 +168,27 @@ namespace AndyTipsterPro.Controllers
         public ActionResult ThankYou()
         {
             return View();
+        }
+
+        public ActionResult DuplicateSubscriptionFound()
+        {
+            return View();
+        }
+
+        public async Task UpdateUserProfileForSubscriptions(Agreement createdAgreement)
+        {
+                 
+            var user = await _userManager.GetUserAsync(User);
+
+            user.PayPalAgreementId = createdAgreement.Id;
+            user.SubscriptionState = createdAgreement.State;
+            user.SubscriptionDescription = createdAgreement.Description;
+            user.SubscriptionEmail = createdAgreement.Payer.PayerInfo.Email;
+            user.SubscriptionFirstName = createdAgreement.Payer.PayerInfo.FirstName;
+            user.SubscriptionLastName = createdAgreement.Payer.PayerInfo.LastName;
+            user.SubscriptionPostalCode = createdAgreement.Payer.PayerInfo.BillingAddress.PostalCode;            
+
+            await _userManager.UpdateAsync(user);
         }
     }
 }

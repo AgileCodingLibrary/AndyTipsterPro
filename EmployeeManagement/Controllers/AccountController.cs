@@ -1,11 +1,12 @@
-﻿using AndyTipsterPro.Models;
+﻿using AndyTipsterPro.Helpers;
+using AndyTipsterPro.Models;
 using AndyTipsterPro.ViewModels;
-using AndyTipsterPro.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using PayPal.v1.BillingAgreements;
 using System;
 using System.Linq;
 using System.Security.Claims;
@@ -19,16 +20,20 @@ namespace AndyTipsterPro.Controllers
         private readonly SignInManager<ApplicationUser> signInManager;
         private readonly ILogger<AccountController> logger;
         private readonly IConfiguration _configuration;
+        private readonly PayPalHttpClientFactory _clientFactory;
 
         public AccountController(UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             ILogger<AccountController> logger,
-            IConfiguration configuration)
+            IConfiguration configuration,
+            PayPalHttpClientFactory clientFactory
+            )
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
             this.logger = logger;
             this._configuration = configuration;
+            this._clientFactory = clientFactory;
         }
 
         [HttpGet]
@@ -253,12 +258,12 @@ namespace AndyTipsterPro.Controllers
                     var confirmationLink = Url.Action("ConfirmEmail", "Account",
                                             new { userId = user.Id, token = token }, Request.Scheme);
 
-                    
+
                     var sendGridKey = _configuration.GetValue<string>("SendGridApi");
 
                     //string email, string subject, string htmlContent)
                     await Emailer.SendEmail(user.Email, "AndyTipster: Please confirm your email", "<p>" + confirmationLink + "</p>", sendGridKey);
-                    
+
                     logger.Log(LogLevel.Warning, confirmationLink);
 
                     if (signInManager.IsSignedIn(User) && User.IsInRole("Admin"))
@@ -330,7 +335,7 @@ namespace AndyTipsterPro.Controllers
 
             if (ModelState.IsValid)
             {
-                var user = await userManager.FindByEmailAsync(model.Email);
+                ApplicationUser user = await userManager.FindByEmailAsync(model.Email);
 
                 if (user != null && !user.EmailConfirmed &&
                                     (await userManager.CheckPasswordAsync(user, model.Password)))
@@ -344,6 +349,12 @@ namespace AndyTipsterPro.Controllers
 
                 if (result.Succeeded)
                 {
+
+                    //check status of subscriptions
+
+                    CheckUpdateUserSubscriptionDetails(user).Wait();
+
+
                     if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
                     {
                         return Redirect(returnUrl);
@@ -354,7 +365,7 @@ namespace AndyTipsterPro.Controllers
                     }
                 }
 
-                if(result.IsLockedOut)
+                if (result.IsLockedOut)
                 {
                     return View("AccountLocked");
                 }
@@ -380,7 +391,7 @@ namespace AndyTipsterPro.Controllers
 
         [AllowAnonymous]
         public async Task<IActionResult>
-            ExternalLoginCallback(string returnUrl = null, string remoteError = null)
+        ExternalLoginCallback(string returnUrl = null, string remoteError = null)
         {
             returnUrl = returnUrl ?? Url.Content("~/");
 
@@ -469,5 +480,41 @@ namespace AndyTipsterPro.Controllers
                 return View("Error");
             }
         }
+
+
+        private async Task CheckUpdateUserSubscriptionDetails(ApplicationUser user)
+        {
+            if (!String.IsNullOrEmpty(user.PayPalAgreementId))
+            {
+                //get user subscritions
+                var client = _clientFactory.GetClient();
+                AgreementGetRequest request = new AgreementGetRequest(user.PayPalAgreementId);
+                BraintreeHttp.HttpResponse result = await client.Execute(request);
+                var agreement = result.Result<Agreement>();
+
+                user.SubscriptionState = agreement.State;
+                user.SubscriptionDescription = agreement.Description;
+                user.SubscriptionEmail = agreement.Payer.PayerInfo.Email;
+                user.SubscriptionFirstName = agreement.Payer.PayerInfo.FirstName;
+                user.SubscriptionLastName = agreement.Payer.PayerInfo.LastName;
+                user.SubscriptionPostalCode = agreement.Payer.PayerInfo.BillingAddress.PostalCode;               
+
+            }
+            else
+            {
+                user.SubscriptionDescription = "Your Subscription Description";
+                user.SubscriptionEmail = "Your Subscription Email";
+                user.SubscriptionFirstName = "Your Payer First Name";
+                user.SubscriptionLastName = "Your Payer Last Name";
+                user.SubscriptionPostalCode = "Your Payer Post Code";
+                user.SubscriptionState = "Agreement status";
+                              
+            }
+            await userManager.UpdateAsync(user);
+
+
+
+        }
+
     }
 }
