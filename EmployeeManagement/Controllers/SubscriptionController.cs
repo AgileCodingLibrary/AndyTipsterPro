@@ -14,7 +14,6 @@ using Microsoft.AspNetCore.Identity;
 
 namespace AndyTipsterPro.Controllers
 {
-    [Authorize(Roles = "superadmin")]
     public class SubscriptionController : Controller
     {
         private readonly AppDbContext _dbContext;
@@ -141,6 +140,7 @@ namespace AndyTipsterPro.Controllers
             return View(model);
         }
 
+
         public async Task<IActionResult> Return(string token)
         {
             var subscription = _dbContext.Subscriptions.FirstOrDefault(x => x.PayPalAgreementToken == token);
@@ -155,6 +155,9 @@ namespace AndyTipsterPro.Controllers
 
             // Save the PayPal agreement in our subscription so we can look it up later.
             subscription.PayPalAgreementId = executedAgreement.Id;
+
+            await UpdateUserProfileForSubscriptions(executedAgreement);
+
             _dbContext.SaveChanges();
 
             return RedirectToAction("Thankyou");
@@ -177,16 +180,17 @@ namespace AndyTipsterPro.Controllers
 
         public async Task UpdateUserProfileForSubscriptions(Agreement createdAgreement)
         {
-                 
+
             var user = await _userManager.GetUserAsync(User);
 
             user.PayPalAgreementId = createdAgreement.Id;
+            user.SubscriptionId = createdAgreement.Id;
             user.SubscriptionState = createdAgreement.State;
             user.SubscriptionDescription = createdAgreement.Description;
             user.SubscriptionEmail = createdAgreement.Payer.PayerInfo.Email;
             user.SubscriptionFirstName = createdAgreement.Payer.PayerInfo.FirstName;
             user.SubscriptionLastName = createdAgreement.Payer.PayerInfo.LastName;
-            user.SubscriptionPostalCode = createdAgreement.Payer.PayerInfo.BillingAddress.PostalCode;            
+            user.SubscriptionPostalCode = createdAgreement.ShippingAddress.PostalCode;
 
             await _userManager.UpdateAsync(user);
         }

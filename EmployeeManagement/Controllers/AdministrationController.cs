@@ -345,6 +345,7 @@ namespace AndyTipsterPro.Controllers
                 UserName = user.UserName,
                 City = user.City,
                 SendEmails = user.SendEmails,
+                PayPalAgreementId = user.PayPalAgreementId,
                 SubscriptionId = user.SubscriptionId,
                 SubscriptionDescription = user.SubscriptionDescription,
                 SubscriptionState = user.SubscriptionState,

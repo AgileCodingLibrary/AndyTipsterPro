@@ -28,9 +28,15 @@ namespace AndyTipsterPro.Controllers
         public async Task<IActionResult> Index()
         {
 
+            var hasAnyPayPalPlans = _dbContext.BillingPlans.Any();
+            if (!hasAnyPayPalPlans)
+            {
+                await CreatePayPalPlans();
+            }
+
             var client = _clientFactory.GetClient();
 
-            var request = new PlanListRequest()
+            PlanListRequest request = new PlanListRequest()
                 .Status("ACTIVE")
                 .PageSize("20");
 
@@ -38,16 +44,28 @@ namespace AndyTipsterPro.Controllers
             var result = await client.Execute(request);
             PlanList list = result.Result<PlanList>();
 
-            var hasAnyExistingPlans = _dbContext.BillingPlans.Any();
+            await CreateBillingPlans(list);
+            await CreateProducts();
 
-            var hasAnyProducts = _dbContext.Products.Any();
+            return View(list);
+        }
 
-            if (!hasAnyExistingPlans && list.Plans.Count() > 0)
+
+        private async Task CreateBillingPlans(PlanList list)
+        {
+            //clear all billing plans, if any.
+            var existingBillingPlans = _dbContext.BillingPlans.ToList();
+            if (existingBillingPlans.Count() > 0)
             {
-                foreach (var plan in list.Plans)
+                _dbContext.BillingPlans.RemoveRange(existingBillingPlans);
+                _dbContext.SaveChanges();
+
+            }
+
+            foreach (var plan in list.Plans)
                 {
 
-                    //add Paypal plans in the database
+                    //add Billing plans in the database
                     var billingPlan = new BillingPlan();
 
                     billingPlan.PayPalPlanId = plan.Id;
@@ -77,73 +95,183 @@ namespace AndyTipsterPro.Controllers
                 }
 
                 await _dbContext.SaveChangesAsync();
-
-            };
-
-            return View(list);
+           
         }
 
+        private async Task CreateProducts()
+        {
 
-        //public async Task<ActionResult> SeedProduct()
-        //{
-        //    List<Product> products = new List<Product>()
-        //{
-        //    new Product()
-        //    {
-        //        Name = "Elite Package - Monthly",
-        //        Description = "The combination of UK/IRE & International Racing Tips Daily.",
-        //        PayPalPlanId = "P-01H67865SG822584NWXTXUVI",
-        //        Price = 2800,
-        //        PaymentFrequency = "1 Month"
-        //    },
-        //    new Product()
-        //    {
-        //        Name = "Elite Package - 3 Months",
-        //        Description = "The combination of UK/IRE & International Racing Tips Daily.",
-        //        PayPalPlanId = "P-33Y52169CA6617927WXTXX4Y",
-        //        Price = 7000,
-        //        PaymentFrequency = "3 Months"
-        //    },
-        //     new Product()
-        //    {
-        //        Name = "Combination Package UK/IRE - Monthly",
-        //        Description = "The UK package but with Irish Racing Tips included",
-        //        PayPalPlanId = "P-4PX56472M3478614BWXTX3DA",
-        //        Price = 2400,
-        //        PaymentFrequency = "1 Month"
-        //    },
-        //       new Product()
-        //    {
-        //        Name = "Combination Package UK/IRE -  3 Months",
-        //        Description = "The UK package but with Irish Racing Tips included",
-        //        PayPalPlanId = "P-4LL517486K0601123WXTX6JA",
-        //        Price = 6000,
-        //        PaymentFrequency = "3 Months"
-        //    },
-        //            new Product()
-        //    {
-        //        Name = "UK Racing Only Package - Monthly",
-        //        Description = "Specialising in UK Racing Tips Daily",
-        //        PayPalPlanId = "P-07569959YM054623FWXTYBWA",
-        //        Price = 1900,
-        //        PaymentFrequency = "1 Month"
-        //    },
-        //                      new Product()
-        //    {
-        //        Name = "UK Racing Only Package - 3 Months",
-        //        Description = "Specialising in UK Racing Tips Daily",
-        //        PayPalPlanId = "P-9LD18441MG843805VWXTYX2Y",
-        //        Price = 5000,
-        //        PaymentFrequency = "3 Months"
-        //    }
+            //clear all products, if any.
+            var existingProducts = _dbContext.Products.ToList();
+            if (existingProducts.Count() > 0)
+            {
+                _dbContext.Products.RemoveRange(existingProducts);
+                _dbContext.SaveChanges();
 
-        //};
+            }
 
-        //    _dbContext.Products.AddRange(products);
-        //    await _dbContext.SaveChangesAsync();
+            var billingPlans = _dbContext.BillingPlans.ToList();
 
-        //    return View("Index");
-        //}
+            var EliteMonthlyBillingPlan = billingPlans.Where(x => x.Name == "Elite Package - Monthly").FirstOrDefault();
+            var EliteQuarterBillingPlan = billingPlans.Where(x => x.Name == "Elite Package - 3 Months").FirstOrDefault();
+            var CombinationMonthlyBillingPlan = billingPlans.Where(x => x.Name == "Combination Package UK/IRE - Monthly").FirstOrDefault();
+            var CombinationQuarterBillingPlan = billingPlans.Where(x => x.Name == "Combination Package UK/IRE -  3 Months").FirstOrDefault();
+            var UKRacingMonthlyBillingPlan = billingPlans.Where(x => x.Name == "UK Racing Only Package - Monthly").FirstOrDefault();
+            var UKRacingQuarterBillingPlan = billingPlans.Where(x => x.Name == "UK Racing Only Package - 3 Months").FirstOrDefault();
+
+
+            List<Product> products = new List<Product>();
+
+            var EliteMonthlyProduct = new Product()
+            {
+                Name = EliteMonthlyBillingPlan.Name,
+                Description = EliteMonthlyBillingPlan.Description,
+                PayPalPlanId = EliteMonthlyBillingPlan.PayPalPlanId,
+                Price = 2800,
+                PaymentFrequency = "1 Month"
+            };
+            products.Add(EliteMonthlyProduct);
+
+            var EliteQuarterProduct = new Product()
+            {
+                Name = EliteQuarterBillingPlan.Name,
+                Description = EliteQuarterBillingPlan.Description,
+                PayPalPlanId = EliteQuarterBillingPlan.PayPalPlanId,
+                Price = 7000,
+                PaymentFrequency = "3 Months"
+            };
+            products.Add(EliteQuarterProduct);
+
+            var CombinationMonthlyProduct = new Product()
+            {
+                Name = CombinationMonthlyBillingPlan.Name,
+                Description = CombinationMonthlyBillingPlan.Description,
+                PayPalPlanId = CombinationMonthlyBillingPlan.PayPalPlanId,
+                Price = 2400,
+                PaymentFrequency = "1 Month"
+            };
+            products.Add(CombinationMonthlyProduct);
+
+            var CombinationQuarterProduct = new Product()
+            {
+                Name = CombinationQuarterBillingPlan.Name,
+                Description = CombinationQuarterBillingPlan.Description,
+                PayPalPlanId = CombinationQuarterBillingPlan.PayPalPlanId,
+                Price = 6000,
+                PaymentFrequency = "3 Months"
+            };
+            products.Add(CombinationQuarterProduct);
+
+            var UKRacingMonthlyProduct = new Product()
+            {
+                Name = UKRacingMonthlyBillingPlan.Name,
+                Description = UKRacingMonthlyBillingPlan.Description,
+                PayPalPlanId = UKRacingMonthlyBillingPlan.PayPalPlanId,
+                Price = 1900,
+                PaymentFrequency = "1 Month"
+            };
+            products.Add(UKRacingMonthlyProduct);
+
+
+            var UKRacingQuarterProduct = new Product()
+            {
+                Name = UKRacingQuarterBillingPlan.Name,
+                Description = UKRacingQuarterBillingPlan.Description,
+                PayPalPlanId = UKRacingQuarterBillingPlan.PayPalPlanId,
+                Price = 5000,
+                PaymentFrequency = "3 Months"
+            };
+            products.Add(UKRacingQuarterProduct);
+
+            _dbContext.Products.AddRange(products);
+            await _dbContext.SaveChangesAsync();
+
+        }
+
+        /// <summary>
+        /// Create the default billing plans for this example website
+        /// </summary>
+        private async Task CreatePayPalPlans()
+        {
+
+            var client = _clientFactory.GetClient();
+
+            foreach (var plan in BillingPlanSeed.PayPalPlans("https://localhost:44376/Subscription/Return", "https://localhost:44376/Subscription/Cancel"))
+            {
+                // Create Plan
+                var request = new PlanCreateRequest().RequestBody(plan);
+                var result = await client.Execute(request);
+                var obj = result.Result<Plan>();
+
+                // Activate Plan
+                var activateRequest = new PlanUpdateRequest<Plan>(obj.Id)
+                    .RequestBody(GetActivatePlanBody());
+
+                await client.Execute(activateRequest);
+
+                // Add to database record
+                //var dbPlan = _dbContext.BillingPlans.FirstOrDefault(x =>
+                //    x.Name == obj.Name);
+
+                //if (dbPlan != null && string.IsNullOrEmpty(dbPlan.PayPalPlanId))
+                //{
+                //    dbPlan.PayPalPlanId = obj.Id;
+                //    await _dbContext.SaveChangesAsync();
+                //}
+
+
+            }
+
+            //// Create plans
+            //var justBrowsingPlanRequest = new PlanCreateRequest().RequestBody(justBrowsingPlan);
+            //var justBrowsingPlanResult = await client.Execute(justBrowsingPlanRequest);
+            //var justBrowsingPlanObject = justBrowsingPlanResult.Result<Plan>();
+
+            //var letsDoThisPlanRequest = new PlanCreateRequest().RequestBody(letsDoThisPlan);
+            //var letsDoThisPlanResult = await client.Execute(letsDoThisPlanRequest);
+            //var letsDoThisPlanObject = letsDoThisPlanResult.Result<Plan>();
+
+            //var beardIncludedPlanRequest = new PlanCreateRequest().RequestBody(beardIncludedPlan);
+            //var beardIncludedPlanResult = await client.Execute(beardIncludedPlanRequest);
+            //var beardIncludedPlanObject = beardIncludedPlanResult.Result<Plan>();
+
+            //var hookItToMyVeinsPlanRequest = new PlanCreateRequest().RequestBody(hookItToMyVeinsPlan);
+            //var hookItToMyVeinsPlanResult = await client.Execute(hookItToMyVeinsPlanRequest);
+            //var hookItToMyVeinsPlanObject = hookItToMyVeinsPlanResult.Result<Plan>();
+
+            //// Activate plans
+            //var activateJustBrowsingPlanRequest = new PlanUpdateRequest<Plan>(justBrowsingPlanObject.Id)
+            //    .RequestBody(GetActivatePlanBody());
+            //await client.Execute(activateJustBrowsingPlanRequest);
+
+            //var activateletsDoThisPlanRequest = new PlanUpdateRequest<Plan>(letsDoThisPlanObject.Id)
+            //    .RequestBody(GetActivatePlanBody());
+            //await client.Execute(activateletsDoThisPlanRequest);
+
+            //var activateBeardIncludedPlanRequest = new PlanUpdateRequest<Plan>(beardIncludedPlanObject.Id)
+            //    .RequestBody(GetActivatePlanBody());
+            //await client.Execute(activateBeardIncludedPlanRequest);
+
+            //var activateHookItToMyVeinsPlanRequest = new PlanUpdateRequest<Plan>(hookItToMyVeinsPlanObject.Id)
+            //    .RequestBody(GetActivatePlanBody());
+            //await client.Execute(activateHookItToMyVeinsPlanRequest);
+        }
+
+        private static List<JsonPatch<Plan>> GetActivatePlanBody()
+        {
+            return new List<JsonPatch<Plan>>()
+            {
+                new JsonPatch<Plan>()
+                {
+                    Op = "replace",
+                    Path = "/",
+                    Value = new Plan()
+                    {
+                        State = "ACTIVE"
+                    }
+                }
+            };
+        }
 
         private APIContext GetApiContext()
         {
