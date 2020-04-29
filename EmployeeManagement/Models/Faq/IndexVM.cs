@@ -8,6 +8,6 @@ namespace AndyTipsterPro.Models.Faq
 {
     public class IndexVM
     {
-        public List<Questions> Questions { get; set; } = new List<Questions>();
+        public List<Testimonial> Questions { get; set; } = new List<Testimonial>();
     }
 }

@@ -1,0 +1,39 @@
+﻿@model IEnumerable<AndyTipsterPro.Entities.Testimonial>
+
+
+@{
+    ViewBag.Title = "Better service starts here";
+}
+
+
+<div class="row" style="margin-bottom:50px;">
+    <section>
+        <div class="col-xs-12"></div>
+    </section>
+    <div class="col-md-10">
+        <h2 class="section-title">@ViewBag.Title</h2>
+        @if (Model != null)
+        {
+            @if (Model.Count() > 0)
+            {
+                foreach (var test in Model)
+                {
+                    <div class="icon-item">
+                        <i class="fa fa-thumbs-up"></i>
+                        <div class="item-content">
+                            <h3>@test.Description</h3>
+                            <p>@test.Customer</p>
+                        </div>
+                    </div>
+                }
+            }
+        }
+        else
+        {
+            <p>No testimonials added yet.</p>
+        }
+
+    </div>
+</div>
+
+

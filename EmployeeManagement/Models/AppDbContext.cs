@@ -23,6 +23,8 @@ namespace AndyTipsterPro.Models
 
         public DbSet<Product> Products { get; set; }
 
+        public DbSet<Testimonial> Testimonials { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

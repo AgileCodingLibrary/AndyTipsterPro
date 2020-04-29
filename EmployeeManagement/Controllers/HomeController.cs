@@ -73,6 +73,16 @@ namespace AndyTipsterPro.Controllers
 
             return View(model);
         }
+
+        [AllowAnonymous]
+        public ViewResult Testimonials()
+        {
+            var model = _db.Testimonials.ToList();
+
+            return View(model);
+        }
+
+
         [AllowAnonymous]
         public ViewResult Contact()
         {
