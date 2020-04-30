@@ -1,4 +1,5 @@
 ﻿using AndyTipsterPro.Entities;
+using AndyTipsterPro.Models;
 using System;
 
 namespace AndyTipsterPro.Entities
@@ -13,7 +14,7 @@ namespace AndyTipsterPro.Entities
         public string PayPalAgreementToken { get; set; }
         public string PayPalAgreementId { get; set; }
         public string PayPalPlanName { get; set; }
-        public string PayPalPaymentEmail { get; set; }
+        public string PayPalPaymentEmail { get; set; }        
     }
 }
 

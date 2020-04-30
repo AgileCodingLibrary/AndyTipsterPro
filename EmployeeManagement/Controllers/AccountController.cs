@@ -1,6 +1,7 @@
 ﻿using AndyTipsterPro.Helpers;
 using AndyTipsterPro.Models;
 using AndyTipsterPro.ViewModels;
+using EmployeeManagement.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -8,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using PayPal.v1.BillingAgreements;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -21,12 +23,15 @@ namespace AndyTipsterPro.Controllers
         private readonly ILogger<AccountController> logger;
         private readonly IConfiguration _configuration;
         private readonly PayPalHttpClientFactory _clientFactory;
+        private readonly AppDbContext _dbContext;
 
         public AccountController(UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             ILogger<AccountController> logger,
             IConfiguration configuration,
-            PayPalHttpClientFactory clientFactory
+            PayPalHttpClientFactory clientFactory,
+            AppDbContext dbContext
+
             )
         {
             this.userManager = userManager;
@@ -34,6 +39,7 @@ namespace AndyTipsterPro.Controllers
             this.logger = logger;
             this._configuration = configuration;
             this._clientFactory = clientFactory;
+            this._dbContext = dbContext;
         }
 
         [HttpGet]
@@ -351,9 +357,7 @@ namespace AndyTipsterPro.Controllers
                 {
 
                     //check status of subscriptions
-
                     CheckUpdateUserSubscriptionDetails(user).Wait();
-
 
                     if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
                     {
@@ -481,40 +485,31 @@ namespace AndyTipsterPro.Controllers
             }
         }
 
-
         private async Task CheckUpdateUserSubscriptionDetails(ApplicationUser user)
         {
-            if (!String.IsNullOrEmpty(user.PayPalAgreementId))
+            if (user.Subscriptions.Any())
             {
-                //get user subscritions
-                var client = _clientFactory.GetClient();
-                AgreementGetRequest request = new AgreementGetRequest(user.PayPalAgreementId);
-                BraintreeHttp.HttpResponse result = await client.Execute(request);
-                var agreement = result.Result<Agreement>();
 
-                user.SubscriptionState = agreement.State;
-                user.SubscriptionDescription = agreement.Description;
-                user.SubscriptionEmail = agreement.Payer.PayerInfo.Email;
-                user.SubscriptionFirstName = agreement.Payer.PayerInfo.FirstName;
-                user.SubscriptionLastName = agreement.Payer.PayerInfo.LastName;
-                user.SubscriptionPostalCode = agreement.Payer.PayerInfo.BillingAddress.PostalCode;               
+                List<string> userSubscriptionIds = user.Subscriptions.Select(x => x.PayPalAgreementId).ToList();
 
+                foreach (var Id in userSubscriptionIds)
+                {
+                    //get user subscription
+                    var client = _clientFactory.GetClient();
+                    AgreementGetRequest request = new AgreementGetRequest(Id);
+                    BraintreeHttp.HttpResponse result = await client.Execute(request);
+                    var agreement = result.Result<Agreement>();
+
+                    //get user subscription
+                    UserSubscriptions userExistingSubscription = user.Subscriptions.Where(x => x.PayPalAgreementId == Id).FirstOrDefault();
+
+                    //update user subscription status.
+                    userExistingSubscription.State = agreement.State;
+
+                    await userManager.UpdateAsync(user);
+                }
             }
-            else
-            {
-                user.SubscriptionDescription = "Your Subscription Description";
-                user.SubscriptionEmail = "Your Subscription Email";
-                user.SubscriptionFirstName = "Your Payer First Name";
-                user.SubscriptionLastName = "Your Payer Last Name";
-                user.SubscriptionPostalCode = "Your Payer Post Code";
-                user.SubscriptionState = "Agreement status";
-                              
-            }
-            await userManager.UpdateAsync(user);
-
-
-
         }
-
     }
+
 }

@@ -4,14 +4,16 @@ using AndyTipsterPro.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace AndyTipsterPro.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200430102542_add-products-in-landing-page")]
+    partial class addproductsinlandingpage
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -146,6 +148,8 @@ namespace AndyTipsterPro.Migrations
 
                     b.Property<string>("Description");
 
+                    b.Property<int?>("LandingPageId");
+
                     b.Property<string>("Name");
 
                     b.Property<string>("PayPalPlanId");
@@ -155,6 +159,8 @@ namespace AndyTipsterPro.Migrations
                     b.Property<int>("Price");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("LandingPageId");
 
                     b.ToTable("Products");
                 });
@@ -487,6 +493,14 @@ namespace AndyTipsterPro.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens");
+                });
+
+            modelBuilder.Entity("AndyTipsterPro.Entities.Product", b =>
+                {
+                    b.HasOne("AndyTipsterPro.Entities.LandingPage")
+                        .WithMany("Products")
+                        .HasForeignKey("LandingPageId")
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("EmployeeManagement.Entities.UserSubscriptions", b =>

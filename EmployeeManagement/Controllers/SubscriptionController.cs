@@ -1,16 +1,16 @@
 ﻿using AndyTipsterPro.Entities;
-using AndyTipsterPro.Models;
 using AndyTipsterPro.Helpers;
+using AndyTipsterPro.Models;
 using AndyTipsterPro.ViewModels;
-using Microsoft.AspNetCore.Authorization;
+using EmployeeManagement.Entities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using PayPal.v1.BillingAgreements;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using PayPal.v1.BillingPlans;
-using Microsoft.AspNetCore.Identity;
 
 namespace AndyTipsterPro.Controllers
 {
@@ -60,19 +60,15 @@ namespace AndyTipsterPro.Controllers
 
             //check if user already has this subscription
 
-            if (!String.IsNullOrEmpty(currentUser.PayPalAgreementId))
-            {
-                //get user subscritions
-                var client = _clientFactory.GetClient();
-                AgreementGetRequest request = new AgreementGetRequest(currentUser.PayPalAgreementId);
-                BraintreeHttp.HttpResponse result = await client.Execute(request);
-                var agreement = result.Result<Agreement>();
+            List<string> userPayPalPlansIds = currentUser.Subscriptions.Select(x => x.PayPalPlanId).ToList();
 
-                if (agreement.Plan.Id == model.Product.PayPalPlanId && agreement.State == "ACTIVE")
-                {
-                    //tell user they already have this subscription.
-                    return RedirectToAction("DuplicateSubscriptionFound");
-                }
+            List<UserSubscriptions> currentUserSubscriptions = _dbContext.UserSubscriptions.Where(x => x.UserId == currentUser.Id).ToList();
+
+            var duplicateProduct = _dbContext.Products.Where(x => x.PayPalPlanId == model.Product.PayPalPlanId).FirstOrDefault();
+
+            if (duplicateProduct != null)
+            {
+                return RedirectToAction("DuplicateSubscriptionFound", duplicateProduct);
             }
 
 
@@ -90,6 +86,18 @@ namespace AndyTipsterPro.Controllers
                     PayPalPlanId = plan.PayPalPlanId
                 };
                 _dbContext.Subscriptions.Add(subscription);
+
+
+                var userNewSubscriptoin = new UserSubscriptions()
+                {
+                    PayPalPlanId = plan.PayPalPlanId,
+                    Description = plan.Description,
+                    User = currentUser,
+                    UserId = currentUser.Id
+                };
+
+                _dbContext.UserSubscriptions.Add(userNewSubscriptoin);
+
                 _dbContext.SaveChanges();
 
                 var agreement = new Agreement()
@@ -109,7 +117,6 @@ namespace AndyTipsterPro.Controllers
                 };
 
 
-
                 // Send the agreement to PayPal
                 var client = _clientFactory.GetClient();
                 var request = new AgreementCreateRequest()
@@ -127,7 +134,6 @@ namespace AndyTipsterPro.Controllers
                 // Save the token so we can match the returned request to our subscription.
                 subscription.PayPalAgreementToken = token;
 
-                //UpdateUserProfileForSubscriptions(createdAgreement).Wait();
 
                 _dbContext.SaveChanges();
 
@@ -143,7 +149,7 @@ namespace AndyTipsterPro.Controllers
 
         public async Task<IActionResult> Return(string token)
         {
-            var subscription = _dbContext.Subscriptions.FirstOrDefault(x => x.PayPalAgreementToken == token);
+            Subscription subscription = _dbContext.Subscriptions.FirstOrDefault(x => x.PayPalAgreementToken == token);
 
             var client = _clientFactory.GetClient();
 
@@ -156,7 +162,7 @@ namespace AndyTipsterPro.Controllers
             // Save the PayPal agreement in our subscription so we can look it up later.
             subscription.PayPalAgreementId = executedAgreement.Id;
 
-            await UpdateUserProfileForSubscriptions(executedAgreement);
+            await UpdateUserProfileForSubscriptions(executedAgreement, subscription.PayPalPlanId);
 
             _dbContext.SaveChanges();
 
@@ -173,26 +179,33 @@ namespace AndyTipsterPro.Controllers
             return View();
         }
 
-        public ActionResult DuplicateSubscriptionFound()
+        public ActionResult DuplicateSubscriptionFound(Product model)
         {
-            return View();
+            return View(model);
         }
 
-        public async Task UpdateUserProfileForSubscriptions(Agreement createdAgreement)
+        public async Task UpdateUserProfileForSubscriptions(Agreement createdAgreement, string paypalPlanId)
         {
 
             var user = await _userManager.GetUserAsync(User);
 
-            user.PayPalAgreementId = createdAgreement.Id;
-            user.SubscriptionId = createdAgreement.Id;
-            user.SubscriptionState = createdAgreement.State;
-            user.SubscriptionDescription = createdAgreement.Description;
-            user.SubscriptionEmail = createdAgreement.Payer.PayerInfo.Email;
-            user.SubscriptionFirstName = createdAgreement.Payer.PayerInfo.FirstName;
-            user.SubscriptionLastName = createdAgreement.Payer.PayerInfo.LastName;
-            user.SubscriptionPostalCode = createdAgreement.ShippingAddress.PostalCode;
+            //add all subscriptions as Payment already has happened!!
 
-            await _userManager.UpdateAsync(user);
+            UserSubscriptions subscriptionToUpdate = _dbContext.UserSubscriptions.Where(x => x.PayPalPlanId == paypalPlanId && x.UserId == user.Id).FirstOrDefault();
+
+            if (user != null && subscriptionToUpdate != null)
+            {
+                subscriptionToUpdate.PayPalAgreementId = createdAgreement.Id;
+                subscriptionToUpdate.SubscriptionId = createdAgreement.Id;
+                subscriptionToUpdate.State = createdAgreement.State;
+                subscriptionToUpdate.Description = createdAgreement.Description;
+                subscriptionToUpdate.PayerEmail = createdAgreement.Payer.PayerInfo.Email;
+                subscriptionToUpdate.PayerFirstName = createdAgreement.Payer.PayerInfo.FirstName;
+                subscriptionToUpdate.PayerLastName = createdAgreement.Payer.PayerInfo.LastName;
+
+                await _dbContext.SaveChangesAsync();
+            }
+
         }
     }
 }

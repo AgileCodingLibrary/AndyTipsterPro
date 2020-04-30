@@ -58,7 +58,19 @@ namespace AndyTipsterPro.Controllers
             return View("Index");
         }
 
+        [AllowAnonymous]
+        public ViewResult Twitter()
+        {
 
+            return View();
+        }
+
+        [AllowAnonymous]
+        public ViewResult Facebook()
+        {
+
+            return View();
+        }
 
         [AllowAnonymous]
         public ViewResult Subscribe()

@@ -196,7 +196,10 @@ namespace AndyTipsterPro.Controllers
 
             var client = _clientFactory.GetClient();
 
-            foreach (var plan in BillingPlanSeed.PayPalPlans("https://localhost:44376/Subscription/Return", "https://localhost:44376/Subscription/Cancel"))
+            foreach (var plan in BillingPlanSeed.PayPalPlans("https://www.andytipsterpro.com/Subscription/Return", "https://www.andytipsterpro.com/Subscription/Cancel"))
+
+            //foreach (var plan in BillingPlanSeed.PayPalPlans("https://localhost:44376/Subscription/Return", "https://localhost:44376/Subscription/Cancel"))
+
             {
                 // Create Plan
                 var request = new PlanCreateRequest().RequestBody(plan);

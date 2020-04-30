@@ -1,5 +1,6 @@
 ﻿using AndyTipsterPro.Models;
 using AndyTipsterPro.ViewModels;
+using EmployeeManagement.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -21,14 +22,17 @@ namespace AndyTipsterPro.Controllers
         private readonly RoleManager<IdentityRole> roleManager;
         private readonly UserManager<ApplicationUser> userManager;
         private readonly ILogger<AdministrationController> logger;
+        private readonly AppDbContext _dbContext;
 
         public AdministrationController(RoleManager<IdentityRole> roleManager,
                                         UserManager<ApplicationUser> userManager,
-                                        ILogger<AdministrationController> logger)
+                                        ILogger<AdministrationController> logger,
+                                        AppDbContext dbContext)
         {
             this.roleManager = roleManager;
             this.userManager = userManager;
             this.logger = logger;
+            this._dbContext = dbContext;
         }
 
         [HttpGet]
@@ -336,6 +340,7 @@ namespace AndyTipsterPro.Controllers
                 return View("NotFound");
             }
 
+            List<UserSubscriptions> userSubscriptions = _dbContext.UserSubscriptions.Where(x => x.UserId == user.Id).ToList();
 
             var model = new EditUserProfileViewModel
             {
@@ -345,15 +350,7 @@ namespace AndyTipsterPro.Controllers
                 UserName = user.UserName,
                 City = user.City,
                 SendEmails = user.SendEmails,
-                PayPalAgreementId = user.PayPalAgreementId,
-                SubscriptionId = user.SubscriptionId,
-                SubscriptionDescription = user.SubscriptionDescription,
-                SubscriptionState = user.SubscriptionState,
-                SubscriptionEmail = user.SubscriptionEmail,
-                SubscriptionFirstName = user.SubscriptionFirstName,
-                SubscriptionLastName = user.SubscriptionLastName,
-                SubscriptionPostalCode = user.SubscriptionPostalCode
-
+                UserSubscriptions = userSubscriptions
             };
 
             return View(model);
@@ -372,20 +369,14 @@ namespace AndyTipsterPro.Controllers
             }
             else
             {
+                List<UserSubscriptions> userSubscriptions = _dbContext.UserSubscriptions.Where(x => x.UserId == user.Id).ToList();
+
                 user.FirstName = model.FirstName;
                 user.LastName = model.LastName;
                 user.UserName = model.UserName;
                 user.City = model.City;
                 user.SendEmails = model.SendEmails;
-                user.SubscriptionId = model.SubscriptionId;
-                user.SubscriptionDescription = model.SubscriptionDescription;
-                user.SubscriptionState = model.SubscriptionState;
-                user.SubscriptionEmail = model.SubscriptionEmail;
-                user.SubscriptionFirstName = model.SubscriptionFirstName;
-                user.SubscriptionLastName = model.SubscriptionLastName;
-                user.SubscriptionPostalCode = model.SubscriptionPostalCode;
-                user.PayPalAgreementId = model.PayPalAgreementId;
-
+                user.Subscriptions = userSubscriptions;
 
                 var result = await userManager.UpdateAsync(user);
 

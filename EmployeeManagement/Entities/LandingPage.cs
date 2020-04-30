@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace AndyTipsterPro.Entities
 {
@@ -11,7 +12,6 @@ namespace AndyTipsterPro.Entities
         //[AllowHtml]
         [DataType(DataType.MultilineText)]
         public string LandingPageHtml { get; set; }
-
 
     }
 }

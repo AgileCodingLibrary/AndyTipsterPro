@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using EmployeeManagement.Entities;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace AndyTipsterPro.ViewModels
 {
@@ -20,15 +22,9 @@ namespace AndyTipsterPro.ViewModels
         public string FirstName { get; set; }
         public string LastName { get; set; }
 
-        //subscription properties.
-        public string SubscriptionId { get; set; }
-        public string SubscriptionDescription { get; set; }
-        public string SubscriptionState { get; set; }
-        public string SubscriptionEmail { get; set; }
-        public string SubscriptionFirstName { get; set; }
-        public string SubscriptionLastName { get; set; }
-        public string SubscriptionPostalCode { get; set; }
-        public string PayPalAgreementId { get; set; }
+        public List<UserSubscriptions> UserSubscriptions { get; set; } = new List<UserSubscriptions>();
+
+       
     }
 
 
