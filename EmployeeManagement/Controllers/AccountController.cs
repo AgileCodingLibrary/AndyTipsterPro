@@ -252,7 +252,8 @@ namespace AndyTipsterPro.Controllers
                 {
                     UserName = model.Email,
                     Email = model.Email,
-                    City = model.City
+                    City = model.City,
+                    SendEmails = true
                 };
 
                 var result = await userManager.CreateAsync(user, model.Password);
@@ -264,11 +265,12 @@ namespace AndyTipsterPro.Controllers
                     var confirmationLink = Url.Action("ConfirmEmail", "Account",
                                             new { userId = user.Id, token = token }, Request.Scheme);
 
+                    var confirmationLinkHtml = "<a href=" + confirmationLink + "> Click to Confirm your Email </a>";
 
                     var sendGridKey = _configuration.GetValue<string>("SendGridApi");
 
                     //string email, string subject, string htmlContent)
-                    await Emailer.SendEmail(user.Email, "AndyTipster: Please confirm your email", "<p>" + confirmationLink + "</p>", sendGridKey);
+                    await Emailer.SendEmail(user.Email, "AndyTipster: Please confirm your email", "<p>" + confirmationLinkHtml + "</p>", sendGridKey);
 
                     logger.Log(LogLevel.Warning, confirmationLink);
 

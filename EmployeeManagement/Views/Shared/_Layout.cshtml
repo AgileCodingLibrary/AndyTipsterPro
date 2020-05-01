@@ -79,11 +79,28 @@
 
         <header id="header" class="hidden-xs">
             <div class="container">
-                <div id="header-title">
-                    <h1 class="animated ">
-                        <a asp-controller="Home" asp-action="Index">Andy<span>tipster</span></a>
-                    </h1>
-                    <p class="animated fadeInLeft">The Number One in Sports Tips, Make The Most out of Your Bets.</p>
+                <div class="col-md-9">
+                    <div id="header-title">
+                        <h1 class="animated" style="text-transform:none; word-spacing: normal;">
+                            <a asp-controller="Home" asp-action="Index">Andy <span>Tipster</span></a>
+                        </h1>
+                        <p class="animated fadeInLeft">The Number One in Sports Tips, Make The Most out of Your Bets.</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    
+                    <div style="width:250px; margin-top:5px;">
+                        <div class="AW-Form-452195183"></div>
+                        <script type="text/javascript">
+                            (function (d, s, id) {
+                                var js, fjs = d.getElementsByTagName(s)[0];
+                                if (d.getElementById(id)) return;
+                                js = d.createElement(s); js.id = id;
+                                js.src = "//forms.aweber.com/form/83/452195183.js";
+                                fjs.parentNode.insertBefore(js, fjs);
+                            }(document, "script", "aweber-wjs-d93otjwlr"));
+                        </script>
+                    </div>
                 </div>
             </div> <!-- container -->
         </header> <!-- header -->
@@ -108,7 +125,7 @@
                         <li><a asp-controller="Home" asp-action="Index">Home</a></li>
                         <li><a asp-controller="Home" asp-action="About">About us</a></li>
                         @*<li><a asp-controller="Home" asp-action="Facebook">Facebook</a></li>
-                        <li><a asp-controller="Home" asp-action="Twitter">Twitter</a></li>*@
+                            <li><a asp-controller="Home" asp-action="Twitter">Twitter</a></li>*@
                         <li class="btn btn-success"><a asp-controller="Subscription" asp-action="Index">Subscriptions</a></li>
                         <li><a asp-controller="Home" asp-action="Faq">FAQ</a></li>
                         <li><a asp-controller="Home" asp-action="Testimonials">Testimonials</a></li>
@@ -120,9 +137,9 @@
                             <li class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">Tips<b class="caret"></b></a>
                                 <ul class="dropdown-menu">
-                                    <li><a asp-controller="Home" asp-action="AndyTipsterTips">AndyTipster Tips</a></li>
-                                    <li><a asp-controller="Home" asp-action="IrishRacingTips">Irish Racing Tips</a></li>
-                                    <li><a asp-controller="Home" asp-action="UltimatePackTips">Ultimate Pack Tips</a></li>
+                                    <li><a asp-controller="Home" asp-action="ElitePackageTips">Elite Package Tips</a></li>
+                                    <li><a asp-controller="Home" asp-action="CombinationPackageTips">Combination Package Tips</a></li>
+                                    <li><a asp-controller="Home" asp-action="UKPackageTips">UK Package Tips</a></li>
                                 </ul>
                             </li>
                         }

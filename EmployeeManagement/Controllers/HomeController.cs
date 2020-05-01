@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 
 namespace AndyTipsterPro.Controllers
 {
@@ -24,18 +25,21 @@ namespace AndyTipsterPro.Controllers
         private readonly ILogger logger;
         private readonly AppDbContext _db;
         private readonly IConfiguration _configuration;
+        private readonly UserManager<ApplicationUser> _userManager;
 
         public HomeController(IEmployeeRepository employeeRepository,
                               IHostingEnvironment hostingEnvironment,
                               ILogger<HomeController> logger,
                               AppDbContext db,
-                              IConfiguration configuration)
+                              IConfiguration configuration,
+                              UserManager<ApplicationUser> userManager)
         {
             _employeeRepository = employeeRepository;
             this.hostingEnvironment = hostingEnvironment;
             this.logger = logger;
             _db = db;
             _configuration = configuration;
+            this._userManager = userManager;
         }
 
         [AllowAnonymous]
@@ -125,25 +129,55 @@ namespace AndyTipsterPro.Controllers
 
 
         [Authorize]
-        public ActionResult AndyTipsterTips()
+        public async Task<ActionResult> ElitePackageTips()
         {
-            var model = _db.Tips.FirstOrDefault();
-            return View(model);
+
+            List<string> payPalPlanIds = _db.Products.Where(x => x.Name.Contains("Elite")).Select(x => x.PayPalPlanId).ToList();
+
+            var canView = await UserCanViewTips(payPalPlanIds);
+
+            if (canView)
+            {
+                var model = _db.Tips.FirstOrDefault();
+
+                return View(model);
+            }
+
+            return View("NotAuthorized");
         }
 
-
         [Authorize]
-        public ActionResult IrishRacingTips()
+        public async Task<ActionResult> CombinationPackageTips()
         {
-            var model = _db.Tips.FirstOrDefault();
-            return View(model);
+            List<string> payPalPlanIds = _db.Products.Where(x => x.Name.Contains("combination")).Select(x => x.PayPalPlanId).ToList();
+
+            var canView = await UserCanViewTips(payPalPlanIds);
+
+            if (canView)
+            {
+                var model = _db.Tips.FirstOrDefault();
+
+                return View(model);
+            }
+
+            return View("NotAuthorized");
         }
 
         [Authorize]
-        public ActionResult UltimatePackTips()
+        public async Task<ActionResult> UKPackageTips()
         {
-            var model = _db.Tips.FirstOrDefault();
-            return View(model);
+            List<string> payPalPlanIds = _db.Products.Where(x => x.Name.Contains("UK")).Select(x => x.PayPalPlanId).ToList();
+
+            var canView = await UserCanViewTips(payPalPlanIds);
+
+            if (canView)
+            {
+                var model = _db.Tips.FirstOrDefault();
+
+                return View(model);
+            }
+
+            return View("NotAuthorized");
         }
 
         public ActionResult ComingSoon()
@@ -192,7 +226,36 @@ namespace AndyTipsterPro.Controllers
         }
 
 
-    }
+        private async Task<bool> UserCanViewTips(List<string> payPalPlanIds)
+        {
+            //get current user
+            var currentUser = await _userManager.GetUserAsync(User);
 
+            //check if user has Any subscription
+
+            if (currentUser != null)
+            {
+                if (User.Identity.IsAuthenticated && (User.IsInRole("superadmin") || User.IsInRole("admin")))
+                {
+                    return true;
+                }
+
+                var userSubscriptions = _db.UserSubscriptions.Where(x => x.UserId == currentUser.Id).ToList();
+
+                if (userSubscriptions.Count() > 0)
+                {
+                    //check if any of the subscription Paypal Id matches with current package.
+
+                    var canView = payPalPlanIds.Where(n => userSubscriptions.Select(x => x.PayPalPlanId).Contains(n)).Any();
+
+                    return canView;
+                }
+
+            }
+
+            return false;
+        }
+
+    }
 
 }

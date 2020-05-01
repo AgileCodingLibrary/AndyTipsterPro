@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace AndyTipsterPro.Entities
 {
@@ -7,22 +8,25 @@ namespace AndyTipsterPro.Entities
         public int Id { get; set; }
 
         [Required]
+        [DisplayName("Elite Package Tips")]
         [StringLength(2000, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 10)]
         //[AllowHtml]
         [DataType(DataType.MultilineText)]
-        public string AndyTipsterTips { get; set; }
+        public string ElitePackageTips { get; set; }
 
         [Required]
         [StringLength(2000, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 10)]
+        [DisplayName("Combination Package Tips")]
         //[AllowHtml]
         [DataType(DataType.MultilineText)]
-        public string IrishHorseTips { get; set; }
+        public string CombinationPackageTips { get; set; }
 
         [Required]
         [StringLength(2000, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 10)]
+        [DisplayName("UK Package Tips")]
         //[AllowHtml]
         [DataType(DataType.MultilineText)]
-        public string UltimateTips { get; set; }
+        public string UKPackageTips { get; set; }
     }
 
 

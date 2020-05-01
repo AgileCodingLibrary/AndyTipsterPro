@@ -3,6 +3,7 @@ using AndyTipsterPro.Helpers;
 using AndyTipsterPro.Models;
 using AndyTipsterPro.ViewModels;
 using EmployeeManagement.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
@@ -27,6 +28,7 @@ namespace AndyTipsterPro.Controllers
             _userManager = userManager;
         }
 
+        [AllowAnonymous]
         public ActionResult Index()
         {
             var model = new IndexVm()
@@ -56,19 +58,20 @@ namespace AndyTipsterPro.Controllers
             var plan = _dbContext.BillingPlans.FirstOrDefault(x => x.PayPalPlanId == model.Product.PayPalPlanId);
             var product = _dbContext.Products.FirstOrDefault(x => x.PayPalPlanId == model.Product.PayPalPlanId);
 
+            //check DUPLICATES
             var currentUser = await _userManager.GetUserAsync(User);
+            var userhasAnySubscriptions = _dbContext.UserSubscriptions.Any(x => x.UserId == currentUser.Id);
 
-            //check if user already has this subscription
-
-            List<string> userPayPalPlansIds = currentUser.Subscriptions.Select(x => x.PayPalPlanId).ToList();
-
-            List<UserSubscriptions> currentUserSubscriptions = _dbContext.UserSubscriptions.Where(x => x.UserId == currentUser.Id).ToList();
-
-            var duplicateProduct = _dbContext.Products.Where(x => x.PayPalPlanId == model.Product.PayPalPlanId).FirstOrDefault();
-
-            if (duplicateProduct != null)
+            if (userhasAnySubscriptions)
             {
-                return RedirectToAction("DuplicateSubscriptionFound", duplicateProduct);
+                List<UserSubscriptions> subscribedPlans = _dbContext.UserSubscriptions.Where(x => x.UserId == currentUser.Id).ToList();
+
+                bool alreadySusbcribedToThisPlan = subscribedPlans.Any(x => x.PayPalPlanId == product.PayPalPlanId);
+
+                if (alreadySusbcribedToThisPlan)
+                {
+                    return RedirectToAction("DuplicateSubscriptionFound", product);
+                }
             }
 
 
