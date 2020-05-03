@@ -1,4 +1,4 @@
-﻿using EmployeeManagement.Entities;
+﻿using AndyTipsterPro.Entities;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 

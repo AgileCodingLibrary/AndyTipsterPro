@@ -1,7 +1,7 @@
 ﻿using AndyTipsterPro.Helpers;
 using AndyTipsterPro.Models;
 using AndyTipsterPro.ViewModels;
-using EmployeeManagement.Entities;
+using AndyTipsterPro.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -195,10 +195,17 @@ namespace AndyTipsterPro.Controllers
                     var passwordResetLink = Url.Action("ResetPassword", "Account",
                             new { email = model.Email, token = token }, Request.Scheme);
 
+                    var passwordResetLinkHtml = "<a href='" + passwordResetLink + "' >Reset Password</a>";
+
                     var sendGridKey = _configuration.GetValue<string>("SendGridApi");
 
                     //string email, string subject, string htmlContent)
-                    await Emailer.SendEmail(user.Email, "AndyTipster: Please reset your password as requested", "<p>" + passwordResetLink + "</p>", sendGridKey);
+                    await Emailer.SendEmail(user.Email, "Reset Password for AndyTipster",
+                        "<p>Hi " + user.FirstName + " " + user.LastName + "</p>"
+                        + "<p>A request to reset the password for your account has been made at AndyTipsterPro.com.</p>"
+                        + "<p>You may now reset the password for your AndyTipsterPro account by clicking on this link.</p>"
+                        + "<p>" + passwordResetLinkHtml + "</p>"
+                        , sendGridKey);
 
 
                     logger.Log(LogLevel.Warning, passwordResetLink);

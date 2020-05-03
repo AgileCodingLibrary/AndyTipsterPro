@@ -1,5 +1,4 @@
 ﻿using AndyTipsterPro.Entities;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,6 +9,6 @@ namespace AndyTipsterPro.ViewModels
     {
         public List<BillingPlan> BillingPlans { get; set; } = new List<BillingPlan>();
         public List<Product> Products { get; set; } = new List<Product>();
-        public List<Entities.Subscription> Subscriptions { get; set; } = new List<Entities.Subscription>();
+
     }
 }

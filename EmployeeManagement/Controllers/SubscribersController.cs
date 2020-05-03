@@ -8,8 +8,11 @@ using PayPal.v1.BillingAgreements;
 using PayPal;
 using AndyTipsterPro.ViewModels;
 using System.Threading.Tasks;
+using System.Collections.Generic;
+using AndyTipsterPro.Entities;
+using System;
 
-namespace EmployeeManagement.Controllers
+namespace AndyTipsterPro.Controllers
 {
     public class SubscribersController : Controller
     {
@@ -25,18 +28,40 @@ namespace EmployeeManagement.Controllers
         }
 
 
-        public ActionResult Index()
+        public async Task<ActionResult> Index()
         {
-            var model = new IndexVm()
+            List<Entities.UserSubscriptions> subscriptions = _dbContext.UserSubscriptions.Where(x => x.PayPalPlanId != null && x.PayPalAgreementId != null).ToList();
+            var users = new List<ApplicationUser>();
+
+            var model = new List<Subscriber>();
+
+            foreach (var sub in subscriptions)
             {
-                BillingPlans = _dbContext.BillingPlans.ToList(),
-                Subscriptions = _dbContext.Subscriptions
-                    .Where(x => !string.IsNullOrEmpty(x.PayPalAgreementId))
-                    .OrderByDescending(x => x.StartDate).Take(50).ToList()
-            };
+                ApplicationUser user = await _userManager.FindByIdAsync(sub.UserId);
+                users.Add(user);
+
+                var subscriber = new Subscriber
+                {
+                    ApplicationUserFirstName = user.FirstName,
+                    ApplicationUserLastName = user.LastName,
+                    ApplicationUserEmail = user.Email,
+
+                    PayerFirstName = sub.PayerFirstName,
+                    PayerLastName = sub.PayerLastName,
+                    PayerEmail = sub.PayerEmail,
+                    StartDate = sub.StartDate,
+                    PayPalPlanId = sub.PayPalPlanId,
+                    PayPalAgreementId = sub.PayPalAgreementId,
+                    PayPalPlanDescription = sub.Description
+                };
+
+                model.Add(subscriber);
+            }
 
             return View(model);
         }
+
+
 
         public async Task<IActionResult> Details(string id)
         {

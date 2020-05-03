@@ -76,6 +76,14 @@ namespace AndyTipsterPro.Controllers
             return View();
         }
 
+
+        [AllowAnonymous]
+        public ViewResult FreeTips()
+        {
+
+            return View();
+        }
+
         [AllowAnonymous]
         public ViewResult Subscribe()
         {
@@ -185,7 +193,6 @@ namespace AndyTipsterPro.Controllers
             return View();
         }
 
-
         [Authorize(Roles = "superadmin, admin")]
         [HttpGet]
         public FileContentResult EmailList()
@@ -224,7 +231,6 @@ namespace AndyTipsterPro.Controllers
             }
             return sb.ToString();
         }
-
 
         private async Task<bool> UserCanViewTips(List<string> payPalPlanIds)
         {

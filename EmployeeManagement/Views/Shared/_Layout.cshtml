@@ -87,20 +87,7 @@
                         <p class="animated fadeInLeft">The Number One in Sports Tips, Make The Most out of Your Bets.</p>
                     </div>
                 </div>
-                <div class="col-md-3">
-                    
-                    <div style="width:250px; margin-top:5px;">
-                        <div class="AW-Form-452195183"></div>
-                        <script type="text/javascript">
-                            (function (d, s, id) {
-                                var js, fjs = d.getElementsByTagName(s)[0];
-                                if (d.getElementById(id)) return;
-                                js = d.createElement(s); js.id = id;
-                                js.src = "//forms.aweber.com/form/83/452195183.js";
-                                fjs.parentNode.insertBefore(js, fjs);
-                            }(document, "script", "aweber-wjs-d93otjwlr"));
-                        </script>
-                    </div>
+                <div class="col-md-3">                    
                 </div>
             </div> <!-- container -->
         </header> <!-- header -->
@@ -124,9 +111,13 @@
                     <ul class="nav navbar-nav nav-left">
                         <li><a asp-controller="Home" asp-action="Index">Home</a></li>
                         <li><a asp-controller="Home" asp-action="About">About us</a></li>
-                        @*<li><a asp-controller="Home" asp-action="Facebook">Facebook</a></li>
-                            <li><a asp-controller="Home" asp-action="Twitter">Twitter</a></li>*@
-                        <li class="btn btn-success"><a asp-controller="Subscription" asp-action="Index">Subscriptions</a></li>
+                        <li><a asp-controller="Home" asp-action="FreeTips">Free Tips</a></li>                       
+                        <li><a asp-controller="Subscription" 
+                               asp-action="Index"
+                               class="btn btn-success" style="width:125px;">
+                            Subscriptions
+                            </a>
+                        </li>
                         <li><a asp-controller="Home" asp-action="Faq">FAQ</a></li>
                         <li><a asp-controller="Home" asp-action="Testimonials">Testimonials</a></li>
                         <li><a asp-controller="Home" asp-action="Contact">Contact us</a></li>

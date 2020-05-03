@@ -1,11 +1,7 @@
-﻿using AndyTipsterPro.Entities;
-using AndyTipsterPro.Models;
+﻿using AndyTipsterPro.Models;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace EmployeeManagement.Entities
+namespace AndyTipsterPro.Entities
 {
     public class UserSubscriptions : BaseEntity
     {

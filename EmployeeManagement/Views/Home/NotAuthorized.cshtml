@@ -3,9 +3,11 @@
     ViewBag.Title = "NotAuthorized";
 }
 
-<h2>Not Authorized</h2>
-<p>It seems you do not have subscription to view these pages.</p>
-<p>To view these pages, you will need a valid subscription.</p>
 
-@Html.ActionLink("Home", "Index", "Home", null, new { @class = "btn btn-primary"})
+<div class="row">
+    <h2>Not Authorized</h2>
+    <p>It seems you do not have subscription to view these pages.</p>
+    <p>To view these pages, you will need a valid subscription.</p>
+    <a asp-action="Index" asp-controller="Home" class="btn btn-primary">Back to Home</a>
+</div>
 
