@@ -259,7 +259,8 @@ namespace AndyTipsterPro.Controllers
                 {
                     UserName = model.Email,
                     Email = model.Email,
-                    City = model.City,
+                    FirstName = model.FirstName,
+                    LastName = model.LastName,
                     SendEmails = true
                 };
 

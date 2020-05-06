@@ -27,6 +27,12 @@ namespace AndyTipsterPro.ViewModels
             ErrorMessage = "Password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
 
-        public string City { get; set; }
+        [Required]
+        [Display(Name = "First Name")]
+        public string FirstName { get; set; }
+
+        [Required]
+        [Display(Name = "Last Name")]
+        public string LastName { get; set; }
     }
 }

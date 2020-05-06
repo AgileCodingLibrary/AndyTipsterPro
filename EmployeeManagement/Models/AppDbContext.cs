@@ -1,5 +1,4 @@
 ﻿using AndyTipsterPro.Entities;
-using AndyTipsterPro.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
