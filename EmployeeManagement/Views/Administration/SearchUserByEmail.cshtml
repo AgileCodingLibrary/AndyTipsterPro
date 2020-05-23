@@ -1,0 +1,32 @@
+﻿
+@{
+    ViewBag.Title = "Subscribe a User Manually";
+}
+
+<div class="col-xs-12">
+    <p class="lead lead-lg text-center">Subscribe a User Manually</p>
+</div>
+
+
+<div class="container">
+    <div class="row">
+        <form asp-controller="Administration" asp-action="SubscribeUser"
+              method="post" class="form-horizontal" role="form">
+
+            @Html.AntiForgeryToken()
+
+            <div class="col-md-8">
+                <h4>Please enter user email.</h4>
+                <p>If user is not found, customer will need to <strong>register and confirm their email</strong>. </p>
+                <p>Ask your customer to <strong>register with a valid email</strong> and check <strong>confirmation email link </strong>in their emails.</p>
+
+                <div class="input-group">
+                    <span class="input-group-btn">
+                        <button class="btn btn-primary" type="submit">Search</button>
+                    </span>
+                    <input type="text" class="form-control" name="Email" id="Email">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

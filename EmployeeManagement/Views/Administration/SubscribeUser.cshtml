@@ -1,0 +1,84 @@
+﻿@model AndyTipsterPro.ViewModels.SubscribeUserByAdminViewModel
+
+
+@{
+    ViewBag.Title = "Subscribe User by Admin";
+}
+
+
+
+<div class="container">
+
+    <div class="col-md-8">
+
+        <h2>User Found</h2>
+        <ul>
+            <li>Name: @Model.FirstName   @Model.LastName</li>
+            <li>Email: @Model.Email</li>
+        </ul>
+        <p>Update their access below accordingly.</p>
+
+        <div class="panel panel-default">
+            <div class="panel-heading">Subscribe User</div>
+            <div class="panel-body">
+                <div class="col-md-6">
+                    <form asp-controller="Administration" asp-action="SaveUserSubscription"
+                          method="post" class="form-horizontal" role="form">
+
+                        @Html.HiddenFor(m => m.FirstName)
+                        @Html.HiddenFor(m => m.LastName)
+                        @Html.HiddenFor(m => m.UserName)
+                        @Html.HiddenFor(m => m.Email)
+
+                        <div class="form-group">
+
+                            <p>Subscribe Elite Package</p>
+                            <div class="input-group login-input">
+                                <label>
+                                    @Html.CheckBoxFor(m => m.CanSeeElitePackage)
+                                </label>
+                            </div>
+                            <div class="input-group login-input">
+                                <label>
+                                    @Html.EditorFor(m => m.ManualElitePackageAccessExpiresAt)
+                                </label>
+                            </div>
+
+                            <hr>
+
+                            <p>Subscribe UK Racing Package</p>
+                            <div class="input-group login-input">
+                                <label>
+                                    @Html.CheckBoxFor(m => m.CanSeeUKRacingPackage)
+                                </label>
+                            </div>
+                            <div class="input-group login-input">
+                                <label>
+                                    @Html.EditorFor(m => m.ManualUKRacingPackageAccessExpiresAt)
+                                </label>
+                            </div>
+
+                            <hr>
+
+                            <p>Subscribe Combo Package</p>
+                            <div class="input-group login-input">
+                                <label>
+                                    @Html.CheckBoxFor(m => m.CanSeeComboPackage)
+                                </label>
+                            </div>
+                            <div class="input-group login-input">
+                                <label>
+                                    @Html.EditorFor(m => m.ManualComboPackageAccessExpiresAt)
+                                </label>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary pull-right">Save</button>
+
+                            <div class="clearfix"></div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

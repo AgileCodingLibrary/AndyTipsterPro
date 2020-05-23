@@ -142,9 +142,11 @@ namespace AndyTipsterPro.Controllers
 
             List<string> payPalPlanIds = _db.Products.Where(x => x.Name.Contains("Elite")).Select(x => x.PayPalPlanId).ToList();
 
-            var canView = await UserCanViewTips(payPalPlanIds);
+            var canView = await UserCanViewTips(payPalPlanIds);           
 
-            if (canView)
+            var hasAdminApproval = await HasAdminApproval("Elite");
+
+            if (canView || hasAdminApproval)
             {
                 var model = _db.Tips.FirstOrDefault();
 
@@ -160,8 +162,9 @@ namespace AndyTipsterPro.Controllers
             List<string> payPalPlanIds = _db.Products.Where(x => x.Name.Contains("combination")).Select(x => x.PayPalPlanId).ToList();
 
             var canView = await UserCanViewTips(payPalPlanIds);
+            var hasAdminApproval = await HasAdminApproval("Combo");
 
-            if (canView)
+            if (canView || hasAdminApproval)
             {
                 var model = _db.Tips.FirstOrDefault();
 
@@ -177,8 +180,9 @@ namespace AndyTipsterPro.Controllers
             List<string> payPalPlanIds = _db.Products.Where(x => x.Name.Contains("UK")).Select(x => x.PayPalPlanId).ToList();
 
             var canView = await UserCanViewTips(payPalPlanIds);
+            var hasAdminApproval = await HasAdminApproval("UK");
 
-            if (canView)
+            if (canView || hasAdminApproval)
             {
                 var model = _db.Tips.FirstOrDefault();
 
@@ -257,6 +261,41 @@ namespace AndyTipsterPro.Controllers
                     return canView;
                 }
 
+            }
+
+            return false;
+        }
+
+
+        private async Task<bool> HasAdminApproval(string packageName)
+        {
+            //get current user
+            ApplicationUser currentUser = await _userManager.GetUserAsync(User);
+
+            var now = DateTime.UtcNow.Date;
+
+            //check if user has Any subscription
+
+            if (currentUser != null)
+            {
+
+                //Check for Elite package.
+                if (packageName.Contains("Elite"))
+                {
+                    return currentUser.CanSeeElitePackage && currentUser.ManualElitePackageAccessExpiresAt > now;
+                }
+
+                //Check for Combo package.
+                if (packageName.Contains("Combo"))
+                {
+                    return currentUser.CanSeeComboPackage && currentUser.ManualComboPackageAccessExpiresAt > now;
+                }
+
+                //Check for UK package.
+                if (packageName.Contains("UK"))
+                {
+                    return currentUser.CanSeeUKRacingPackage && currentUser.ManualUKRacingPackageAccessExpiresAt > now;
+                }
             }
 
             return false;

@@ -1,12 +1,11 @@
-﻿using AndyTipsterPro.Models;
+﻿using AndyTipsterPro.Entities;
+using AndyTipsterPro.Models;
 using AndyTipsterPro.ViewModels;
-using AndyTipsterPro.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
@@ -395,7 +394,6 @@ namespace AndyTipsterPro.Controllers
         }
 
 
-
         [HttpGet]
         public async Task<IActionResult> EditUser(string id)
         {
@@ -573,5 +571,96 @@ namespace AndyTipsterPro.Controllers
 
             return RedirectToAction("EditRole", new { Id = roleId });
         }
+
+
+        [HttpGet]
+        public ViewResult SearchUserByEmail()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SubscribeUser(string Email)
+        {
+
+            var user = await userManager.FindByEmailAsync(Email);
+
+            if (user == null)
+            {
+                ViewBag.ErrorMessage = $"User cannot be found";
+                return View("NotFound");
+            }
+
+
+            //protect Super admin
+           
+
+            if (user.Email.Contains("fazahmed786@hotmail.com"))
+            {
+                ViewBag.ErrorMessage = $"User cannot be found. --";
+                return View("NotFound");
+            }
+
+
+
+
+
+            //build a view model to show all current manual subscriptions.
+            var model = new SubscribeUserByAdminViewModel
+            {
+                Id = user.Id,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                UserName = user.UserName,
+                Email = user.Email,
+                CanSeeComboPackage = user.CanSeeComboPackage,
+                CanSeeElitePackage = user.CanSeeElitePackage,
+                CanSeeUKRacingPackage = user.CanSeeUKRacingPackage,
+                ManualComboPackageAccessExpiresAt = user.ManualComboPackageAccessExpiresAt,
+                ManualElitePackageAccessExpiresAt = user.ManualElitePackageAccessExpiresAt,
+                ManualUKRacingPackageAccessExpiresAt = user.ManualUKRacingPackageAccessExpiresAt
+            };
+
+            return View(model);
+            
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult>  SaveUserSubscription(SubscribeUserByAdminViewModel model)
+        {
+
+            //save user subscription.
+
+            var user = await userManager.FindByEmailAsync(model.Email);
+
+            if (user == null)
+            {
+                ViewBag.Message = $"User cannot be found, Not updated.";                
+            }
+            else
+            {
+
+                //update user and save.
+
+                user.CanSeeComboPackage = model.CanSeeComboPackage;
+                user.CanSeeElitePackage = model.CanSeeElitePackage;
+                user.CanSeeUKRacingPackage = model.CanSeeUKRacingPackage;
+                user.ManualComboPackageAccessExpiresAt = model.ManualComboPackageAccessExpiresAt;
+                user.ManualElitePackageAccessExpiresAt = model.ManualElitePackageAccessExpiresAt;
+                user.ManualUKRacingPackageAccessExpiresAt = model.ManualUKRacingPackageAccessExpiresAt;
+
+                await userManager.UpdateAsync(user);
+
+                ViewBag.Message = $"WELL DONE! You successfully updated user subscription. Ask your customer to login and enjoy their updates.";
+            }
+
+            
+
+            return View();
+
+        }
+
+
     }
 }

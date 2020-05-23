@@ -261,7 +261,15 @@ namespace AndyTipsterPro.Controllers
                     Email = model.Email,
                     FirstName = model.FirstName,
                     LastName = model.LastName,
-                    SendEmails = true
+
+                    //get send emails by default
+                    SendEmails = true,
+
+                    //no access by default to the tips
+                    ManualElitePackageAccessExpiresAt = DateTime.Now.AddDays(-1),
+                    ManualComboPackageAccessExpiresAt = DateTime.Now.AddDays(-1),
+                    ManualUKRacingPackageAccessExpiresAt = DateTime.Now.AddDays(-1),
+
                 };
 
                 var result = await userManager.CreateAsync(user, model.Password);
@@ -479,7 +487,7 @@ namespace AndyTipsterPro.Controllers
                         ViewBag.ErrorTitle = "Registration successful";
                         ViewBag.ErrorMessage = "Before you can Login, please confirm your " +
                             "email, by clicking on the confirmation link we have emailed you. Check junk/spam/promotions folders as most of the time these generic subscription emails don’t filter to your main mail inbox";
-                            
+
                         return View("Error");
                     }
 
