@@ -585,6 +585,13 @@ namespace AndyTipsterPro.Controllers
 
             var user = await userManager.FindByEmailAsync(Email);
 
+
+            //check if this is an admin user.
+            if (!User.IsInRole("superadmin") || !User.IsInRole("admin"))
+            {
+                RedirectToAction("Index", "Home");
+            }
+
             if (user == null)
             {
                 ViewBag.ErrorMessage = $"User cannot be found";
@@ -593,7 +600,7 @@ namespace AndyTipsterPro.Controllers
 
 
             //protect Super admin
-           
+
 
             if (user.Email.Contains("fazahmed786@hotmail.com"))
             {
@@ -622,40 +629,53 @@ namespace AndyTipsterPro.Controllers
             };
 
             return View(model);
-            
+
         }
 
 
         [HttpPost]
-        public async Task<IActionResult>  SaveUserSubscription(SubscribeUserByAdminViewModel model)
+        public async Task<IActionResult> SaveUserSubscription(SubscribeUserByAdminViewModel model)
         {
 
             //save user subscription.
 
             var user = await userManager.FindByEmailAsync(model.Email);
 
+            //check if this is an admin user.
+            if (!User.IsInRole("superadmin") || !User.IsInRole("admin"))
+            {
+                RedirectToAction("Index", "Home");
+            }
+
+
             if (user == null)
             {
-                ViewBag.Message = $"User cannot be found, Not updated.";                
+                ViewBag.Message = $"User cannot be found, Nothing updated.";
+                return View();
             }
-            else
+
+            if (!user.EmailConfirmed)
             {
-
-                //update user and save.
-
-                user.CanSeeComboPackage = model.CanSeeComboPackage;
-                user.CanSeeElitePackage = model.CanSeeElitePackage;
-                user.CanSeeUKRacingPackage = model.CanSeeUKRacingPackage;
-                user.ManualComboPackageAccessExpiresAt = model.ManualComboPackageAccessExpiresAt;
-                user.ManualElitePackageAccessExpiresAt = model.ManualElitePackageAccessExpiresAt;
-                user.ManualUKRacingPackageAccessExpiresAt = model.ManualUKRacingPackageAccessExpiresAt;
-
-                await userManager.UpdateAsync(user);
-
-                ViewBag.Message = $"WELL DONE! You successfully updated user subscription. Ask your customer to login and enjoy their updates.";
+                ViewBag.Message = $"User have not confirmed their email. They should click on the confirmation link.";
+                return View();
             }
 
-            
+
+            //update user and save.                
+
+            user.CanSeeComboPackage = model.CanSeeComboPackage;
+            user.CanSeeElitePackage = model.CanSeeElitePackage;
+            user.CanSeeUKRacingPackage = model.CanSeeUKRacingPackage;
+            user.ManualComboPackageAccessExpiresAt = model.ManualComboPackageAccessExpiresAt;
+            user.ManualElitePackageAccessExpiresAt = model.ManualElitePackageAccessExpiresAt;
+            user.ManualUKRacingPackageAccessExpiresAt = model.ManualUKRacingPackageAccessExpiresAt;
+
+            await userManager.UpdateAsync(user);
+
+            ViewBag.Message = $"WELL DONE! You successfully updated user subscriptions. Ask your customer to login and enjoy their updates.";
+
+
+
 
             return View();
 

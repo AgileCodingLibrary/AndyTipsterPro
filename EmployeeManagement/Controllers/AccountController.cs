@@ -297,7 +297,7 @@ namespace AndyTipsterPro.Controllers
 
                     ViewBag.ErrorTitle = "Registration successful";
                     ViewBag.ErrorMessage = "Before you can Login, please confirm your " +
-                        "email, by clicking on the confirmation link we have emailed you";
+                        "email, by clicking on the confirmation link we have emailed you. Missing Emails! Have you checked your Spam Folder?";
                     return View("Error");
                 }
 
