@@ -12,7 +12,7 @@ namespace AndyTipsterPro.Helpers
             new Plan()
             {
                 Name = "Elite Package - Monthly",
-                Description = "The combination of UK/IRE & International Racing Tips Daily.",
+                Description = "The combination of UK/IRE & International Racing Tips Daily. (0620)",
                 Type = "infinite",
                 State = "ACTIVE",
                 PaymentDefinitions = new List<PaymentDefinition>()
@@ -46,7 +46,7 @@ namespace AndyTipsterPro.Helpers
             new Plan()
             {
                 Name = "Elite Package - 3 Months",
-                Description = "The combination of UK/IRE & International Racing Tips Daily.",
+                Description = "The combination of UK/IRE & International Racing Tips Daily. (0620)",
                 Type = "infinite",
                 State = "ACTIVE",
                 PaymentDefinitions = new List<PaymentDefinition>()
@@ -80,7 +80,7 @@ namespace AndyTipsterPro.Helpers
             new Plan()
             {
                 Name = "Combination Package UK/IRE - Monthly",
-                Description = "The UK package but with Irish Racing Tips included",
+                Description = "The UK package but with Irish Racing Tips included (0620)",
                 Type = "infinite",
                 State = "ACTIVE",
                 PaymentDefinitions = new List<PaymentDefinition>()
@@ -114,7 +114,7 @@ namespace AndyTipsterPro.Helpers
             new Plan()
             {
                 Name = "Combination Package UK/IRE -  3 Months",
-                Description = "The UK package but with Irish Racing Tips included",
+                Description = "The UK package but with Irish Racing Tips included (0620)",
                 Type = "infinite",
                 State = "ACTIVE",
                 PaymentDefinitions = new List<PaymentDefinition>()
@@ -148,7 +148,7 @@ namespace AndyTipsterPro.Helpers
             new Plan()
             {
                 Name = "UK Racing Only Package - Monthly",
-                Description = "Specialising in UK Racing Tips Daily",
+                Description = "Specialising in UK Racing Tips Daily (0620)",
                 Type = "infinite",
                 State = "ACTIVE",
                 PaymentDefinitions = new List<PaymentDefinition>()
@@ -182,7 +182,7 @@ namespace AndyTipsterPro.Helpers
             new Plan()
             {
                 Name = "UK Racing Only Package - 3 Months",
-                Description = "Specialising in UK Racing Tips Daily",
+                Description = "Specialising in UK Racing Tips Daily (0620)",
                 Type = "infinite",
                 State = "ACTIVE",
                 PaymentDefinitions = new List<PaymentDefinition>()

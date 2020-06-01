@@ -26,6 +26,7 @@
     <script src="~/lib/ckeditor/ckeditor.js"></script>
     <link href="~/lib/ckeditor/contents.css" rel="stylesheet" />
     <script src="~/lib/ckeditor/styles.js"></script>
+    <script src="https://apps.elfsight.com/p/platform.js" defer></script>
 
 </head>
 
@@ -87,7 +88,7 @@
                         <p class="animated fadeInLeft">The Number One in Sports Tips, Make The Most out of Your Bets.</p>
                     </div>
                 </div>
-                <div class="col-md-3">                    
+                <div class="col-md-3">
                 </div>
             </div> <!-- container -->
         </header> <!-- header -->
@@ -111,11 +112,12 @@
                     <ul class="nav navbar-nav nav-left">
                         <li><a asp-controller="Home" asp-action="Index">Home</a></li>
                         <li><a asp-controller="Home" asp-action="About">About us</a></li>
-                        <li><a asp-controller="Home" asp-action="FreeTips">Free Mail</a></li>                       
-                        <li><a asp-controller="Subscription" 
+                        <li><a asp-controller="Home" asp-action="FreeTips">Free Mail</a></li>
+                        <li>
+                            <a asp-controller="Subscription"
                                asp-action="Index"
                                class="btn btn-success" style="width:125px;">
-                            Subscriptions
+                                Subscriptions
                             </a>
                         </li>
                         <li><a asp-controller="Home" asp-action="Faq">FAQ</a></li>
@@ -194,8 +196,8 @@
                                     <li>
                                         <a asp-controller="Subscribers" asp-action="Index">Subscribers</a>
                                     </li>
-                                    
-                                    
+
+
                                 </ul>
                             </li>
                         }
@@ -246,6 +248,7 @@
     <script src="~/Content/Template/js/syntax/shCore.js"></script>
     <script src="~/Content/Template/js/syntax/shBrushXml.js"></script>
     <script src="~/Content/Template/js/syntax/shBrushJScript.js"></script>
+ 
 
     @RenderSection("scripts", required: false)
 
