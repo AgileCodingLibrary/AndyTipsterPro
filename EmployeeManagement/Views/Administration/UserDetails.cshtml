@@ -1,0 +1,100 @@
+﻿@model AndyTipsterPro.ViewModels.UserDetailsViewModel
+
+
+@{
+    ViewData["Title"] = "UserDetails";
+}
+
+    <h2 class="section-title">Customer Details</h2>
+
+    <div class="row">
+        <div class="col-md-8">
+            <section>               
+                <div class="panel panel-primary">
+                    <div class="panel-heading"><i class="fa fa-envelope-o"></i> Customer Details</div>
+                    <div class="panel-body">
+
+                        <p>Full Name: <strong>@Model.Customer.FirstName.ToUpper()  @Model.Customer.LastName.ToUpper() </strong></p>
+                        <p>Email:  @Model.Customer.Email</p>
+                        <p>UserName: @Model.Customer.UserName</p>
+                        <p>Send Emails: @Model.Customer.SendEmails</p>
+
+                        <h4 class="section-title">Admin Allowed Access</h4>
+                        <ul class="list-unstyled">
+                            <li><strong>Elite:</strong> @Model.Customer.CanSeeElitePackage</li>
+                            <li><strong>Combo:</strong> @Model.Customer.CanSeeComboPackage</li>
+                            <li><strong>UK Racing:</strong> @Model.Customer.CanSeeUKRacingPackage</li>
+                        </ul>
+
+                        @if (@Model.CustomerSubscriptions.Count() > 0)
+                        {
+                            <br />
+                            <h4 class="section-title">Paid Subscriptions</h4>
+                            <ul class="list-unstyled">
+                                <li>User has <strong>@Model.CustomerSubscriptions.Count()</strong> paid, active subscriptions.</li>
+
+                            </ul>
+                        }
+
+                    </div>
+                </div>
+
+            </section>
+        </div>
+     
+    </div>
+
+
+@if (Model.CustomerSubscriptions != null && Model.CustomerSubscriptions.Count() > 0)
+{
+    <section class="animated fadeInDown animation-delay-8">
+        <h2>Subscription (via PayPal) Details</h2>
+        <p>PayPal has provided following details.</p>
+        <p><strong>Customers can manage their subscriptions direct in their Paypal account.</strong></p>
+    </section>
+    foreach (var sub in Model.CustomerSubscriptions)
+    {
+        <div class="row">
+            <div class="col-md-12">
+                <section class="animated fadeIn animation-delay-10">
+
+                    <div class="panel-group" id='@(sub.Id)accordion'>
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h4 class="panel-title">
+                                    <a data-toggle="collapse" data-parent='#@(sub.Id)accordion' href="#collapseOne">
+                                        @sub.Description
+                                    </a>
+                                </h4>
+                            </div>
+                            <div id="collapseOne" class="panel-collapse collapse in">
+                                <div class="panel-body">
+
+                                    @*<section class="animated fadeInDown animation-delay-8">
+                                            <h2>Subscription (via PayPal) Details</h2>
+                                            <p>PayPal has provided us following details.</p>
+                                        </section>*@
+
+                                    <ul>
+                                        <li>PayPal Subscription:  @sub.Description</li>
+                                        <li>Status:               @sub.State</li>                                        
+                                        <li>PayPal Agreement:     @sub.PayPalAgreementId</li>
+                                        <li>Payer First Name:     @sub.PayerFirstName</li>
+                                        <li>Payer Last Name:      @sub.PayerLastName</li>
+                                        <li>Payer Email:          @sub.PayerEmail</li>
+
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </section>
+            </div>
+        </div>
+    }
+}
+else
+{
+    <h3>If customer has any paid subscriptions, details will appear here.</h3>
+}

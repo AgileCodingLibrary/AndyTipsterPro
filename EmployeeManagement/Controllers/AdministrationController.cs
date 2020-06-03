@@ -682,5 +682,49 @@ namespace AndyTipsterPro.Controllers
         }
 
 
+
+        [HttpGet]
+        [Authorize(Roles = "superadmin, admin")]
+        public async Task<IActionResult> UserDashboard()
+        {
+            var model = new UserDashBoardViewModel();
+
+            model.currentUser = await userManager.GetUserAsync(HttpContext.User);
+            var allApplicationUsers = userManager.Users.ToList();
+            model.Customers = allApplicationUsers.Where(x => x.EmailConfirmed == true).ToList();
+            model.CustomerSubscriptions = _dbContext.UserSubscriptions.ToList();
+
+            var user = await userManager.GetUserAsync(HttpContext.User);
+
+            if (user == null)
+            {
+                ViewBag.ErrorMessage = $"User cannot be found";
+                return View("NotFound");
+            }
+
+            return View(model);
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "superadmin, admin")]
+        public async Task<IActionResult> UserDetails(string userId)
+        {
+            var currentUser = await userManager.GetUserAsync(HttpContext.User);
+
+            if (!User.IsInRole("admin") || !User.IsInRole("superadmin"))
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            var model = new UserDetailsViewModel
+            {
+                Customer = userManager.Users.Where(x => x.Id == userId).FirstOrDefault(),
+
+                CustomerSubscriptions = _dbContext.UserSubscriptions.Where(x => x.UserId == userId).ToList()
+            };
+
+            return View(model);
+        }
+
     }
 }
