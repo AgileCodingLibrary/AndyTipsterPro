@@ -142,9 +142,9 @@ namespace AndyTipsterPro.Controllers
 
             List<string> payPalPlanIds = _db.Products.Where(x => x.Name.Contains("Elite")).Select(x => x.PayPalPlanId).ToList();
 
-            var canView = await UserCanViewTips(payPalPlanIds);           
+            var canView = await UserCanViewTips(payPalPlanIds);
 
-            var hasAdminApproval = await HasAdminApproval("Elite");
+            var hasAdminApproval = await HasAdminApproval("Elite");            
 
             if (canView || hasAdminApproval)
             {
@@ -162,7 +162,7 @@ namespace AndyTipsterPro.Controllers
             List<string> payPalPlanIds = _db.Products.Where(x => x.Name.Contains("combination")).Select(x => x.PayPalPlanId).ToList();
 
             var canView = await UserCanViewTips(payPalPlanIds);
-            var hasAdminApproval = await HasAdminApproval("Combo");
+            var hasAdminApproval = await HasAdminApproval("Combo");            
 
             if (canView || hasAdminApproval)
             {
@@ -181,6 +181,7 @@ namespace AndyTipsterPro.Controllers
 
             var canView = await UserCanViewTips(payPalPlanIds);
             var hasAdminApproval = await HasAdminApproval("UK");
+            
 
             if (canView || hasAdminApproval)
             {
@@ -238,6 +239,8 @@ namespace AndyTipsterPro.Controllers
 
         private async Task<bool> UserCanViewTips(List<string> payPalPlanIds)
         {
+            var canView = false;
+
             //get current user
             var currentUser = await _userManager.GetUserAsync(User);
 
@@ -254,9 +257,24 @@ namespace AndyTipsterPro.Controllers
 
                 if (userSubscriptions.Count() > 0)
                 {
-                    //check if any of the subscription Paypal Id matches with current package.
+                    ////check if any of the subscription Paypal Id matches with current package.
 
-                    var canView = payPalPlanIds.Where(n => userSubscriptions.Select(x => x.PayPalPlanId).Contains(n)).Any();
+                    //var canView = payPalPlanIds.Where(n => userSubscriptions.Select(x => x.PayPalPlanId).Contains(n)).Any();
+
+                   
+                    
+                    //check if user has any given paypal plans.
+                    //Also check if user has any active plans.
+
+                    List<string> userPayPalPlans = payPalPlanIds.Where(n => userSubscriptions.Select(x => x.PayPalPlanId).Contains(n)).ToList();
+
+                    foreach (var plan in userPayPalPlans)
+                    {
+                        if (_db.UserSubscriptions.Where(x => x.UserId == currentUser.Id && x.PayPalPlanId == plan && x.State == "Active").Any())
+                        {
+                            canView = true;
+                        } 
+                    }
 
                     return canView;
                 }
@@ -300,6 +318,7 @@ namespace AndyTipsterPro.Controllers
 
             return false;
         }
+
 
     }
 

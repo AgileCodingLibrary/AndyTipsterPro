@@ -506,10 +506,13 @@ namespace AndyTipsterPro.Controllers
 
         private async Task CheckUpdateUserSubscriptionDetails(ApplicationUser user)
         {
-            if (user.Subscriptions.Any())
+
+            List<UserSubscriptions> userSubs = _dbContext.UserSubscriptions.Where(x => x.UserId == user.Id).ToList();
+            if (userSubs.Count() > 0)
             {
 
-                List<string> userSubscriptionIds = user.Subscriptions.Select(x => x.PayPalAgreementId).ToList();
+                //List<string> userSubscriptionIds = user.Subscriptions.Select(x => x.PayPalAgreementId).ToList();
+                List<string> userSubscriptionIds = _dbContext.UserSubscriptions.Where(x => x.UserId == user.Id).Select(x => x.PayPalAgreementId).ToList();
 
                 foreach (var Id in userSubscriptionIds)
                 {
@@ -524,6 +527,26 @@ namespace AndyTipsterPro.Controllers
 
                     //update user subscription status.
                     userExistingSubscription.State = agreement.State;
+
+                    if (agreement.State == "Cancelled")
+                    {
+                        //delete Subscription.
+                        var subsTobeDeleted = _dbContext.Subscriptions.Where(x => x.PayPalAgreementId == agreement.Id).FirstOrDefault();
+                        if (subsTobeDeleted != null)
+                        {
+                            _dbContext.Subscriptions.Remove(subsTobeDeleted);
+                        }
+
+                        //delete user Subscription
+                        var userSubsToBeDeleted = _dbContext.UserSubscriptions.Where(x => x.UserId == user.Id && x.PayPalAgreementId == Id).FirstOrDefault();
+                        if (userSubsToBeDeleted != null)
+                        {
+                            _dbContext.UserSubscriptions.Remove(userSubsToBeDeleted);
+                        }
+
+                        _dbContext.SaveChanges();
+
+                    }
 
                     await userManager.UpdateAsync(user);
                 }
