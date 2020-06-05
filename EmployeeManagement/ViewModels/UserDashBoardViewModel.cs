@@ -6,8 +6,8 @@ namespace AndyTipsterPro.ViewModels
 {
     public class UserDashBoardViewModel
     {
-        public ApplicationUser currentUser { get; set; }
+        //public ApplicationUser currentUser { get; set; }
         public List<ApplicationUser> Customers { get; set; } = new List<ApplicationUser>();
-        public List<UserSubscriptions> CustomerSubscriptions { get; set; } = new List<UserSubscriptions>();
+        //public List<UserSubscriptions> CustomerSubscriptions { get; set; } = new List<UserSubscriptions>();
     }
 }

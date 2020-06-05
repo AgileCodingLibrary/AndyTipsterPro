@@ -685,15 +685,8 @@ namespace AndyTipsterPro.Controllers
 
         [HttpGet]
         [Authorize(Roles = "superadmin, admin")]
-        public async Task<IActionResult> UserDashboard()
+        public async Task<IActionResult> UserDashboard(int pageNumber = 1, int pageSize = 3)
         {
-            var model = new UserDashBoardViewModel();
-
-            model.currentUser = await userManager.GetUserAsync(HttpContext.User);
-            var allApplicationUsers = userManager.Users.ToList();
-            model.Customers = allApplicationUsers.Where(x => x.EmailConfirmed == true).ToList();
-            model.CustomerSubscriptions = _dbContext.UserSubscriptions.ToList();
-
             var user = await userManager.GetUserAsync(HttpContext.User);
 
             if (user == null)
@@ -702,7 +695,7 @@ namespace AndyTipsterPro.Controllers
                 return View("NotFound");
             }
 
-            return View(model);
+            return View(await PaginatedList<ApplicationUser>.CreateAsync(userManager.Users, pageNumber, pageSize));
         }
 
         [HttpGet]

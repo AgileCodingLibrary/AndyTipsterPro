@@ -1,4 +1,4 @@
-﻿@model AndyTipsterPro.ViewModels.UserDashBoardViewModel
+﻿@model PaginatedList<ApplicationUser>
 
 @{
     ViewBag.Title = "Customer Dashboard";
@@ -15,7 +15,7 @@
     </div>
 </div>
 
-@if (Model != null && Model.Customers.Count() > 0)
+@if (Model != null && Model.Count() > 0)
 {
     <div class="page-content">
         <div class="container">
@@ -27,7 +27,7 @@
                                 <th>Name</th>
                                 <th>Email</th>
                                 <th>User Name</th>
-                                <th>SendEmails</th>                               
+                                <th>SendEmails</th>
                                 <th>Elite Allowed</th>
                                 <th>Combo Allowed</th>
                                 <th>UK-Racing Allowed</th>
@@ -36,13 +36,13 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (var customer in Model.Customers)
+                            @foreach (var customer in Model)
                             {
                                 <tr>
                                     <td>@customer.FirstName  @customer.LastName </td>
                                     <td><a asp-action="UserDetails" asp-controller="Administration" asp-route-userId="@customer.Id">@customer.Email</a></td>
                                     <td>@customer.UserName</td>
-                                    <td>@customer.SendEmails</td>                                    
+                                    <td>@customer.SendEmails</td>
                                     <td>@customer.CanSeeElitePackage</td>
                                     <td>@customer.CanSeeComboPackage</td>
                                     <td>@customer.CanSeeUKRacingPackage</td>
@@ -61,4 +61,36 @@ else
     <h2>There are no Customers.</h2>
 }
 
+@{
+    var prevDisabled = !Model.PreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.NextPage ? "disabled" : "";
+}
 
+<a asp-action="UserDashboard"
+   asp-route-pageNumber="@(Model.PageIndex - 1)"
+   class="btn btn-default @prevDisabled">
+    Previous
+</a>
+
+<a asp-action="UserDashboard"
+   asp-route-pageNumber="@(Model.PageIndex + 1)"
+   class="btn btn-default @nextDisabled">
+    Next
+</a>
+
+@*<section>
+    <ul class="pagination">
+        <li class="@prevDisabled"><a href="#">«</a></li>
+        <li class="active"><a href="#">1 <span class="sr-only">(current)</span></a></li>
+        <li><a href="#">2</a></li>
+        <li><a href="#">3</a></li>
+        <li><a href="#">4</a></li>
+        <li><a href="#">5</a></li>
+        <li><a href="#">6</a></li>
+        <li><a href="#">7</a></li>
+        <li><a href="#">8</a></li>
+        <li><a href="#">9</a></li>
+        <li><a href="#">10</a></li>
+        <li class="@nextDisabled"><a href="#">»</a></li>
+    </ul>
+</section>*@
