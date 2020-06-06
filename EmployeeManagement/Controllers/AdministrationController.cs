@@ -1,10 +1,12 @@
 ﻿using AndyTipsterPro.Entities;
+using AndyTipsterPro.Helpers;
 using AndyTipsterPro.Models;
 using AndyTipsterPro.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using ReflectionIT.Mvc.Paging;
 using System.Collections.Generic;
@@ -22,16 +24,19 @@ namespace AndyTipsterPro.Controllers
         private readonly RoleManager<IdentityRole> roleManager;
         private readonly UserManager<ApplicationUser> userManager;
         private readonly ILogger<AdministrationController> logger;
+        private readonly IConfiguration _configuration;
         private readonly AppDbContext _dbContext;
 
         public AdministrationController(RoleManager<IdentityRole> roleManager,
                                         UserManager<ApplicationUser> userManager,
                                         ILogger<AdministrationController> logger,
+                                        IConfiguration configuration,
                                         AppDbContext dbContext)
         {
             this.roleManager = roleManager;
             this.userManager = userManager;
             this.logger = logger;
+            _configuration = configuration;
             this._dbContext = dbContext;
         }
 
@@ -455,12 +460,14 @@ namespace AndyTipsterPro.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "superadmin")]
         public IActionResult CreateRole()
         {
             return View();
         }
 
         [HttpPost]
+        [Authorize(Roles = "superadmin")]
         public async Task<IActionResult> CreateRole(CreateRoleViewModel model)
         {
             if (ModelState.IsValid)
@@ -487,6 +494,7 @@ namespace AndyTipsterPro.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "superadmin")]
         public IActionResult ListRoles()
         {
             var roles = roleManager.Roles;
@@ -494,6 +502,7 @@ namespace AndyTipsterPro.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "superadmin")]
         public async Task<IActionResult> EditUsersInRole(string roleId)
         {
             ViewBag.roleId = roleId;
@@ -532,6 +541,7 @@ namespace AndyTipsterPro.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "superadmin")]
         public async Task<IActionResult> EditUsersInRole(List<UserRoleViewModel> model, string roleId)
         {
             var role = await roleManager.FindByIdAsync(roleId);
@@ -575,12 +585,20 @@ namespace AndyTipsterPro.Controllers
 
 
         [HttpGet]
+        [Authorize(Roles = "superadmin, admin")]
         public ViewResult SearchUserByEmail()
         {
+            //check if this is an admin user.
+            if (!User.IsInRole("superadmin") || !User.IsInRole("admin"))
+            {
+                RedirectToAction("Index", "Home");
+            }
+
             return View();
         }
 
         [HttpPost]
+        [Authorize(Roles = "superadmin")]
         public async Task<IActionResult> SubscribeUser(string Email)
         {
 
@@ -601,7 +619,6 @@ namespace AndyTipsterPro.Controllers
 
 
             //protect Super admin
-
 
             if (user.Email.Contains("fazahmed786@hotmail.com"))
             {
@@ -635,6 +652,7 @@ namespace AndyTipsterPro.Controllers
 
 
         [HttpPost]
+        [Authorize(Roles = "superadmin, admin")]
         public async Task<IActionResult> SaveUserSubscription(SubscribeUserByAdminViewModel model)
         {
 
@@ -683,7 +701,6 @@ namespace AndyTipsterPro.Controllers
         }
 
 
-
         [HttpGet]
         [Authorize(Roles = "superadmin, admin")]
         public async Task<IActionResult> UserDashboard(string filter, int page = 1, int pageSize = 5)
@@ -698,16 +715,17 @@ namespace AndyTipsterPro.Controllers
 
             //Pagination NuGet.
 
-            IOrderedQueryable<ApplicationUser> query = userManager.Users.AsNoTracking().OrderBy(x => x.Email);
+            IOrderedQueryable<ApplicationUser> query = null;
 
             if (!string.IsNullOrWhiteSpace(filter))
             {
-               query = userManager.Users.Where(x=>x.Email.Contains(filter) ||
-                                               x.FirstName.Contains(filter) ||
-                                               x.LastName.Contains(filter) ||
-                                               x.UserName.Contains(filter)).AsNoTracking().OrderBy(x => x.Email);
-            }            
+                query = userManager.Users.Where(x => x.Email.Contains(filter) ||
+                                                x.FirstName.Contains(filter) ||
+                                                x.LastName.Contains(filter) ||
+                                                x.UserName.Contains(filter)).AsNoTracking().OrderBy(x => x.Email);
+            }
 
+            query = userManager.Users.AsNoTracking().OrderBy(x => x.Email);
 
             var model = await PagingList.CreateAsync(query, pageSize, page);
             model.Action = "UserDashboard";
@@ -735,5 +753,45 @@ namespace AndyTipsterPro.Controllers
             return View(model);
         }
 
+        [HttpGet]
+        [Authorize(Roles = "superadmin, admin")]
+        public ViewResult BroadCastMessage()
+        {
+            //check if this is an admin user.
+            if (!User.IsInRole("superadmin") || !User.IsInRole("admin"))
+            {
+                RedirectToAction("Index", "Home");
+            }
+
+            return View();
+        }
+
+
+        [HttpPost]
+        [Authorize(Roles = "superadmin, admin")]
+        public ViewResult BroadCastMessage(string message)
+        {
+            //check if this is an admin user.
+            if (!User.IsInRole("superadmin") || !User.IsInRole("admin"))
+            {
+                RedirectToAction("Index", "Home");
+            }
+
+
+            //List<string> emails = userManager.Users.Select(x => x.Email).ToList();
+
+            List<string> emails = new List<string>();
+            emails.Add("fazahmed786@hotmail.com");
+            emails.Add("fazahmed20xx@hotmail.com");
+
+             var sendGridKey = _configuration.GetValue<string>("SendGridApi");
+
+            foreach (var email in emails)
+            {
+                Task.Run(() => Emailer.SendEmail(email, "An Important Announcement has been made by Andy Tipster.", message, sendGridKey).Wait());
+            }
+
+            return View("MessageBroadCasted");
+        }
     }
 }

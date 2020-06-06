@@ -119,9 +119,9 @@ namespace AndyTipsterPro.Controllers
         {
             if (ModelState.IsValid)
             {
-                _db.Contacts.Add(contact);
+                //_db.Contacts.Add(contact);
 
-                _db.SaveChanges();
+                //_db.SaveChanges();
 
                 var SendEmailTo = _configuration.GetValue<string>("ContactEmailAddress");
                 var sendGridKey = _configuration.GetValue<string>("SendGridApi");

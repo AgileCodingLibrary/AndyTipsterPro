@@ -41,7 +41,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="InputName">Telephone (Optional)</label>
+                    <label for="InputName">Telephone</label>
                     <input asp-for="Telephone" type="text" class="form-control" id="Telephone">
                 </div>
 
@@ -55,137 +55,12 @@
             }
         </section>
     </div>
-
-    @*<div class="col-md-4" style="margin-top:50px;">
-            <section>
-                <div class="fb-page" data-href="https://www.facebook.com/Andy-Tipsters-Fan-page-496163440425567/" data-tabs="timeline" data-width="" data-height="1000" data-small-header="true" data-adapt-container-width="true" data-hide-cover="false" data-show-facepile="true"><blockquote cite="https://www.facebook.com/Andy-Tipsters-Fan-page-496163440425567/" class="fb-xfbml-parse-ignore"><a href="https://www.facebook.com/Andy-Tipsters-Fan-page-496163440425567/">Andy Tipster&#039;s Fan-page</a></blockquote></div>
-
-            </section>
-        </div>*@
-
-
-
 </div>
 
-
-
-
-@*<div class="row">
-        <div class="col-md-8">
-            <section>
-                <h2 class="section-title">Send Message</h2>
-
-                <p>Lorem ipsum Ex aliqua tempor nisi laboris dolor id laborum irure minim tempor in sit dolore amet sit esse nostrud tempor nulla consequat aute in nostrud laboris sint ullamco amet nisi pariatur officia nulla pariatur in id et labore dolore ad sit.</p>
-
-                <form role="form">
-                    <div class="form-group">
-                        <label for="InputName">Name</label>
-                        <input type="email" class="form-control" id="InputName">
-                    </div>
-                    <div class="form-group">
-                        <label for="InputEmail1">Email address</label>
-                        <input type="email" class="form-control" id="InputEmail1">
-                    </div>
-                    <div class="form-group">
-                        <label for="InputMessage">Mesagge</label>
-                        <textarea class="form-control" id="InputMessage" rows="8"></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-primary pull-right">Submit</button>
-                    <div class="clearfix"></div>
-                </form>
-            </section>
-        </div>
-
-        <div class="col-md-4">
-            <section>
-                <div class="panel panel-primary">
-                    <div class="panel-heading"><i class="fa fa-envelope-o"></i> Additional Information</div>
-                    <div class="panel-body">
-                        <h4 class="section-title">Contacts</h4>
-                        <address>
-                            <strong>Open Mind, Inc.</strong><br>
-                            795 Folsom Ave, Suite 600<br>
-                            San Francisco, CA 94107<br>
-                            <abbr title="Phone">P:</abbr> (123) 456-7890 <br>
-                            Mail: <a href="#">support@openmid.com</a>
-                        </address>
-
-                        Business Hours
-                        <h4 class="section-title">Business Hours</h4>
-                        <ul class="list-unstyled">
-                            <li><strong>Monday-Friday:</strong> 9am to 7pm</li>
-                            <li><strong>Saturday:</strong> 9am to 2pm</li>
-                            <li><strong>Sunday:</strong> Closed</li>
-                        </ul>
-                    </div>
-                </div>
-            </section>
-        </div>
-    </div>*@
+<script src="https://apps.elfsight.com/p/platform.js" defer></script>
+<div class="elfsight-app-9ec7d23e-8574-4a8c-a1ce-d4df46d6de9f"></div>
 
 
 
 
 
-
-
-
-
-
-
-@*//old form
-
-
-    <div class="col-lg-offset-3 col-md-8">
-
-
-        <div class="form-group">
-            <label for="InputName">Name</label>
-            <input type="email" class="form-control" id="InputName">
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.FirstName, htmlAttributes: new { @class = "col-sm-2 col-form-label" })
-            <div class="col-md-10">
-                @Html.TextBoxFor(model => model.FirstName, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.FirstName, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.LastName, htmlAttributes: new { @class = "col-sm-2 col-form-label" })
-            <div class="col-md-10">
-                @Html.TextBoxFor(model => model.LastName, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.LastName, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.EmailAddress, htmlAttributes: new { @class = "col-sm-2 col-form-label" })
-            <div class="col-md-10">
-                @Html.TextBoxFor(model => model.EmailAddress, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.EmailAddress, "", new { @class = "text-danger" })
-            </div>
-        </div>
-        <div class="form-group">
-            @Html.LabelFor(model => model.Telephone, htmlAttributes: new { @class = "col-sm-2 col-form-label" })
-            <div class="col-md-10">
-                @Html.TextBoxFor(model => model.Telephone, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Telephone, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.Message, htmlAttributes: new { @class = "col-sm-2 col-form-label" })
-            <div class="col-md-10">
-                @Html.TextAreaFor(model => model.Message, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Message, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Create" class="btn btn-default" />
-            </div>
-        </div>
-    </div>*@

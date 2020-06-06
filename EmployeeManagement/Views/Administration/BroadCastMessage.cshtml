@@ -1,0 +1,37 @@
+﻿
+@model string;
+@{
+    ViewBag.Title = "Broadcast A Message";
+}
+
+<div class="heads">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <h2>Broadcasting A Message</h2>
+                <p>Message will be sent to all registered users.</p>
+                <p>Please keep your message short and clear.</p>
+                <p>Message Broadcast should be used as Less Frequent as possible, to make the correct impact on user inboxes. Users can be put off with frequent message broadcast.</p>
+                <p>Frequent Messages to a large number of customers list, can and will impact on your ability to send mass emails. Use this feature wisely.</p>
+            </div>
+        </div>
+
+        <div class="row" style="margin-top:30px;">
+            <div class="col-md-8">
+                <form method="post" class="form-inline">
+                    <label for="InputName">Message</label>
+                    <div class="input-group">
+                        <textarea type="text" name="message" class="form-control" id="Message" rows="8" cols="100"></textarea>                      
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="margin-top:25px;">Submit</button>
+
+                </form>
+            </div>
+        </div>
+
+
+    </div>
+</div>
+
+
+
