@@ -11,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using ReflectionIT.Mvc.Paging;
 
 namespace AndyTipsterPro
 {
@@ -22,6 +23,8 @@ namespace AndyTipsterPro
         {
             _config = config;
         }
+
+        [Obsolete]
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContextPool<AppDbContext>(
@@ -58,6 +61,7 @@ namespace AndyTipsterPro
                 options.Filters.Add(new AuthorizeFilter(policy));
             }).AddXmlSerializerFormatters();
 
+            services.AddPaging();
 
             // Add PayPal client factory.
             services.AddSingleton(factory => new PayPalHttpClientFactory(

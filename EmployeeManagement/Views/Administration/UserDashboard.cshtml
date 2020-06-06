@@ -1,4 +1,8 @@
-﻿@model PaginatedList<ApplicationUser>
+﻿@*@model PaginatedList<ApplicationUser>*@
+
+@model ReflectionIT.Mvc.Paging.PagingList<ApplicationUser>
+@using ReflectionIT.Mvc.Paging
+@addTagHelper *, ReflectionIT.Mvc.Paging
 
 @{
     ViewBag.Title = "Customer Dashboard";
@@ -14,6 +18,13 @@
         </div>
     </div>
 </div>
+
+
+<nav class="pagenav">
+    @await this.Component.InvokeAsync("Pager", new { PagingList = this.Model })    
+</nav>
+
+
 
 @if (Model != null && Model.Count() > 0)
 {
@@ -61,36 +72,25 @@ else
     <h2>There are no Customers.</h2>
 }
 
-@{
-    var prevDisabled = !Model.PreviousPage ? "disabled" : "";
-    var nextDisabled = !Model.NextPage ? "disabled" : "";
-}
 
-<a asp-action="UserDashboard"
-   asp-route-pageNumber="@(Model.PageIndex - 1)"
-   class="btn btn-default @prevDisabled">
-    Previous
-</a>
 
-<a asp-action="UserDashboard"
-   asp-route-pageNumber="@(Model.PageIndex + 1)"
-   class="btn btn-default @nextDisabled">
-    Next
-</a>
+<nav class="pagenav">
+    @await this.Component.InvokeAsync("Pager", new { PagingList = this.Model })
+</nav>
 
-@*<section>
-    <ul class="pagination">
-        <li class="@prevDisabled"><a href="#">«</a></li>
-        <li class="active"><a href="#">1 <span class="sr-only">(current)</span></a></li>
-        <li><a href="#">2</a></li>
-        <li><a href="#">3</a></li>
-        <li><a href="#">4</a></li>
-        <li><a href="#">5</a></li>
-        <li><a href="#">6</a></li>
-        <li><a href="#">7</a></li>
-        <li><a href="#">8</a></li>
-        <li><a href="#">9</a></li>
-        <li><a href="#">10</a></li>
-        <li class="@nextDisabled"><a href="#">»</a></li>
-    </ul>
-</section>*@
+@*@{
+        var prevDisabled = !Model.PreviousPage ? "disabled" : "";
+        var nextDisabled = !Model.NextPage ? "disabled" : "";
+    }
+
+    <a asp-action="UserDashboard"
+       asp-route-pageNumber="@(Model.PageIndex - 1)"
+       class="btn btn-default @prevDisabled">
+        Previous
+    </a>
+
+    <a asp-action="UserDashboard"
+       asp-route-pageNumber="@(Model.PageIndex + 1)"
+       class="btn btn-default @nextDisabled">
+        Next
+    </a>*@

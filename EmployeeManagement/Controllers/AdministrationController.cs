@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using ReflectionIT.Mvc.Paging;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
@@ -685,7 +686,7 @@ namespace AndyTipsterPro.Controllers
 
         [HttpGet]
         [Authorize(Roles = "superadmin, admin")]
-        public async Task<IActionResult> UserDashboard(int pageNumber = 1, int pageSize = 3)
+        public async Task<IActionResult> UserDashboard(int page = 1, int pageSize = 3)
         {
             var user = await userManager.GetUserAsync(HttpContext.User);
 
@@ -694,8 +695,12 @@ namespace AndyTipsterPro.Controllers
                 ViewBag.ErrorMessage = $"User cannot be found";
                 return View("NotFound");
             }
-
-            return View(await PaginatedList<ApplicationUser>.CreateAsync(userManager.Users, pageNumber, pageSize));
+                        
+            //Pagination NuGet.
+            IOrderedQueryable<ApplicationUser> query = userManager.Users.AsNoTracking().OrderBy(x => x.Email);
+            var model = await PagingList.CreateAsync(query, pageSize, page);
+            model.Action = "UserDashboard";
+            return View(model);
         }
 
         [HttpGet]
