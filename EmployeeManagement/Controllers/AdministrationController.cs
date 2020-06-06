@@ -769,7 +769,7 @@ namespace AndyTipsterPro.Controllers
 
         [HttpPost]
         [Authorize(Roles = "superadmin, admin")]
-        public ViewResult BroadCastMessage(string message)
+        public async Task<ViewResult> BroadCastMessage(BroadcastMessageViewModel model)
         {
             //check if this is an admin user.
             if (!User.IsInRole("superadmin") || !User.IsInRole("admin"))
@@ -777,18 +777,25 @@ namespace AndyTipsterPro.Controllers
                 RedirectToAction("Index", "Home");
             }
 
+            if (!ModelState.IsValid)
+            {
+                return View();
+            }
 
-            //List<string> emails = userManager.Users.Select(x => x.Email).ToList();
 
-            List<string> emails = new List<string>();
-            emails.Add("fazahmed786@hotmail.com");
-            emails.Add("fazahmed20xx@hotmail.com");
+            var users = userManager.Users.Where(x => x.EmailConfirmed && x.SendEmails);
 
-             var sendGridKey = _configuration.GetValue<string>("SendGridApi");
+            List<string> emails = users.Select(x => x.Email).ToList();
+
+            //List<string> emails = new List<string>();
+            //emails.Add("fazahmed786@hotmail.com");           
+            
+
+              var sendGridKey = _configuration.GetValue<string>("SendGridApi");
 
             foreach (var email in emails)
             {
-                Task.Run(() => Emailer.SendEmail(email, "An Important Announcement has been made by Andy Tipster.", message, sendGridKey).Wait());
+               await Emailer.SendEmail(email, model.Subject, model.Message, sendGridKey);
             }
 
             return View("MessageBroadCasted");
