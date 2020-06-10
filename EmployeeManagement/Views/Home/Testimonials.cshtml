@@ -6,38 +6,39 @@
 }
 
 
-    <div class="row" style="margin-bottom:50px;">
-        <div class="jumbotron">
-            <h1>People influence people</h1>
-            <p>“Nothing influences people more than a recommendation from a trusted friend. A trusted referral influences people more than the best broadcast message. A trusted referral is the Holy Grail of advertising.” – Mark Zuckerberg</p>
-        </div>
-        <div class="col-md-8">            
-            @if (Model != null)
+<div class="row" style="margin-bottom:50px;">
+    <div class="jumbotron">
+        <h1>People influence people</h1>
+        <p>“Nothing influences people more than a recommendation from a trusted friend. A trusted referral influences people more than the best broadcast message. A trusted referral is the Holy Grail of advertising.” – Mark Zuckerberg</p>
+    </div>
+    <div class="col-md-8">
+        @if (Model != null)
+        {
+            @if (Model.Count() > 0)
             {
-                @if (Model.Count() > 0)
+                foreach (var test in Model)
                 {
-                    foreach (var test in Model)
-                    {
-                        <div class="icon-item">
-                            <i class="fa fa-thumbs-up"></i>
-                            <div class="item-content">
-                                <h3>@test.Description</h3>
-                                <p>@test.Customer</p>
-                            </div>
+                    <div class="icon-item">
+                        <i class="fa fa-thumbs-up"></i>
+                        <div class="item-content">
+                            <h3>@test.Description</h3>
+                            <p>@test.Customer</p>
                         </div>
-                    }
+                    </div>
                 }
             }
-            else
-            {
-                <p>No testimonials added yet.</p>
-            }
+        }
+        else
+        {
+            <p>No testimonials added yet.</p>
+        }
 
-        </div>
-
-        <div class="col-md-4">
-            <div class="fb-page" data-href="https://www.facebook.com/Andy-Tipsters-Fan-page-496163440425567/" data-tabs="timeline" data-width="" data-height="1000" data-small-header="true" data-adapt-container-width="true" data-hide-cover="false" data-show-facepile="true"><blockquote cite="https://www.facebook.com/Andy-Tipsters-Fan-page-496163440425567/" class="fb-xfbml-parse-ignore"><a href="https://www.facebook.com/Andy-Tipsters-Fan-page-496163440425567/">Andy Tipster&#039;s Fan-page</a></blockquote></div>
-        </div>
     </div>
+
+    <div class="col-md-4">
+        <script src="https://apps.elfsight.com/p/platform.js" defer></script>
+        <div class="elfsight-app-aa90ce0f-671f-4c59-b660-dcffab67f353"></div>
+    </div>
+</div>
 
 

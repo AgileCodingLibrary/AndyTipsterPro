@@ -795,7 +795,7 @@ namespace AndyTipsterPro.Controllers
 
             foreach (var email in emails)
             {
-               await Emailer.SendEmail(email, model.Subject, model.Message, sendGridKey);
+               await Emailer.SendBroadCastEmail(email, model.Subject, model.Message, sendGridKey);
             }
 
             return View("MessageBroadCasted");

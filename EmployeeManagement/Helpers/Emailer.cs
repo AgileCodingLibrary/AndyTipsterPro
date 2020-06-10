@@ -22,5 +22,18 @@ namespace AndyTipsterPro.Helpers
             var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
             var response = await client.SendEmailAsync(msg);
         }
+
+        public static async Task SendBroadCastEmail(string email, string subject, string htmlContent, string sendGridKey)
+        {
+            var apiKey = sendGridKey;
+
+            var client = new SendGridClient(apiKey);
+            var from = new EmailAddress("CustomerSupport@AndyTipster.com", "Andy Tipster");
+            var to = new EmailAddress(email);
+            var plainTextContent = Regex.Replace(htmlContent, "<[^>]*>", "");
+            var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
+            var response = await client.SendEmailAsync(msg);
+        }
+
     }
 }
