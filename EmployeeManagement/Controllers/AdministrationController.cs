@@ -281,6 +281,8 @@ namespace AndyTipsterPro.Controllers
             }
         }
 
+
+
         [HttpPost]
         [Authorize(Roles = "superadmin")]
         public async Task<IActionResult> DeleteRole(string id)
@@ -582,6 +584,60 @@ namespace AndyTipsterPro.Controllers
 
             return RedirectToAction("EditRole", new { Id = roleId });
         }
+
+
+
+        [HttpGet]
+        [Authorize(Roles = "superadmin, admin")]
+        public ViewResult SearchUnconfirmedUserByEmail()
+        {
+            //check if this is an admin user.
+            if (!User.IsInRole("superadmin") || !User.IsInRole("admin"))
+            {
+                RedirectToAction("Index", "Home");
+            }
+
+            return View();
+        }
+
+
+        [HttpPost]
+        [Authorize(Roles = "superadmin, admin")]
+        public async Task<IActionResult> DeleteUnConfirmedUser(string email)
+        {
+            var user = await userManager.FindByEmailAsync(email);
+
+            if (user == null)
+            {
+                ViewBag.ErrorMessage = $"User with Id = {email} cannot be found";
+                return View("NotFound");
+            }
+            else
+            {
+                if (user.EmailConfirmed != false)
+                {
+                    ViewBag.ErrorMessage = $"User already have confirmed their emails. This account can be unlocked by user clicking on forgot password link.";
+                    return View("UnconfirmedUserNotification");
+                }
+
+                var result = await userManager.DeleteAsync(user);
+
+                if (result.Succeeded)
+                {
+                    ViewBag.ErrorMessage = $"User with email {email} has been deleted. Please ask customer to re-register and check their emails for confirmation email.";
+                    return View("UnconfirmedUserNotification");
+                }
+
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError("", error.Description);
+                }
+
+                return View("UnconfirmedUserNotification");
+            }
+        }
+
+
 
 
         [HttpGet]
