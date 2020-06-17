@@ -16,7 +16,8 @@ namespace AndyTipsterPro.Helpers
             var apiKey = sendGridKey;
 
             var client = new SendGridClient(apiKey);
-            var from = new EmailAddress("fazahmed786@hotmail.com", "Support");
+            //var from = new EmailAddress("fazahmed786@hotmail.com", "Support");
+            var from = new EmailAddress("CustomerSupport@AndyTipster.com", "Support");
             var to = new EmailAddress(email);
             var plainTextContent = Regex.Replace(htmlContent, "<[^>]*>", "");
             var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);

@@ -507,12 +507,12 @@ namespace AndyTipsterPro.Controllers
         private async Task CheckUpdateUserSubscriptionDetails(ApplicationUser user)
         {
 
-            List<UserSubscriptions> userSubs = _dbContext.UserSubscriptions.Where(x => x.UserId == user.Id).ToList();
+            List<UserSubscriptions> userSubs = _dbContext.UserSubscriptions.Where(x => x.UserId == user.Id && x.PayPalAgreementId != null).ToList();
             if (userSubs.Count() > 0)
             {
 
                 //List<string> userSubscriptionIds = user.Subscriptions.Select(x => x.PayPalAgreementId).ToList();
-                List<string> userSubscriptionIds = _dbContext.UserSubscriptions.Where(x => x.UserId == user.Id).Select(x => x.PayPalAgreementId).ToList();
+                List<string> userSubscriptionIds = _dbContext.UserSubscriptions.Where(x => x.UserId == user.Id && x.PayPalAgreementId != null).Select(x => x.PayPalAgreementId).ToList();
 
                 foreach (var Id in userSubscriptionIds)
                 {
@@ -538,7 +538,7 @@ namespace AndyTipsterPro.Controllers
                         }
 
                         //delete user Subscription
-                        var userSubsToBeDeleted = _dbContext.UserSubscriptions.Where(x => x.UserId == user.Id && x.PayPalAgreementId == Id).FirstOrDefault();
+                        var userSubsToBeDeleted = _dbContext.UserSubscriptions.Where(x => x.UserId == user.Id && x.PayPalAgreementId == Id && x.PayPalAgreementId == null).FirstOrDefault();
                         if (userSubsToBeDeleted != null)
                         {
                             _dbContext.UserSubscriptions.Remove(userSubsToBeDeleted);

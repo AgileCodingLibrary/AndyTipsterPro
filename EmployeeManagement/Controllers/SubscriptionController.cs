@@ -59,11 +59,11 @@ namespace AndyTipsterPro.Controllers
 
             //check DUPLICATES
             var currentUser = await _userManager.GetUserAsync(User);
-            var userhasAnySubscriptions = _dbContext.UserSubscriptions.Any(x => x.UserId == currentUser.Id);
+            var userhasAnySubscriptions = _dbContext.UserSubscriptions.Any(x => x.UserId == currentUser.Id && x.SubscriptionId != null);
 
             if (userhasAnySubscriptions)
             {
-                List<UserSubscriptions> subscribedPlans = _dbContext.UserSubscriptions.Where(x => x.UserId == currentUser.Id).ToList();
+                List<UserSubscriptions> subscribedPlans = _dbContext.UserSubscriptions.Where(x => x.UserId == currentUser.Id && x.SubscriptionId != null).ToList();
 
                 bool alreadySusbcribedToThisPlan = subscribedPlans.Any(x => x.PayPalPlanId == product.PayPalPlanId);
 

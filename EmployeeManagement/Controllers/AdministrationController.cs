@@ -347,7 +347,7 @@ namespace AndyTipsterPro.Controllers
                 return View("NotFound");
             }
 
-            List<UserSubscriptions> userSubscriptions = _dbContext.UserSubscriptions.Where(x => x.UserId == user.Id).ToList();
+            List<UserSubscriptions> userSubscriptions = _dbContext.UserSubscriptions.Where(x => x.UserId == user.Id && x.SubscriptionId != null).ToList();
 
             var model = new EditUserProfileViewModel
             {
@@ -376,7 +376,7 @@ namespace AndyTipsterPro.Controllers
             }
             else
             {
-                List<UserSubscriptions> userSubscriptions = _dbContext.UserSubscriptions.Where(x => x.UserId == user.Id).ToList();
+                List<UserSubscriptions> userSubscriptions = _dbContext.UserSubscriptions.Where(x => x.UserId == user.Id && x.SubscriptionId != null).ToList();
 
                 user.FirstName = model.FirstName;
                 user.LastName = model.LastName;
@@ -654,7 +654,7 @@ namespace AndyTipsterPro.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "superadmin")]
+        [Authorize(Roles = "superadmin, admin")]
         public async Task<IActionResult> SubscribeUser(string Email)
         {
 
@@ -759,7 +759,7 @@ namespace AndyTipsterPro.Controllers
 
         [HttpGet]
         [Authorize(Roles = "superadmin, admin")]
-        public async Task<IActionResult> UserDashboard(string filter, int page = 1, int pageSize = 5)
+        public async Task<IActionResult> UserDashboard(string filter, int page = 1, int pageSize = 25)
         {
             var user = await userManager.GetUserAsync(HttpContext.User);
 
@@ -773,6 +773,8 @@ namespace AndyTipsterPro.Controllers
 
             IOrderedQueryable<ApplicationUser> query = null;
 
+            query = userManager.Users.AsNoTracking().OrderBy(x => x.Email);
+
             if (!string.IsNullOrWhiteSpace(filter))
             {
                 query = userManager.Users.Where(x => x.Email.Contains(filter) ||
@@ -781,7 +783,7 @@ namespace AndyTipsterPro.Controllers
                                                 x.UserName.Contains(filter)).AsNoTracking().OrderBy(x => x.Email);
             }
 
-            query = userManager.Users.AsNoTracking().OrderBy(x => x.Email);
+           
 
             var model = await PagingList.CreateAsync(query, pageSize, page);
             model.Action = "UserDashboard";
