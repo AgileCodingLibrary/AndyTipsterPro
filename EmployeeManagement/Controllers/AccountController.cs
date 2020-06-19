@@ -544,6 +544,17 @@ namespace AndyTipsterPro.Controllers
                             DateTime expiryDate = DateTime.ParseExact(expiryDateAsString, "yyyy-MM-dd", null);
 
                             userExistingSubscription.ExpiryDate = expiryDate;
+
+                            //Send user an email and let them know expiry date.
+                            var confirmationHtml = $"<h2>Your Subscription <strong>{userExistingSubscription.Description}</strong> has been cancelled.</h2> <p>However, you can continue enjoy your access till your paid period expired on {userExistingSubscription.ExpiryDate}.</p>";
+                            var sendGridKey = _configuration.GetValue<string>("SendGridApi");
+                            await Emailer.SendEmail(user.Email, "Andy Tipster Subscription has been cancelled", confirmationHtml, sendGridKey);
+
+
+                            //Send admin an email and let them know expiry date.
+                            var confirmationAdminHtml = $"<h2>User {user.Email} has cancelled their subscription for <strong>{userExistingSubscription.Description}</strong>.</h2> <p>However, user has access till their paid period expired on {userExistingSubscription.ExpiryDate}.</p><p>An email confirmation has been sent to user on {user.Email}</p>";
+                            await Emailer.SendEmail("andytipster99@outlook.com", "A user has cancelled a Subscription", confirmationAdminHtml, sendGridKey);
+
                         }
                         else if (agreement.State == "Cancelled" && userExistingSubscription.ExpiryDate < DateTime.Now)
                         {
@@ -562,6 +573,15 @@ namespace AndyTipsterPro.Controllers
                             }
 
                             _dbContext.SaveChanges();
+
+                            //Send user an email and let them know subscription now has expired.                           
+                            var expiredHtml = $"<h2>Your Subscription <strong>{userExistingSubscription.Description}</strong> has now expired.</h2>";
+                            var sendGridKey = _configuration.GetValue<string>("SendGridApi");
+                            await Emailer.SendEmail(user.Email, "Andy Tipster Subscription has expired.", expiredHtml, sendGridKey);
+
+                            //Send admin an email and let them know expiry.
+                            var expiredAdminHtml = $"<h2>User {user.Email} subscription for <strong>{userExistingSubscription.Description}</strong>. has now expired.</h2><p>An email confirmation has been sent to user on {user.Email}</p>";
+                            await Emailer.SendEmail("andytipster99@outlook.com", "A user has cancelled a Subscription", expiredAdminHtml, sendGridKey);
                         }
 
                     }
