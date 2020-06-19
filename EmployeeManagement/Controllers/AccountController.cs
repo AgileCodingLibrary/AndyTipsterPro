@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using System.Globalization;
 
 namespace AndyTipsterPro.Controllers
 {
@@ -520,7 +521,7 @@ namespace AndyTipsterPro.Controllers
                     var client = _clientFactory.GetClient();
                     AgreementGetRequest request = new AgreementGetRequest(Id);
                     BraintreeHttp.HttpResponse result = await client.Execute(request);
-                    var agreement = result.Result<Agreement>();
+                    Agreement agreement = result.Result<Agreement>();
 
                     //get user subscription
                     UserSubscriptions userExistingSubscription = user.Subscriptions.Where(x => x.PayPalAgreementId == Id).FirstOrDefault();
@@ -530,21 +531,38 @@ namespace AndyTipsterPro.Controllers
 
                     if (agreement.State == "Cancelled")
                     {
-                        //delete Subscription.
-                        var subsTobeDeleted = _dbContext.Subscriptions.Where(x => x.PayPalAgreementId == agreement.Id).FirstOrDefault();
-                        if (subsTobeDeleted != null)
-                        {
-                            _dbContext.Subscriptions.Remove(subsTobeDeleted);
-                        }
 
-                        //delete user Subscription
-                        var userSubsToBeDeleted = _dbContext.UserSubscriptions.Where(x => x.UserId == user.Id && x.PayPalAgreementId == Id && x.PayPalAgreementId == null).FirstOrDefault();
-                        if (userSubsToBeDeleted != null)
+                        //if this is the first canellation.
+                        if (userExistingSubscription.ExpiryDate.Year < 1995)
                         {
-                            _dbContext.UserSubscriptions.Remove(userSubsToBeDeleted);
-                        }
+                            //set expiry date in the User Subscription to the next billing date.
+                            //"last_payment_date": "2020-06-15T17:57:02Z",
+                            // "next_billing_date": "2020-07-15T10:00:00Z",
 
-                        _dbContext.SaveChanges();
+                            string expiryDateAsString = agreement.AgreementDetails.NextBillingDate.Substring(0, 10);
+
+                            DateTime expiryDate = DateTime.ParseExact(expiryDateAsString, "yyyy-MM-dd", null);
+
+                            userExistingSubscription.ExpiryDate = expiryDate;
+                        }
+                        else if (agreement.State == "Cancelled" && userExistingSubscription.ExpiryDate < DateTime.Now)
+                        {
+                            //delete Subscription.
+                            var subsTobeDeleted = _dbContext.Subscriptions.Where(x => x.PayPalAgreementId == agreement.Id).FirstOrDefault();
+                            if (subsTobeDeleted != null)
+                            {
+                                _dbContext.Subscriptions.Remove(subsTobeDeleted);
+                            }
+
+                            //delete user Subscription
+                            var userSubsToBeDeleted = _dbContext.UserSubscriptions.Where(x => x.UserId == user.Id && x.PayPalAgreementId == Id && x.PayPalAgreementId == null).FirstOrDefault();
+                            if (userSubsToBeDeleted != null)
+                            {
+                                _dbContext.UserSubscriptions.Remove(userSubsToBeDeleted);
+                            }
+
+                            _dbContext.SaveChanges();
+                        }
 
                     }
 

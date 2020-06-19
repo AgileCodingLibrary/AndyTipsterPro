@@ -23,7 +23,7 @@ namespace AndyTipsterPro.Models
         public DbSet<Product> Products { get; set; }
         public DbSet<Testimonial> Testimonials { get; set; }
         
-        public DbSet<UserSubscriptions> UserSubscriptions { get; set; }
+        public DbSet<UserSubscriptions> UserSubscriptions { get; set; }        
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

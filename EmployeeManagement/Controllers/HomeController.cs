@@ -268,9 +268,13 @@ namespace AndyTipsterPro.Controllers
 
                     List<string> userPayPalPlans = payPalPlanIds.Where(n => userSubscriptions.Select(x => x.PayPalPlanId).Contains(n)).ToList();
 
+                    DateTime today = DateTime.Now;
                     foreach (var plan in userPayPalPlans)
                     {
-                        if (_db.UserSubscriptions.Where(x => x.UserId == currentUser.Id && x.PayPalPlanId == plan && x.State == "Active").Any())
+                        if (_db.UserSubscriptions.Where(x => x.UserId == currentUser.Id && x.PayPalPlanId == plan && x.State == "Active"
+                                                        || (x.UserId == currentUser.Id && x.PayPalPlanId == plan && x.ExpiryDate >= today)
+                        
+                        ).Any())
                         {
                             canView = true;
                         } 
