@@ -144,9 +144,11 @@ namespace AndyTipsterPro.Controllers
 
             var canView = await UserCanViewTips(payPalPlanIds);
 
-            var hasAdminApproval = await HasAdminApproval("Elite");            
+            var hasAdminApproval = await HasAdminApproval("Elite");
+            
+            var blockedByAdmin = await BlockedByAdmin("Elite");
 
-            if (canView || hasAdminApproval)
+            if (canView || hasAdminApproval || !blockedByAdmin)
             {
                 var model = _db.Tips.FirstOrDefault();
 
@@ -162,9 +164,12 @@ namespace AndyTipsterPro.Controllers
             List<string> payPalPlanIds = _db.Products.Where(x => x.Name.Contains("combination")).Select(x => x.PayPalPlanId).ToList();
 
             var canView = await UserCanViewTips(payPalPlanIds);
-            var hasAdminApproval = await HasAdminApproval("Combo");            
 
-            if (canView || hasAdminApproval)
+            var hasAdminApproval = await HasAdminApproval("Combo");
+
+            var blockedByAdmin = await BlockedByAdmin("Combo");
+
+            if (canView || hasAdminApproval || !blockedByAdmin)
             {
                 var model = _db.Tips.FirstOrDefault();
 
@@ -180,10 +185,13 @@ namespace AndyTipsterPro.Controllers
             List<string> payPalPlanIds = _db.Products.Where(x => x.Name.Contains("UK")).Select(x => x.PayPalPlanId).ToList();
 
             var canView = await UserCanViewTips(payPalPlanIds);
-            var hasAdminApproval = await HasAdminApproval("UK");
-            
 
-            if (canView || hasAdminApproval)
+            var hasAdminApproval = await HasAdminApproval("UK");
+
+            var blockedByAdmin = await BlockedByAdmin("UK");
+
+
+            if (canView || hasAdminApproval || !blockedByAdmin)
             {
                 var model = _db.Tips.FirstOrDefault();
 
@@ -317,6 +325,41 @@ namespace AndyTipsterPro.Controllers
                 if (packageName.Contains("UK"))
                 {
                     return currentUser.CanSeeUKRacingPackage && currentUser.ManualUKRacingPackageAccessExpiresAt > now;
+                }
+            }
+
+            return false;
+        }
+
+
+        private async Task<bool> BlockedByAdmin(string packageName)
+        {
+            //get current user
+            ApplicationUser currentUser = await _userManager.GetUserAsync(User);
+
+            var now = DateTime.UtcNow.Date;
+
+            //check if user has Any subscription
+
+            if (currentUser != null)
+            {
+
+                //Check for Elite package.
+                if (packageName.Contains("Elite"))
+                {
+                    return currentUser.BlockElitePackage;
+                }
+
+                //Check for Combo package.
+                if (packageName.Contains("Combo"))
+                {
+                    return currentUser.BlockComboPackage;
+                }
+
+                //Check for UK package.
+                if (packageName.Contains("UK"))
+                {
+                    return currentUser.BlockUKRacingPackage;
                 }
             }
 

@@ -22,5 +22,9 @@ namespace AndyTipsterPro.ViewModels
         public bool CanSeeComboPackage { get; set; }
         public DateTime ManualComboPackageAccessExpiresAt { get; set; }
 
+
+        public bool BlockElitePackage { get; set; }
+        public bool BlockUKRacingPackage { get; set; }
+        public bool BlockComboPackage { get; set; }
     }
 }

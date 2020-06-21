@@ -98,6 +98,22 @@
 
                                     <ul>
                                         <li>PayPal Subscription:  @sub.Description</li>
+
+                                        @if (sub.State == "Cancelled")
+                                        {
+                                            <li>
+                                                Status:           @sub.State <span style="background-color:yellow"><strong>Your access will expire on @sub.ExpiryDate.</strong></span>
+                                            </li>
+                                        }
+                                        else
+                                        {
+                                            <li>Status:           @sub.State</li>
+                                        }
+
+
+
+
+
                                         <li>PayPal Agreement:     @sub.PayPalAgreementId</li>
                                         <li>Payer First Name:     @sub.PayerFirstName</li>
                                         <li>Payer Last Name:      @sub.PayerLastName</li>

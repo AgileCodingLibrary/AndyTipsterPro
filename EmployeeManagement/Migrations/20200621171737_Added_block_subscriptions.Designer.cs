@@ -4,14 +4,16 @@ using AndyTipsterPro.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace AndyTipsterPro.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200621171737_Added_block_subscriptions")]
+    partial class Added_block_subscriptions
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -289,12 +291,6 @@ namespace AndyTipsterPro.Migrations
                         .ValueGeneratedOnAdd();
 
                     b.Property<int>("AccessFailedCount");
-
-                    b.Property<bool>("BlockComboPackage");
-
-                    b.Property<bool>("BlockElitePackage");
-
-                    b.Property<bool>("BlockUKRacingPackage");
 
                     b.Property<bool>("CanSeeComboPackage");
 

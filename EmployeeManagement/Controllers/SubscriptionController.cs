@@ -58,7 +58,7 @@ namespace AndyTipsterPro.Controllers
             var product = _dbContext.Products.FirstOrDefault(x => x.PayPalPlanId == model.Product.PayPalPlanId);
 
             //check DUPLICATES
-            var currentUser = await _userManager.GetUserAsync(User);
+            ApplicationUser currentUser = await _userManager.GetUserAsync(User);
             var userhasAnySubscriptions = _dbContext.UserSubscriptions.Any(x => x.UserId == currentUser.Id && x.SubscriptionId != null);
 
             if (userhasAnySubscriptions)
@@ -209,5 +209,7 @@ namespace AndyTipsterPro.Controllers
             }
 
         }
+
+               
     }
 }

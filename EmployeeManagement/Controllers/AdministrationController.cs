@@ -658,7 +658,7 @@ namespace AndyTipsterPro.Controllers
         public async Task<IActionResult> SubscribeUser(string Email)
         {
 
-            var user = await userManager.FindByEmailAsync(Email);
+            ApplicationUser user = await userManager.FindByEmailAsync(Email);
 
 
             //check if this is an admin user.
@@ -699,7 +699,14 @@ namespace AndyTipsterPro.Controllers
                 CanSeeUKRacingPackage = user.CanSeeUKRacingPackage,
                 ManualComboPackageAccessExpiresAt = user.ManualComboPackageAccessExpiresAt,
                 ManualElitePackageAccessExpiresAt = user.ManualElitePackageAccessExpiresAt,
-                ManualUKRacingPackageAccessExpiresAt = user.ManualUKRacingPackageAccessExpiresAt
+                ManualUKRacingPackageAccessExpiresAt = user.ManualUKRacingPackageAccessExpiresAt,
+
+                BlockComboPackage = user.BlockComboPackage,
+                BlockUKRacingPackage = user.BlockUKRacingPackage,
+                BlockElitePackage = user.BlockElitePackage
+                
+                
+
             };
 
             return View(model);
@@ -745,11 +752,13 @@ namespace AndyTipsterPro.Controllers
             user.ManualElitePackageAccessExpiresAt = model.ManualElitePackageAccessExpiresAt;
             user.ManualUKRacingPackageAccessExpiresAt = model.ManualUKRacingPackageAccessExpiresAt;
 
+            user.BlockElitePackage = model.BlockElitePackage;
+            user.BlockComboPackage = model.BlockComboPackage;
+            user.BlockUKRacingPackage = model.BlockUKRacingPackage;
+
             await userManager.UpdateAsync(user);
 
-            ViewBag.Message = $"WELL DONE! You successfully updated user subscriptions. Ask your customer to login and enjoy their updates.";
-
-
+            ViewBag.Message = $"User Permissions have been updated.";
 
 
             return View();
@@ -858,5 +867,7 @@ namespace AndyTipsterPro.Controllers
 
             return View("MessageBroadCasted");
         }
+
+
     }
 }

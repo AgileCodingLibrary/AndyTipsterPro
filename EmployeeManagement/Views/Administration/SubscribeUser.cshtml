@@ -11,25 +11,25 @@
 
     <div class="col-md-8">
 
-        <h2>User Found</h2>
+        <h2>Update User Access</h2>
         <ul>
             <li>Name: @Model.FirstName   @Model.LastName</li>
             <li>Email: @Model.Email</li>
         </ul>
         <p>Update their access below accordingly.</p>
 
-        <div class="panel panel-default">
-            <div class="panel-heading">Subscribe User</div>
-            <div class="panel-body">
-                <div class="col-md-6">
-                    <form asp-controller="Administration" asp-action="SaveUserSubscription"
-                          method="post" class="form-horizontal" role="form">
+        <form asp-controller="Administration" asp-action="SaveUserSubscription"
+              method="post" class="form-horizontal" role="form">
 
-                        @Html.HiddenFor(m => m.FirstName)
-                        @Html.HiddenFor(m => m.LastName)
-                        @Html.HiddenFor(m => m.UserName)
-                        @Html.HiddenFor(m => m.Email)
+            @Html.HiddenFor(m => m.FirstName)
+            @Html.HiddenFor(m => m.LastName)
+            @Html.HiddenFor(m => m.UserName)
+            @Html.HiddenFor(m => m.Email)
 
+            <div class="panel panel-primary">
+                <div class="panel-heading">Subscribe User</div>
+                <div class="panel-body">
+                    <div class="col-md-6">
                         <div class="form-group">
 
                             <p>Subscribe Elite Package</p>
@@ -44,7 +44,7 @@
                                 </label>
                             </div>
 
-                            <hr>
+
 
                             <p>Subscribe UK Racing Package</p>
                             <div class="input-group login-input">
@@ -58,7 +58,7 @@
                                 </label>
                             </div>
 
-                            <hr>
+
 
                             <p>Subscribe Combo Package</p>
                             <div class="input-group login-input">
@@ -71,14 +71,64 @@
                                     @Html.EditorFor(m => m.ManualComboPackageAccessExpiresAt)
                                 </label>
                             </div>
-
-                            <button type="submit" class="btn btn-primary pull-right">Save</button>
-
                             <div class="clearfix"></div>
                         </div>
-                    </form>
+                    </div>
                 </div>
             </div>
-        </div>
+            <div class="panel panel-primary">
+                <div class="panel-heading">Block user Subscription</div>
+                <div class="panel-body">
+                    <div class="col-md-6">
+
+                        <div class="form-group">
+                            <p>Block Elite Package</p>
+                            <div class="input-group login-input">
+                                <label>
+                                    @Html.CheckBoxFor(m => m.BlockElitePackage)
+                                </label>
+                            </div>
+
+                        </div>
+                        <div class="form-group">
+                            <p>Block UK Racing Package</p>
+                            <div class="input-group login-input">
+                                <label>
+                                    @Html.CheckBoxFor(m => m.BlockUKRacingPackage)
+                                </label>
+                            </div>
+
+                        </div>
+                        <div class="form-group">
+                            <p>Block Combo Package</p>
+                            <div class="input-group login-input">
+                                <label>
+                                    @Html.CheckBoxFor(m => m.BlockComboPackage)
+                                </label>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary pull-right">Save</button>
+        </form>
+
+
     </div>
 </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

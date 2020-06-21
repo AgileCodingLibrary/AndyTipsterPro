@@ -21,6 +21,8 @@ namespace AndyTipsterPro.Entities
         public ApplicationUser User { get; set; }
         public string UserId { get; set; }
         public DateTime ExpiryDate { get; set; } = new DateTime(1994, 04, 04);
+
+        public bool IsBlocked { get; set; } = false;
     }
 
 }
