@@ -145,7 +145,7 @@ namespace AndyTipsterPro.Controllers
             var canView = await UserCanViewTips(payPalPlanIds);
 
             var hasAdminApproval = await HasAdminApproval("Elite");
-            
+
             var blockedByAdmin = await BlockedByAdmin("Elite");
 
             if (canView || hasAdminApproval || !blockedByAdmin)
@@ -200,6 +200,45 @@ namespace AndyTipsterPro.Controllers
 
             return View("NotAuthorized");
         }
+
+
+        [Authorize]
+        public async Task<ActionResult> Welcome()
+        {
+            List<string> payPalPlanIds = _db.Products.Select(x => x.PayPalPlanId).ToList();
+
+            var canView = await UserCanViewTips(payPalPlanIds); // can view any of the plans
+
+            var hasAdminUKApproval = await HasAdminApproval("UK");
+            var blockedUKByAdmin = await BlockedByAdmin("UK");
+
+            var hasAdminEliteApproval = await HasAdminApproval("Elite");
+            var blockedEliteByAdmin = await BlockedByAdmin("Elite");
+
+            var hasAdminComboApproval = await HasAdminApproval("Combo");
+            var blockedComboByAdmin = await BlockedByAdmin("Combo");
+
+            if (canView ||
+
+                //has access to uk packages                
+                hasAdminUKApproval || !blockedUKByAdmin ||
+
+                //has access to Elite packages
+                hasAdminEliteApproval || !blockedEliteByAdmin ||
+
+                //has access to Combo packages
+                hasAdminComboApproval || !blockedComboByAdmin
+
+                )
+            {
+                var model = _db.Tips.FirstOrDefault();
+
+                return View(model);
+            }
+
+            return View("NotAuthorized");
+        }
+
 
         public ActionResult ComingSoon()
         {
@@ -269,8 +308,8 @@ namespace AndyTipsterPro.Controllers
 
                     //var canView = payPalPlanIds.Where(n => userSubscriptions.Select(x => x.PayPalPlanId).Contains(n)).Any();
 
-                   
-                    
+
+
                     //check if user has any given paypal plans.
                     //Also check if user has any active plans.
 
@@ -281,11 +320,11 @@ namespace AndyTipsterPro.Controllers
                     {
                         if (_db.UserSubscriptions.Where(x => x.UserId == currentUser.Id && x.PayPalPlanId == plan && x.State == "Active"
                                                         || (x.UserId == currentUser.Id && x.PayPalPlanId == plan && x.ExpiryDate >= today)
-                        
+
                         ).Any())
                         {
                             canView = true;
-                        } 
+                        }
                     }
 
                     return canView;

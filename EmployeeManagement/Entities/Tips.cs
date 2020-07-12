@@ -27,6 +27,15 @@ namespace AndyTipsterPro.Entities
         //[AllowHtml]
         [DataType(DataType.MultilineText)]
         public string UKPackageTips { get; set; }
+
+
+        [Required]
+        //[StringLength(2000, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 10)]
+        [DisplayName("Welcome")]
+        //[AllowHtml]
+        [DataType(DataType.MultilineText)]
+        public string Welcome { get; set; }
+
     }
 
 

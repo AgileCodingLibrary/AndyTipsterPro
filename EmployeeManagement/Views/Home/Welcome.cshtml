@@ -1,0 +1,48 @@
+﻿@model AndyTipsterPro.Entities.Tips
+@{
+    /**/
+
+    ViewBag.Title = "Welcome to Members Area";
+}
+
+
+
+@if (Model != null)
+{
+    <div class="row">
+        <div class="col-xs-12">
+            <article class="post animated fadeInDown">
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <h3 class="post-title"><a href="single.html" class="transicion">Welcome to Members Area</a></h3>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <img src="~/images/uk-sports-home-image.jpg" class="img-responsive" alt="Image">
+                            </div>
+                            <div class="col-md-6">
+                                <p> @Html.Raw(Model.Welcome).</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel-footer">
+                        <div class="row">
+                            <div class="col-lg-10 col-md-9 col-sm-8">
+                                <i class="fa fa-clock-o"></i> @DateTime.Today <i class="fa fa-user"> Andy Tipster</i>
+                            </div>
+                            <div class="col-lg-2 col-md-3 col-sm-4">
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </article> <!-- post -->
+        </div> <!-- col-md-8 -->
+
+    </div>
+}
+else
+{
+    <h2 class="lead lead-lg text-center animated bounceInLeft animation-delay-12">"Contents will appear here."</h2>
+}
+
+
