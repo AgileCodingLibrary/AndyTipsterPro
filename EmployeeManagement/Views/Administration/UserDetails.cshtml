@@ -21,9 +21,9 @@
 
                     <h4 class="section-title">Admin Allowed Access</h4>
                     <ul class="list-unstyled">
-                        <li><strong>Elite:</strong> @Model.Customer.CanSeeElitePackage</li>
-                        <li><strong>Combo:</strong> @Model.Customer.CanSeeComboPackage</li>
-                        <li><strong>UK Racing:</strong> @Model.Customer.CanSeeUKRacingPackage</li>
+                        <li><strong>Admin has allowed user access to Elite:</strong> @Model.Customer.CanSeeElitePackage</li>
+                        <li><strong>Admin has allowed user access to Combo:</strong> @Model.Customer.CanSeeComboPackage</li>
+                        <li><strong>Admin has allowed user access to UK Racing:</strong> @Model.Customer.CanSeeUKRacingPackage</li>
                     </ul>
 
                     @if (@Model.CustomerSubscriptions.Count() > 0)

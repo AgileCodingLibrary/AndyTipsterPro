@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using ReflectionIT.Mvc.Paging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
@@ -810,11 +811,14 @@ namespace AndyTipsterPro.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
+            var today = DateTime.Now;
+            var customerSubs = _dbContext.UserSubscriptions.Where(x => x.UserId == userId && x.ExpiryDate >= today).ToList();
+
             var model = new UserDetailsViewModel
             {
                 Customer = userManager.Users.Where(x => x.Id == userId).FirstOrDefault(),
 
-                CustomerSubscriptions = _dbContext.UserSubscriptions.Where(x => x.UserId == userId).ToList()
+                CustomerSubscriptions = customerSubs
             };
 
             return View(model);
