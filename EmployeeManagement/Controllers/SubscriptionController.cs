@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.WebUtilities;
 using PayPal.v1.BillingAgreements;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -89,14 +90,19 @@ namespace AndyTipsterPro.Controllers
                 //for an account in the Berlin time zone(UTC + 1) to 2017 - 01 - 02T00:00:00.When the API returns this date and time in the
                 //execute agreement response, it shows the converted date and time in the UTC time zone.So, 
                 //the internal 2017-01-02T00:00:00 start date and time becomes 2017-01-01T23:00:00 externally.
-                var startDate = DateTime.UtcNow;
+                var startDate = DateTime.UtcNow.AddDays(1);
+                string formatedStringDate = startDate.ToString("o", CultureInfo.InvariantCulture);
+                var formatedStartDate = DateTime.Parse(formatedStringDate, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind);
+
+                //DateTime.UtcNow.ToString("o");
+
 
                 var subscription = new Subscription()
                 {
                     FirstName = currentUser.FirstName,
                     LastName = currentUser.LastName,
                     Email = currentUser.Email,
-                    StartDate = startDate.AddSeconds(5), //stat date has to be greator than now.
+                    StartDate = formatedStartDate, //stat date has to be greator than now.
                     PayPalPlanId = plan.PayPalPlanId
                 };
                 _dbContext.Subscriptions.Add(subscription);
