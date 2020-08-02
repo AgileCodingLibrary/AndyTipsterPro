@@ -96,7 +96,7 @@ namespace AndyTipsterPro.Controllers
                     FirstName = currentUser.FirstName,
                     LastName = currentUser.LastName,
                     Email = currentUser.Email,
-                    StartDate = startDate,
+                    StartDate = startDate.AddSeconds(5), //stat date has to be greator than now.
                     PayPalPlanId = plan.PayPalPlanId
                 };
                 _dbContext.Subscriptions.Add(subscription);
