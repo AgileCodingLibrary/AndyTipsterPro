@@ -77,7 +77,19 @@ namespace AndyTipsterPro.Controllers
             if (ModelState.IsValid && plan != null)
             {
                 // Since we take an Initial Payment (instant payment), the start date of the recurring payments will be next month.
-                var startDate = DateTime.UtcNow.AddMonths(1);
+                //var startDate = DateTime.UtcNow.AddMonths(1);
+
+                //Above did not work.
+                //start_date string required
+                //The date and time when this agreement begins, in Internet date and time format.
+                //The start date must be no less than 24 hours after the current date as the agreement can take up to 24 hours to activate.
+                //The start date and time in the create agreement request might not match the start date and time that the API returns
+                //in the execute agreement response. When you execute an agreement, the API internally converts the start date and time to
+                //the start of the day in the time zone of the merchant account.For example, the API converts a 2017 - 01 - 02T14: 36:21Z start date and time 
+                //for an account in the Berlin time zone(UTC + 1) to 2017 - 01 - 02T00:00:00.When the API returns this date and time in the
+                //execute agreement response, it shows the converted date and time in the UTC time zone.So, 
+                //the internal 2017-01-02T00:00:00 start date and time becomes 2017-01-01T23:00:00 externally.
+                var startDate = DateTime.UtcNow;
 
                 var subscription = new Subscription()
                 {
