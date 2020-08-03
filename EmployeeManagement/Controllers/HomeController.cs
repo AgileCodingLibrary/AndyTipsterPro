@@ -148,7 +148,8 @@ namespace AndyTipsterPro.Controllers
 
             var blockedByAdmin = await BlockedByAdmin("Elite");
 
-            if (canView || hasAdminApproval || !blockedByAdmin)
+            //if (canView || hasAdminApproval || blockedByAdmin)
+            if (canView || hasAdminApproval)
             {
                 var model = _db.Tips.FirstOrDefault();
 
@@ -169,7 +170,8 @@ namespace AndyTipsterPro.Controllers
 
             var blockedByAdmin = await BlockedByAdmin("Combo");
 
-            if (canView || hasAdminApproval || !blockedByAdmin)
+            //if (canView || hasAdminApproval || blockedByAdmin)
+            if (canView || hasAdminApproval)
             {
                 var model = _db.Tips.FirstOrDefault();
 
@@ -191,7 +193,8 @@ namespace AndyTipsterPro.Controllers
             var blockedByAdmin = await BlockedByAdmin("UK");
 
 
-            if (canView || hasAdminApproval || !blockedByAdmin)
+            //if (canView || hasAdminApproval || blockedByAdmin)
+            if (canView || hasAdminApproval)
             {
                 var model = _db.Tips.FirstOrDefault();
 
@@ -218,18 +221,30 @@ namespace AndyTipsterPro.Controllers
             var hasAdminComboApproval = await HasAdminApproval("Combo");
             var blockedComboByAdmin = await BlockedByAdmin("Combo");
 
+            //if (canView ||
+
+            //    //has access to uk packages                
+            //    hasAdminUKApproval || blockedUKByAdmin ||
+
+            //    //has access to Elite packages
+            //    hasAdminEliteApproval || blockedEliteByAdmin ||
+
+            //    //has access to Combo packages
+            //    hasAdminComboApproval || blockedComboByAdmin
+
+            //    )
             if (canView ||
 
-                //has access to uk packages                
-                hasAdminUKApproval || !blockedUKByAdmin ||
+               //has access to uk packages                
+               hasAdminUKApproval || 
 
-                //has access to Elite packages
-                hasAdminEliteApproval || !blockedEliteByAdmin ||
+               //has access to Elite packages
+               hasAdminEliteApproval || 
 
-                //has access to Combo packages
-                hasAdminComboApproval || !blockedComboByAdmin
+               //has access to Combo packages
+               hasAdminComboApproval 
 
-                )
+               )
             {
                 var model = _db.Tips.FirstOrDefault();
 
@@ -386,7 +401,16 @@ namespace AndyTipsterPro.Controllers
                 //Check for Elite package.
                 if (packageName.Contains("Elite"))
                 {
-                    return currentUser.BlockElitePackage;
+                    if (currentUser.BlockElitePackage)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                    
+
                 }
 
                 //Check for Combo package.
@@ -399,6 +423,7 @@ namespace AndyTipsterPro.Controllers
                 if (packageName.Contains("UK"))
                 {
                     return currentUser.BlockUKRacingPackage;
+
                 }
             }
 

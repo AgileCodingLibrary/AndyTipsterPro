@@ -90,7 +90,8 @@ namespace AndyTipsterPro.Controllers
                 //for an account in the Berlin time zone(UTC + 1) to 2017 - 01 - 02T00:00:00.When the API returns this date and time in the
                 //execute agreement response, it shows the converted date and time in the UTC time zone.So, 
                 //the internal 2017-01-02T00:00:00 start date and time becomes 2017-01-01T23:00:00 externally.
-                var startDate = DateTime.UtcNow.AddDays(1);
+                //var startDate = DateTime.UtcNow.AddDays(1);
+                var startDate = DateTime.UtcNow.AddMinutes(1);
                 string formatedStringDate = startDate.ToString("o", CultureInfo.InvariantCulture);
                 var formatedStartDate = DateTime.Parse(formatedStringDate, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind);
 
