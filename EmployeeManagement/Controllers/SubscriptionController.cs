@@ -33,8 +33,8 @@ namespace AndyTipsterPro.Controllers
         {
             var model = new IndexVm()
             {
-                BillingPlans = _dbContext.BillingPlans.ToList(),
-                Products = _dbContext.Products.ToList()
+                BillingPlans = _dbContext.BillingPlans.Where(x => x.Name.Contains("0820")).ToList(),
+                Products = _dbContext.Products.Where(x =>x.Name.Contains("0820")).ToList()
             };
 
             return View(model);
