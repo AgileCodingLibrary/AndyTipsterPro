@@ -140,15 +140,19 @@ namespace AndyTipsterPro.Controllers
         public async Task<ActionResult> ElitePackageTips()
         {
 
+            var blockedByAdmin = await BlockedByAdmin("Elite");
+            if (blockedByAdmin)
+            {
+                return View("NotAuthorized");
+            }
+
             List<string> payPalPlanIds = _db.Products.Where(x => x.Name.Contains("Elite")).Select(x => x.PayPalPlanId).ToList();
 
             var canView = await UserCanViewTips(payPalPlanIds);
 
             var hasAdminApproval = await HasAdminApproval("Elite");
 
-            var blockedByAdmin = await BlockedByAdmin("Elite");
 
-            //if (canView || hasAdminApproval || blockedByAdmin)
             if (canView || hasAdminApproval)
             {
                 var model = _db.Tips.FirstOrDefault();
@@ -162,15 +166,19 @@ namespace AndyTipsterPro.Controllers
         [Authorize]
         public async Task<ActionResult> CombinationPackageTips()
         {
+            var blockedByAdmin = await BlockedByAdmin("Combo");
+            if (blockedByAdmin)
+            {
+                return View("NotAuthorized");
+            }
+
+
             List<string> payPalPlanIds = _db.Products.Where(x => x.Name.Contains("combination")).Select(x => x.PayPalPlanId).ToList();
 
             var canView = await UserCanViewTips(payPalPlanIds);
 
             var hasAdminApproval = await HasAdminApproval("Combo");
 
-            var blockedByAdmin = await BlockedByAdmin("Combo");
-
-            //if (canView || hasAdminApproval || blockedByAdmin)
             if (canView || hasAdminApproval)
             {
                 var model = _db.Tips.FirstOrDefault();
@@ -184,16 +192,18 @@ namespace AndyTipsterPro.Controllers
         [Authorize]
         public async Task<ActionResult> UKPackageTips()
         {
-            List<string> payPalPlanIds = _db.Products.Where(x => x.Name.Contains("UK")).Select(x => x.PayPalPlanId).ToList();
+            var blockedByAdmin = await BlockedByAdmin("UK");
+            if (blockedByAdmin)
+            {
+                return View("NotAuthorized");
+            }
+
+            List<string> payPalPlanIds = _db.Products.Where(x => x.Name.Contains("UK Racing Only")).Select(x => x.PayPalPlanId).ToList();
 
             var canView = await UserCanViewTips(payPalPlanIds);
 
-            var hasAdminApproval = await HasAdminApproval("UK");
+            var hasAdminApproval = await HasAdminApproval("UK");           
 
-            var blockedByAdmin = await BlockedByAdmin("UK");
-
-
-            //if (canView || hasAdminApproval || blockedByAdmin)
             if (canView || hasAdminApproval)
             {
                 var model = _db.Tips.FirstOrDefault();
@@ -208,41 +218,35 @@ namespace AndyTipsterPro.Controllers
         [Authorize]
         public async Task<ActionResult> Welcome()
         {
+            var blockedUKByAdmin = await BlockedByAdmin("UK");
+            var blockedEliteByAdmin = await BlockedByAdmin("Elite");
+            var blockedComboByAdmin = await BlockedByAdmin("Combo");
+            if (blockedUKByAdmin || blockedEliteByAdmin || blockedComboByAdmin)
+            {
+                return View("NotAuthorized");
+            }
+            
+            
             List<string> payPalPlanIds = _db.Products.Select(x => x.PayPalPlanId).ToList();
 
-            var canView = await UserCanViewTips(payPalPlanIds); // can view any of the plans
+            var canView = await UserCanViewTips(payPalPlanIds); 
 
-            var hasAdminUKApproval = await HasAdminApproval("UK");
-            var blockedUKByAdmin = await BlockedByAdmin("UK");
+            var hasAdminUKApproval = await HasAdminApproval("UK");            
 
-            var hasAdminEliteApproval = await HasAdminApproval("Elite");
-            var blockedEliteByAdmin = await BlockedByAdmin("Elite");
+            var hasAdminEliteApproval = await HasAdminApproval("Elite");            
 
             var hasAdminComboApproval = await HasAdminApproval("Combo");
-            var blockedComboByAdmin = await BlockedByAdmin("Combo");
-
-            //if (canView ||
-
-            //    //has access to uk packages                
-            //    hasAdminUKApproval || blockedUKByAdmin ||
-
-            //    //has access to Elite packages
-            //    hasAdminEliteApproval || blockedEliteByAdmin ||
-
-            //    //has access to Combo packages
-            //    hasAdminComboApproval || blockedComboByAdmin
-
-            //    )
+            
             if (canView ||
 
                //has access to uk packages                
-               hasAdminUKApproval || 
+               hasAdminUKApproval ||
 
                //has access to Elite packages
-               hasAdminEliteApproval || 
+               hasAdminEliteApproval ||
 
                //has access to Combo packages
-               hasAdminComboApproval 
+               hasAdminComboApproval
 
                )
             {
@@ -401,15 +405,7 @@ namespace AndyTipsterPro.Controllers
                 //Check for Elite package.
                 if (packageName.Contains("Elite"))
                 {
-                    if (currentUser.BlockElitePackage)
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
-                    
+                    return currentUser.BlockElitePackage;
 
                 }
 

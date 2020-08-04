@@ -25,9 +25,9 @@ namespace AndyTipsterPro.Controllers
             _dbContext = dbContext;
         }
 
-        public ActionResult Index()
+        public IActionResult Index()
         {
-
+          
             return RedirectToAction("Index", "Home");
         }
 
@@ -88,7 +88,7 @@ namespace AndyTipsterPro.Controllers
         //        return RedirectToAction("Index", "Home");
         //    }
 
-        //    await CreateBillingPlans(list);
+        //    await AddBillingPlans(list);
         //    await AddProducts();
 
         //    return View(list);
@@ -276,12 +276,12 @@ namespace AndyTipsterPro.Controllers
 
             var billingPlans = _dbContext.BillingPlans.ToList();
 
-            var EliteMonthlyBillingPlan = billingPlans.Where(x => x.Name == "Elite Package - Monthly (0820)").FirstOrDefault();
-            var EliteQuarterBillingPlan = billingPlans.Where(x => x.Name == "Elite Package - 3 Months (0820)").FirstOrDefault();
-            var CombinationMonthlyBillingPlan = billingPlans.Where(x => x.Name == "Combination Package UK/IRE - Monthly (0820)").FirstOrDefault();
-            var CombinationQuarterBillingPlan = billingPlans.Where(x => x.Name == "Combination Package UK/IRE -  3 Months (0820)").FirstOrDefault();
-            var UKRacingMonthlyBillingPlan = billingPlans.Where(x => x.Name == "UK Racing Only Package - Monthly (0820)").FirstOrDefault();
-            var UKRacingQuarterBillingPlan = billingPlans.Where(x => x.Name == "UK Racing Only Package - 3 Months (0820)").FirstOrDefault();
+            var EliteMonthlyBillingPlan = billingPlans.Where(x => x.Name == "Elite Package - Monthly (1001)").FirstOrDefault();
+            var EliteQuarterBillingPlan = billingPlans.Where(x => x.Name == "Elite Package - 3 Months (1001)").FirstOrDefault();
+            var CombinationMonthlyBillingPlan = billingPlans.Where(x => x.Name == "Combination Package UK/IRE - Monthly (1001)").FirstOrDefault();
+            var CombinationQuarterBillingPlan = billingPlans.Where(x => x.Name == "Combination Package UK/IRE -  3 Months (1001)").FirstOrDefault();
+            var UKRacingMonthlyBillingPlan = billingPlans.Where(x => x.Name == "UK Racing Only Package - Monthly (1001)").FirstOrDefault();
+            var UKRacingQuarterBillingPlan = billingPlans.Where(x => x.Name == "UK Racing Only Package - 3 Months (1001)").FirstOrDefault();
 
 
             List<Product> products = new List<Product>();

@@ -5,12 +5,13 @@ namespace AndyTipsterPro.Helpers
 {
     public static class BillingPlanSeed
     {
+
         public static List<Plan> PayPalPlans(string returnUrl, string cancelUrl) => new List<Plan>()
         {
             new Plan()
             {
-                Name = "Elite Package - Monthly (0820)",
-                Description = "Elite Package - Monthly (0820)",
+                Name = "Elite Package - Monthly (1001)",
+                Description = "Elite Package - Monthly (1001)",
                 Type = "infinite",
                 State = "ACTIVE",
                 PaymentDefinitions = new List<PaymentDefinition>()
@@ -31,20 +32,14 @@ namespace AndyTipsterPro.Helpers
                 },
                 MerchantPreferences = new MerchantPreferences()
                 {
-                    // The initial payment
-                    SetupFee = new Currency()
-                    {
-                        CurrencyCode = "GBP",
-                        Value = "0"
-                    },
                     ReturnUrl = returnUrl,
                     CancelUrl = cancelUrl
                 }
             },
             new Plan()
             {
-                Name = "Elite Package - 3 Months (0820)",
-                Description = "Elite Package - 3 Months (0820)",
+                Name = "Elite Package - 3 Months (1001)",
+                Description = "Elite Package - 3 Months (1001)",
                 Type = "infinite",
                 State = "ACTIVE",
                 PaymentDefinitions = new List<PaymentDefinition>()
@@ -65,20 +60,15 @@ namespace AndyTipsterPro.Helpers
                 },
                 MerchantPreferences = new MerchantPreferences()
                 {
-                    // The initial payment
-                    SetupFee = new Currency()
-                    {
-                        CurrencyCode = "GBP",
-                        Value = "0"
-                    },
+                    
                     ReturnUrl = returnUrl,
                     CancelUrl = cancelUrl
                 }
             },
             new Plan()
             {
-                Name = "Combination Package UK/IRE - Monthly (0820)",
-                Description = "Combination Package UK/IRE - Monthly (0820)",
+                Name = "Combination Package UK/IRE - Monthly (1001)",
+                Description = "Combination Package UK/IRE - Monthly (1001)",
                 Type = "infinite",
                 State = "ACTIVE",
                 PaymentDefinitions = new List<PaymentDefinition>()
@@ -99,20 +89,15 @@ namespace AndyTipsterPro.Helpers
                 },
                 MerchantPreferences = new MerchantPreferences()
                 {
-                    // The initial payment
-                    SetupFee = new Currency()
-                    {
-                        CurrencyCode = "GBP",
-                        Value = "0"
-                    },
+                   
                     ReturnUrl = returnUrl,
                     CancelUrl = cancelUrl
                 }
             },
             new Plan()
             {
-                Name = "Combination Package UK/IRE -  3 Months (0820)",
-                Description = "Combination Package UK/IRE -  3 Months (0820)",
+                Name = "Combination Package UK/IRE -  3 Months (1001)",
+                Description = "Combination Package UK/IRE -  3 Months (1001)",
                 Type = "infinite",
                 State = "ACTIVE",
                 PaymentDefinitions = new List<PaymentDefinition>()
@@ -133,20 +118,15 @@ namespace AndyTipsterPro.Helpers
                 },
                 MerchantPreferences = new MerchantPreferences()
                 {
-                    // The initial payment
-                    SetupFee = new Currency()
-                    {
-                        CurrencyCode = "GBP",
-                        Value = "0"
-                    },
+                    
                     ReturnUrl = returnUrl,
                     CancelUrl = cancelUrl
                 }
             },
             new Plan()
             {
-                Name = "UK Racing Only Package - Monthly (0820)",
-                Description = "UK Racing Only Package - Monthly (0820)",
+                Name = "UK Racing Only Package - Monthly (1001)",
+                Description = "UK Racing Only Package - Monthly (1001)",
                 Type = "infinite",
                 State = "ACTIVE",
                 PaymentDefinitions = new List<PaymentDefinition>()
@@ -167,20 +147,15 @@ namespace AndyTipsterPro.Helpers
                 },
                 MerchantPreferences = new MerchantPreferences()
                 {
-                    // The initial payment
-                    SetupFee = new Currency()
-                    {
-                        CurrencyCode = "GBP",
-                        Value = "0"
-                    },
+                    
                     ReturnUrl = returnUrl,
                     CancelUrl = cancelUrl
                 }
             },
             new Plan()
             {
-                Name = "UK Racing Only Package - 3 Months (0820)",
-                Description = "UK Racing Only Package - 3 Months (0820)",
+                Name = "UK Racing Only Package - 3 Months (1001)",
+                Description = "UK Racing Only Package - 3 Months (1001)",
                 Type = "infinite",
                 State = "ACTIVE",
                 PaymentDefinitions = new List<PaymentDefinition>()
@@ -201,18 +176,224 @@ namespace AndyTipsterPro.Helpers
                 },
                 MerchantPreferences = new MerchantPreferences()
                 {
-                    // The initial payment
-                    SetupFee = new Currency()
-                    {
-                        CurrencyCode = "GBP",
-                        Value = "0"
-                    },
+                   
                     ReturnUrl = returnUrl,
                     CancelUrl = cancelUrl
                 }
             }
 
         };
+
+
+
+        //public static List<Plan> PayPalPlans(string returnUrl, string cancelUrl) => new List<Plan>()
+        //{
+        //    new Plan()
+        //    {
+        //        Name = "Elite Package - Monthly (0820)",
+        //        Description = "Elite Package - Monthly (0820)",
+        //        Type = "infinite",
+        //        State = "ACTIVE",
+        //        PaymentDefinitions = new List<PaymentDefinition>()
+        //        {
+        //            new PaymentDefinition()
+        //            {
+        //                Name = "Regular Payments",
+        //                Type = "REGULAR",
+        //                Frequency = "MONTH",
+        //                FrequencyInterval = "1",
+        //                Amount = new Currency()
+        //                {
+        //                    CurrencyCode = "GBP",
+        //                    Value = "28.00"
+        //                },
+        //                Cycles = "0"
+        //            }
+        //        },
+        //        MerchantPreferences = new MerchantPreferences()
+        //        {
+        //            // The initial payment
+        //            SetupFee = new Currency()
+        //            {
+        //                CurrencyCode = "GBP",
+        //                Value = "0"
+        //            },
+        //            ReturnUrl = returnUrl,
+        //            CancelUrl = cancelUrl
+        //        }
+        //    },
+        //    new Plan()
+        //    {
+        //        Name = "Elite Package - 3 Months (0820)",
+        //        Description = "Elite Package - 3 Months (0820)",
+        //        Type = "infinite",
+        //        State = "ACTIVE",
+        //        PaymentDefinitions = new List<PaymentDefinition>()
+        //        {
+        //            new PaymentDefinition()
+        //            {
+        //                Name = "Regular Payments",
+        //                Type = "REGULAR",
+        //                Frequency = "MONTH",
+        //                FrequencyInterval = "3",
+        //                Amount = new Currency()
+        //                {
+        //                    CurrencyCode = "GBP",
+        //                    Value = "70.00"
+        //                },
+        //                Cycles = "0"
+        //            }
+        //        },
+        //        MerchantPreferences = new MerchantPreferences()
+        //        {
+        //            // The initial payment
+        //            SetupFee = new Currency()
+        //            {
+        //                CurrencyCode = "GBP",
+        //                Value = "0"
+        //            },
+        //            ReturnUrl = returnUrl,
+        //            CancelUrl = cancelUrl
+        //        }
+        //    },
+        //    new Plan()
+        //    {
+        //        Name = "Combination Package UK/IRE - Monthly (0820)",
+        //        Description = "Combination Package UK/IRE - Monthly (0820)",
+        //        Type = "infinite",
+        //        State = "ACTIVE",
+        //        PaymentDefinitions = new List<PaymentDefinition>()
+        //        {
+        //            new PaymentDefinition()
+        //            {
+        //                Name = "Regular Payments",
+        //                Type = "REGULAR",
+        //                Frequency = "MONTH",
+        //                FrequencyInterval = "1",
+        //                Amount = new Currency()
+        //                {
+        //                    CurrencyCode = "GBP",
+        //                    Value = "24.00"
+        //                },
+        //                Cycles = "0"
+        //            }
+        //        },
+        //        MerchantPreferences = new MerchantPreferences()
+        //        {
+        //            // The initial payment
+        //            SetupFee = new Currency()
+        //            {
+        //                CurrencyCode = "GBP",
+        //                Value = "0"
+        //            },
+        //            ReturnUrl = returnUrl,
+        //            CancelUrl = cancelUrl
+        //        }
+        //    },
+        //    new Plan()
+        //    {
+        //        Name = "Combination Package UK/IRE -  3 Months (0820)",
+        //        Description = "Combination Package UK/IRE -  3 Months (0820)",
+        //        Type = "infinite",
+        //        State = "ACTIVE",
+        //        PaymentDefinitions = new List<PaymentDefinition>()
+        //        {
+        //            new PaymentDefinition()
+        //            {
+        //                Name = "Regular Payments",
+        //                Type = "REGULAR",
+        //                Frequency = "MONTH",
+        //                FrequencyInterval = "3",
+        //                Amount = new Currency()
+        //                {
+        //                    CurrencyCode = "GBP",
+        //                    Value = "60.00"
+        //                },
+        //                Cycles = "0"
+        //            }
+        //        },
+        //        MerchantPreferences = new MerchantPreferences()
+        //        {
+        //            // The initial payment
+        //            SetupFee = new Currency()
+        //            {
+        //                CurrencyCode = "GBP",
+        //                Value = "0"
+        //            },
+        //            ReturnUrl = returnUrl,
+        //            CancelUrl = cancelUrl
+        //        }
+        //    },
+        //    new Plan()
+        //    {
+        //        Name = "UK Racing Only Package - Monthly (0820)",
+        //        Description = "UK Racing Only Package - Monthly (0820)",
+        //        Type = "infinite",
+        //        State = "ACTIVE",
+        //        PaymentDefinitions = new List<PaymentDefinition>()
+        //        {
+        //            new PaymentDefinition()
+        //            {
+        //                Name = "Regular Payments",
+        //                Type = "REGULAR",
+        //                Frequency = "MONTH",
+        //                FrequencyInterval = "1",
+        //                Amount = new Currency()
+        //                {
+        //                    CurrencyCode = "GBP",
+        //                    Value = "19.00"
+        //                },
+        //                Cycles = "0"
+        //            }
+        //        },
+        //        MerchantPreferences = new MerchantPreferences()
+        //        {
+        //            // The initial payment
+        //            SetupFee = new Currency()
+        //            {
+        //                CurrencyCode = "GBP",
+        //                Value = "0"
+        //            },
+        //            ReturnUrl = returnUrl,
+        //            CancelUrl = cancelUrl
+        //        }
+        //    },
+        //    new Plan()
+        //    {
+        //        Name = "UK Racing Only Package - 3 Months (0820)",
+        //        Description = "UK Racing Only Package - 3 Months (0820)",
+        //        Type = "infinite",
+        //        State = "ACTIVE",
+        //        PaymentDefinitions = new List<PaymentDefinition>()
+        //        {
+        //            new PaymentDefinition()
+        //            {
+        //                Name = "Regular Payments",
+        //                Type = "REGULAR",
+        //                Frequency = "MONTH",
+        //                FrequencyInterval = "3",
+        //                Amount = new Currency()
+        //                {
+        //                    CurrencyCode = "GBP",
+        //                    Value = "50.00"
+        //                },
+        //                Cycles = "0"
+        //            }
+        //        },
+        //        MerchantPreferences = new MerchantPreferences()
+        //        {
+        //            // The initial payment
+        //            SetupFee = new Currency()
+        //            {
+        //                CurrencyCode = "GBP",
+        //                Value = "0"
+        //            },
+        //            ReturnUrl = returnUrl,
+        //            CancelUrl = cancelUrl
+        //        }
+        //    }
+
+        //};
 
         //public static List<Plan> PayPalPlans(string returnUrl, string cancelUrl) => new List<Plan>()
         //{
