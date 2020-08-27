@@ -254,6 +254,16 @@ namespace AndyTipsterPro.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Register(ViewModels.RegisterViewModel model)
         {
+            if (model.FirstName.Length > 80)
+            {
+                ModelState.AddModelError("First Name Too Long", "First Name is too long.");
+            }
+
+            if (model.FirstName.Contains("http"))
+            {
+                ModelState.AddModelError("First Name Invalid", "First Name contains Invalid characters.");
+            }
+
             if (ModelState.IsValid)
             {
                 var user = new ApplicationUser
