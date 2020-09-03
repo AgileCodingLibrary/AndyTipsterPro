@@ -46,7 +46,7 @@ namespace AndyTipsterPro.Controllers
 
         //    PlanListRequest request = new PlanListRequest()
         //    .Status("ACTIVE")
-        //    .PageSize("20");
+        //    .PageSize("40");
 
 
         //    var result = await client.Execute(request);

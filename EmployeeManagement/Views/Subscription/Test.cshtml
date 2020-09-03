@@ -34,7 +34,7 @@
                             <tr>
                                 <td>@item.Name</td>
                                 <td>@(item.Description)</td>
-                                <td class="text-right">£@((item.Price / 100M).ToString("0.00"))</td>
+                                <td class="text-right">£1</td>
                                 <td class="text-right">
                                     <a href="@Url.Action("PurchaseSubscription", "Subscription", new {id = item.PayPalPlanId})" class="btn btn-primary btn-sm">Subscribe</a>
                                 </td>

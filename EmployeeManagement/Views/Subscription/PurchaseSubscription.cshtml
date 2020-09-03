@@ -5,6 +5,8 @@
 }
 
 
+<h1>TESTING...</h1>
+
 <div class="heads">
     <div class="container">
         <div class="row">
@@ -41,10 +43,10 @@
             </div>*@
             <div class="pricing-box-footer">
                
-                @using (Html.BeginForm("Purchase", "Subscription", FormMethod.Post, new { @class = "form-horizontal" }))
+                @using (Html.BeginForm("PurchaseSubscription", "Subscription", FormMethod.Post, new { @class = "form-horizontal" }))
                 {
                     @Html.HiddenFor(x => x.Product.PayPalPlanId)                 
-                    <button type="submit" class="btn btn-primary">Pay £@((Model.Product.Price / 100M).ToString("0.00")) with PayPal</button>
+                    <button type="submit" class="btn btn-primary">Pay £1 with PayPal</button>
                 }
             </div>
         </div>

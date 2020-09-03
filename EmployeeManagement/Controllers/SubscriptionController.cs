@@ -33,168 +33,168 @@ namespace AndyTipsterPro.Controllers
         {
             var model = new IndexVm()
             {
-                BillingPlans = _dbContext.BillingPlans.Where(x => x.Name.Contains("1001")).ToList(),
-                Products = _dbContext.Products.Where(x => x.Name.Contains("1001")).ToList()
+                BillingPlans = _dbContext.BillingPlans.Where(x => x.Name.Contains("092020")).ToList(),
+                Products = _dbContext.Products.Where(x => x.Name.Contains("092020")).ToList()
             };
 
             return View(model);
         }
 
 
-        [AllowAnonymous]
-        public ActionResult Test()
-        {
-            var model = new IndexVm()
-            {
-                BillingPlans = _dbContext.BillingPlans.Where(x => x.Name.Contains("Test1")).ToList(),
-                Products = _dbContext.Products.Where(x => x.Name.Contains("Test")).ToList()
-            };
+        //[AllowAnonymous]
+        //public ActionResult Test()
+        //{
+        //    var model = new IndexVm()
+        //    {
+        //        BillingPlans = _dbContext.BillingPlans.Where(x => x.Name.Contains("Testing")).ToList(),
+        //        Products = _dbContext.Products.Where(x => x.Name.Contains("Testing")).ToList()
+        //    };
 
-            return View(model);
-        }
+        //    return View(model);
+        //}
 
-        [HttpGet]
-        public ActionResult PurchaseSubscription(string id)
-        {
-            var model = new PurchaseVm()
-            {
-                Plan = _dbContext.BillingPlans.FirstOrDefault(x => x.PayPalPlanId == id),
-                Product = _dbContext.Products.FirstOrDefault(x => x.PayPalPlanId == id)
-            };
+        //[HttpGet]
+        //public ActionResult PurchaseSubscription(string id)
+        //{
+        //    var model = new PurchaseVm()
+        //    {
+        //        Plan = _dbContext.BillingPlans.FirstOrDefault(x => x.PayPalPlanId == id),
+        //        Product = _dbContext.Products.FirstOrDefault(x => x.PayPalPlanId == id)
+        //    };
 
-            return View(model);
-        }
+        //    return View(model);
+        //}
 
-        [HttpPost]
-        public async Task<IActionResult> PurchaseSubscription(PurchaseVm model)
-        {
-            var plan = _dbContext.BillingPlans.FirstOrDefault(x => x.PayPalPlanId == model.Product.PayPalPlanId);
-            var product = _dbContext.Products.FirstOrDefault(x => x.PayPalPlanId == model.Product.PayPalPlanId);
+        //[HttpPost]
+        //public async Task<IActionResult> PurchaseSubscription(PurchaseVm model)
+        //{
+        //    var plan = _dbContext.BillingPlans.FirstOrDefault(x => x.PayPalPlanId == model.Product.PayPalPlanId);
+        //    var product = _dbContext.Products.FirstOrDefault(x => x.PayPalPlanId == model.Product.PayPalPlanId);
 
-            //check DUPLICATES
-            ApplicationUser currentUser = await _userManager.GetUserAsync(User);
-            var userhasAnySubscriptions = _dbContext.UserSubscriptions.Any(x => x.UserId == currentUser.Id && x.SubscriptionId != null);
+        //    //check DUPLICATES
+        //    ApplicationUser currentUser = await _userManager.GetUserAsync(User);
+        //    var userhasAnySubscriptions = _dbContext.UserSubscriptions.Any(x => x.UserId == currentUser.Id && x.SubscriptionId != null);
 
-            if (userhasAnySubscriptions)
-            {
-                List<UserSubscriptions> subscribedPlans = _dbContext.UserSubscriptions.Where(x => x.UserId == currentUser.Id && x.SubscriptionId != null).ToList();
+        //    if (userhasAnySubscriptions)
+        //    {
+        //        List<UserSubscriptions> subscribedPlans = _dbContext.UserSubscriptions.Where(x => x.UserId == currentUser.Id && x.SubscriptionId != null).ToList();
 
-                bool alreadySusbcribedToThisPlan = subscribedPlans.Any(x => x.PayPalPlanId == product.PayPalPlanId);
+        //        bool alreadySusbcribedToThisPlan = subscribedPlans.Any(x => x.PayPalPlanId == product.PayPalPlanId);
 
-                if (alreadySusbcribedToThisPlan)
-                {
-                    return RedirectToAction("DuplicateSubscriptionFound", product);
-                }
-            }
-
-
-            if (ModelState.IsValid && plan != null)
-            {
-                // Since we take an Initial Payment (instant payment), the start date of the recurring payments will be next payment date.
+        //        if (alreadySusbcribedToThisPlan)
+        //        {
+        //            return RedirectToAction("DuplicateSubscriptionFound", product);
+        //        }
+        //    }
 
 
-                //Passing the "Setup_fee" as "£1" while creating the plan and pass the "start_date" value with the third date while creating
-                //    the billing agreement.So, that PayPal system will start charging the regular recurring payment from that third date onwards.
-
-                //For example, if customer/buyer sign up on 28th Aug 2020, initially he will be charged "Setup_fee" as "£1" for the 3 days and
-                //    you should pass the "start_date" value as 31st Aug 2020 while creating the billing agreement. 
-                //    So that PayPal system will start charging the regular recurring payments from the customer after 3 days(i.e 31st Aug 2020).
-
-                //calculater start date based on the plan.
-                //3 Months
-                //Monthly
-                // Test - 3 days
-
-                var startDate = DateTime.UtcNow;
-
-                if (plan.Name.Contains("3 Months"))
-                {
-                    startDate = DateTime.UtcNow;
-                    startDate = DateTime.UtcNow.AddMonths(3);
-                }
-
-                if (plan.Name.Contains("Monthly"))
-                {
-                    startDate = DateTime.UtcNow;
-                    startDate = DateTime.UtcNow.AddMonths(1);
-                }
-
-                if (plan.Name.Contains("Test"))
-                {
-                    startDate = DateTime.UtcNow;
-                    startDate = DateTime.UtcNow.AddDays(3);
-                }
-
-                string formatedStringDate = startDate.ToString("o", CultureInfo.InvariantCulture);
-                var formatedStartDate = DateTime.Parse(formatedStringDate, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind);
-
-                //DateTime.UtcNow.ToString("o");
+        //    if (ModelState.IsValid && plan != null)
+        //    {
+        //        // Since we take an Initial Payment (instant payment), the start date of the recurring payments will be next payment date.
 
 
-                var subscription = new Subscription()
-                {
-                    FirstName = currentUser.FirstName,
-                    LastName = currentUser.LastName,
-                    Email = currentUser.Email,
-                    StartDate = formatedStartDate,
-                    PayPalPlanId = plan.PayPalPlanId
-                };
-                _dbContext.Subscriptions.Add(subscription);
+        //        //Passing the "Setup_fee" as "£1" while creating the plan and pass the "start_date" value with the third date while creating
+        //        //    the billing agreement.So, that PayPal system will start charging the regular recurring payment from that third date onwards.
+
+        //        //For example, if customer/buyer sign up on 28th Aug 2020, initially he will be charged "Setup_fee" as "£1" for the 3 days and
+        //        //    you should pass the "start_date" value as 31st Aug 2020 while creating the billing agreement. 
+        //        //    So that PayPal system will start charging the regular recurring payments from the customer after 3 days(i.e 31st Aug 2020).
+
+        //        //calculater start date based on the plan.
+        //        //3 Months
+        //        //Monthly
+        //        // Test - 3 days
+
+        //        var startDate = DateTime.UtcNow.AddDays(3);
+
+        //        //if (plan.Name.Contains("3 Months"))
+        //        //{
+
+        //        //    startDate = DateTime.UtcNow.AddMonths(3);
+        //        //}
+
+        //        //if (plan.Name.Contains("Monthly"))
+        //        //{
+
+        //        //    startDate = DateTime.UtcNow.AddMonths(1);
+        //        //}
+
+        //        //if (plan.Name.Contains("Testing"))
+        //        //{
+
+        //        //    startDate = DateTime.UtcNow.AddDays(3);
+        //        //}
+
+        //        string formatedStringDate = startDate.ToString("o", CultureInfo.InvariantCulture);
+        //        var formatedStartDate = DateTime.Parse(formatedStringDate, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind);
+
+        //        //DateTime.UtcNow.ToString("o");
 
 
-                var userNewSubscriptoin = new UserSubscriptions()
-                {
-                    PayPalPlanId = plan.PayPalPlanId,
-                    Description = plan.Description,
-                    User = currentUser,
-                    UserId = currentUser.Id
-                };
-
-                _dbContext.UserSubscriptions.Add(userNewSubscriptoin);
-
-                _dbContext.SaveChanges();
-
-                var agreement = new Agreement()
-                {
-                    Name = plan.Name,
-                    Description = plan.Description,
-                    StartDate = startDate.ToString("yyyy-MM-ddTHH:mm:ssZ"),
-                    Plan = new PlanWithId() { Id = Convert.ToString(plan.PayPalPlanId) },
-                    Payer = new Payer()
-                    {
-                        PaymentMethod = "paypal"
-                    }
-                };
+        //        var subscription = new Subscription()
+        //        {
+        //            FirstName = currentUser.FirstName,
+        //            LastName = currentUser.LastName,
+        //            Email = currentUser.Email,
+        //            StartDate = formatedStartDate,
+        //            PayPalPlanId = plan.PayPalPlanId
+        //        };
+        //        _dbContext.Subscriptions.Add(subscription);
 
 
-                // Send the agreement to PayPal
-                var client = _clientFactory.GetClient();
-                var request = new AgreementCreateRequest()
-                    .RequestBody(agreement);
-                var result = await client.Execute(request);
-                Agreement createdAgreement = result.Result<Agreement>();
+        //        var userNewSubscriptoin = new UserSubscriptions()
+        //        {
+        //            PayPalPlanId = plan.PayPalPlanId,
+        //            Description = plan.Description,
+        //            User = currentUser,
+        //            UserId = currentUser.Id
+        //        };
 
-                // Find the Approval URL to send our user to (also contains the token)
-                var approvalUrl =
-                    createdAgreement.Links.FirstOrDefault(
-                        x => x.Rel.Equals("approval_url", StringComparison.OrdinalIgnoreCase));
+        //        _dbContext.UserSubscriptions.Add(userNewSubscriptoin);
 
-                var token = QueryHelpers.ParseQuery(approvalUrl?.Href)["token"].First();
+        //        _dbContext.SaveChanges();
 
-                // Save the token so we can match the returned request to our subscription.
-                subscription.PayPalAgreementToken = token;
+        //        var agreement = new Agreement()
+        //        {
+        //            Name = plan.Name,
+        //            Description = plan.Description,
+        //            StartDate = startDate.ToString("yyyy-MM-ddTHH:mm:ssZ"),
+        //            Plan = new PlanWithId() { Id = Convert.ToString(plan.PayPalPlanId) },
+        //            Payer = new Payer()
+        //            {
+        //                PaymentMethod = "paypal"
+        //            }
+        //        };
 
 
-                _dbContext.SaveChanges();
+        //        // Send the agreement to PayPal
+        //        var client = _clientFactory.GetClient();
+        //        var request = new AgreementCreateRequest()
+        //            .RequestBody(agreement);
+        //        var result = await client.Execute(request);
+        //        Agreement createdAgreement = result.Result<Agreement>();
 
-                // Send the user to PayPal to approve the payment
-                return Redirect(approvalUrl.Href);
+        //        // Find the Approval URL to send our user to (also contains the token)
+        //        var approvalUrl =
+        //            createdAgreement.Links.FirstOrDefault(
+        //                x => x.Rel.Equals("approval_url", StringComparison.OrdinalIgnoreCase));
 
-            }
+        //        var token = QueryHelpers.ParseQuery(approvalUrl?.Href)["token"].First();
 
-            model.Product = product;
-            return View(model);
-        }
+        //        // Save the token so we can match the returned request to our subscription.
+        //        subscription.PayPalAgreementToken = token;
+
+
+        //        _dbContext.SaveChanges();
+
+        //        // Send the user to PayPal to approve the payment
+        //        return Redirect(approvalUrl.Href);
+
+        //    }
+
+        //    model.Product = product;
+        //    return View(model);
+        //}
 
 
         [HttpGet]
@@ -237,7 +237,19 @@ namespace AndyTipsterPro.Controllers
                 // Since we take an Initial Payment (instant payment), the start date of the recurring payments will be next month.
                 //var startDate = DateTime.UtcNow.AddMonths(1);
 
-                //Above did not work.
+                //set subscription start date based on plan.
+                var startDate = DateTime.UtcNow;
+                if (plan.Name.Contains("Monthly"))
+                {
+                    startDate = DateTime.UtcNow.AddMonths(1);                    
+                }
+
+                if (plan.Name.Contains("3 Months"))
+                {
+                    startDate = DateTime.UtcNow.AddMonths(3);
+                }
+
+
                 //start_date string required
                 //The date and time when this agreement begins, in Internet date and time format.
                 //The start date must be no less than 24 hours after the current date as the agreement can take up to 24 hours to activate.
@@ -247,8 +259,6 @@ namespace AndyTipsterPro.Controllers
                 //for an account in the Berlin time zone(UTC + 1) to 2017 - 01 - 02T00:00:00.When the API returns this date and time in the
                 //execute agreement response, it shows the converted date and time in the UTC time zone.So, 
                 //the internal 2017-01-02T00:00:00 start date and time becomes 2017-01-01T23:00:00 externally.
-                //var startDate = DateTime.UtcNow.AddDays(1);
-                var startDate = DateTime.UtcNow.AddMinutes(1);
                 string formatedStringDate = startDate.ToString("o", CultureInfo.InvariantCulture);
                 var formatedStartDate = DateTime.Parse(formatedStringDate, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind);
 

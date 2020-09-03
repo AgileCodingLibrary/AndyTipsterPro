@@ -118,6 +118,7 @@ namespace AndyTipsterPro
                 app.UseStatusCodePagesWithReExecute("/Error/{0}");
             }
 
+
             app.UseStaticFiles();
             app.UseAuthentication();
             app.UseMvc(routes =>
