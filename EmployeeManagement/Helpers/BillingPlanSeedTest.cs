@@ -61,6 +61,7 @@ namespace AndyTipsterPro.Helpers
                     AutoBillAmount = "NO",
                     InitialFailAmountAction = "CANCEL",
                     MaxFailAttempts = "1"
+                    
 
                 }
             },

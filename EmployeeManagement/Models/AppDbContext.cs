@@ -22,8 +22,13 @@ namespace AndyTipsterPro.Models
         public DbSet<BillingPlan> BillingPlans { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<Testimonial> Testimonials { get; set; }
-        
-        public DbSet<UserSubscriptions> UserSubscriptions { get; set; }        
+
+        public DbSet<UserSubscriptions> UserSubscriptions { get; set; }
+
+        public DbSet<IPNContext> IPNContexts { get; set; }
+
+        public DbSet<PaypalErrors> PaypalErrors { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
