@@ -1,7 +1,22 @@
-﻿using AndyTipsterPro.Entities;
+﻿//PayPal sends IPN messages for every type of transaction or transaction status update(including payment and subscription notifications), and each notification type contains a unique set of fields.You need to configure your listener to handle the fields for every type of IPN message you might receive, depending on the types of PayPal transactions you support.For a complete guide on the different types of IPN messages and the data fields associated with each type, see the IPN Integration Guide.
+
+//Consider the following processes in your notification handler to properly direct the notifications and to guard against fraud:
+
+
+//Use the Transaction ID value to ensure you haven't already processed the notification.
+//Confirm the status of the transaction, and take proper action depending on value.For example, payment response options include Completed, Pending, and Denied. Don't send inventory unless the transaction has completed!
+//Validate the e-mail address of the receiver.
+//Verify the item description and transaction costs with those listed on your website and catalog.
+//Use the values of txn_type or reason_code of a VERIFIED notification to determine your processing actions.
+
+
+using AndyTipsterPro.Entities;
+using AndyTipsterPro.Helpers;
 using AndyTipsterPro.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.IO;
 using System.Text;
@@ -13,10 +28,14 @@ namespace EmployeeManagement.Controllers
     {
 
         private readonly AppDbContext _dbcontext;
+        private readonly IConfiguration _configuration;
 
-        public IPNController(AppDbContext dbcontext)
+
+        public IPNController(AppDbContext dbcontext, IConfiguration configuration)
         {
             _dbcontext = dbcontext;
+            this._configuration = configuration;
+
         }
         private class IPNLocalContext
         {
@@ -27,10 +46,15 @@ namespace EmployeeManagement.Controllers
             public string Verification { get; set; } = String.Empty;
         }
 
-        [HttpPost]
-        public IActionResult Receive()
-        {
 
+
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IActionResult> Receive()
+        {
+            //notify Me, when this gets.
+            var sendGridKey = _configuration.GetValue<string>("SendGridApi");            
+            await Emailer.SendEmail("fazahmed786@hotmail.com", "IPN Received from PayPal ",  Request.Body.ToString(), sendGridKey);
 
             IPNLocalContext ipnContext = new IPNLocalContext()
             {
@@ -46,17 +70,26 @@ namespace EmployeeManagement.Controllers
             LogRequest(ipnContext);
 
             //Fire and forget verification task
-            Task.Run(() => VerifyTask(ipnContext));
+            //Task.Run(() => VerifyTask(ipnContext));
+
+            await VerifyTask(ipnContext);
 
             //Reply back a 200 code
             return Ok();
         }
 
-        private void VerifyTask(IPNLocalContext ipnContext)
+        private async Task VerifyTask(IPNLocalContext ipnContext)
         {
             try
             {
-                var verificationRequest = System.Net.WebRequest.Create("https://www.sandbox.paypal.com/cgi-bin/webscr");
+                var verificationRequest = System.Net.WebRequest.Create("https://ipnpb.paypal.com/cgi-bin/webscr");
+
+                //var verificationRequest = System.Net.WebRequest.Create("https://www.sandbox.paypal.com/cgi-bin/webscr");
+
+                //Send response messages back to PayPal:
+
+                //https://ipnpb.sandbox.paypal.com/cgi-bin/webscr (for Sandbox IPNs)
+                //https://ipnpb.paypal.com/cgi-bin/webscr (for live IPNs)
 
                 //Set values for the verification request
                 verificationRequest.Method = "POST";
@@ -87,7 +120,7 @@ namespace EmployeeManagement.Controllers
                 };
 
                 _dbcontext.PaypalErrors.Add(error);
-                _dbcontext.SaveChanges();
+               await _dbcontext.SaveChangesAsync();
 
             }
 

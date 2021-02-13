@@ -26,57 +26,64 @@ namespace EmployeeManagement.Controllers
             _dbContext = dbContext;
         }
 
-
-        public async Task<IActionResult> Index()
-        
+       
+        public IActionResult Index()
         {
-
-            //await CreatePayPalPlans();
-
-            var client = _clientFactory.GetClient();
-
-            //PlanListRequest request = new PlanListRequest()
-            //.Status("ACTIVE")
-            //.PageSize("20");
+            return View();
+        }
 
 
-            //var result = await client.Execute(request);
-            //PlanList list = result.Result<PlanList>();
+        //public async Task<IActionResult> Index()
+        
+        //{
 
-            var first20 = new PlanListRequest().Page("0").PageSize("20").Status("ACTIVE");  
 
-            var first20Result = await client.Execute(first20);
+        //    //await CreatePayPalPlans();
 
-            //create a list for first 20 in the list.
-            PlanList list = first20Result.Result<PlanList>();
+        //    var client = _clientFactory.GetClient();
 
-            var next20 = new PlanListRequest().Page("1").PageSize("20").Status("ACTIVE");
+        //    //PlanListRequest request = new PlanListRequest()
+        //    //.Status("ACTIVE")
+        //    //.PageSize("20");
 
-            var next20Result = await client.Execute(next20);
 
-            var next20List = next20Result.Result<PlanList>();
+        //    //var result = await client.Execute(request);
+        //    //PlanList list = result.Result<PlanList>();
 
-            foreach (var plan in next20List.Plans)
-            {
+        //    var first20 = new PlanListRequest().Page("0").PageSize("20").Status("ACTIVE");  
 
-                if (plan.Name.Contains("092020"))
-                {
-                    list.Plans.Add(plan);
-                }
+        //    var first20Result = await client.Execute(first20);
+
+        //    //create a list for first 20 in the list.
+        //    PlanList list = first20Result.Result<PlanList>();
+
+        //    var next20 = new PlanListRequest().Page("1").PageSize("20").Status("ACTIVE");
+
+        //    var next20Result = await client.Execute(next20);
+
+        //    var next20List = next20Result.Result<PlanList>();
+
+        //    foreach (var plan in next20List.Plans)
+        //    {
+
+        //        if (plan.Name.Contains("092020"))
+        //        {
+        //            list.Plans.Add(plan);
+        //        }
                 
-            }
+        //    }
 
             
-            if (list == null)
-            {
-                return RedirectToAction("Index", "Home");
-            }
+        //    if (list == null)
+        //    {
+        //        return RedirectToAction("Index", "Home");
+        //    }
 
-            //await CreateBillingPlans(list);
-            //await CreateProducts();
+        //    //await CreateBillingPlans(list);
+        //    //await CreateProducts();
 
-            return View(list);
-        }
+        //    return View(list);
+        //}
 
         private async Task CreateBillingPlans(PlanList list)
         {
