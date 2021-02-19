@@ -18,6 +18,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
@@ -52,10 +53,6 @@ namespace EmployeeManagement.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Receive()
         {
-            //notify Me, when this gets.
-            var sendGridKey = _configuration.GetValue<string>("SendGridApi");            
-            await Emailer.SendEmail("fazahmed786@hotmail.com", "IPN Received from PayPal ",  Request.Body.ToString(), sendGridKey);
-
             IPNLocalContext ipnContext = new IPNLocalContext()
             {
                 IPNRequest = Request
@@ -67,24 +64,22 @@ namespace EmployeeManagement.Controllers
             }
 
             //Store the IPN received from PayPal
-            LogRequest(ipnContext);
+            await LogAndEmailRequest(ipnContext);
 
             //Fire and forget verification task
             //Task.Run(() => VerifyTask(ipnContext));
 
-            await VerifyTask(ipnContext);
+            VerifyTask(ipnContext);
 
             //Reply back a 200 code
             return Ok();
         }
 
-        private async Task VerifyTask(IPNLocalContext ipnContext)
+        private void VerifyTask(IPNLocalContext ipnContext)
         {
             try
             {
-                var verificationRequest = System.Net.WebRequest.Create("https://ipnpb.paypal.com/cgi-bin/webscr");
-
-                //var verificationRequest = System.Net.WebRequest.Create("https://www.sandbox.paypal.com/cgi-bin/webscr");
+                var verificationRequest = System.Net.WebRequest.Create("https://ipnpb.sandbox.paypal.com/cgi-bin/webscr");
 
                 //Send response messages back to PayPal:
 
@@ -120,7 +115,7 @@ namespace EmployeeManagement.Controllers
                 };
 
                 _dbcontext.PaypalErrors.Add(error);
-               await _dbcontext.SaveChangesAsync();
+                _dbcontext.SaveChanges();
 
             }
 
@@ -128,7 +123,7 @@ namespace EmployeeManagement.Controllers
         }
 
 
-        private void LogRequest(IPNLocalContext ipnContext)
+        private async Task LogAndEmailRequest(IPNLocalContext ipnContext)
         {
             // Persist the request values into a database or temporary data store
 
@@ -140,6 +135,95 @@ namespace EmployeeManagement.Controllers
 
             _dbcontext.IPNContexts.Add(ipn);
             _dbcontext.SaveChanges();
+
+            //send email
+            var message = BuildEmailMessage(ipn);
+            await EmailAdmin(message);
+        }
+
+        private async Task EmailAdmin(string message)
+        {
+            //notify Me, when this gets.
+            var sendGridKey = _configuration.GetValue<string>("SendGridApi");
+            await Emailer.SendEmail("fazahmed786@hotmail.com", "IPN Notification",message, sendGridKey);
+        }
+
+        private string BuildEmailMessage(IPNContext ipn)
+        {
+            var message = "";
+
+            if (ipn != null && ipn.RequestBody != null)
+            {
+                var response = ipn.RequestBody;
+
+                var keys = response.Split('&');
+
+                var data = new Dictionary<string, string>();
+                foreach (var key in keys)
+                {
+                    //payment_type = instant
+                    var field = key.Split('=');
+                    data.Add(field[0], field[1]);
+                }
+
+                var paymentDate = DateTime.Now;
+                var paymentStatus = data["payment_status"];
+
+                var payerId = data["payer_id"];
+                var payerFirstName = data["first_name"];
+                var payerLastName = data["last_name"];
+                var payerEmail = data["payer_email"];
+
+                var amountPaid = data["mc_gross"];
+                var currency = data["mc_currency"];
+                var payPalTransactionId = data["txn_id"];
+                var transactionType = data["txn_type"];
+                var product = data["item_name"];
+
+                var business = data["business"];
+                var buyerEmail = data["receiver_email"];
+                var pendingReason = "Not pending";
+
+                if (paymentStatus == "Pending")
+                {
+                    pendingReason = data["pending_reason"];
+                }
+
+                //message = $"Payment recieved at {paymentDate} for Transaction type ({transactionType}) and transaction Id:{payPalTransactionId} Product:{product}. Payer {payerFirstName} {payerLastName} who's PayPalId is {payerId}) and PayPal email is {payerEmail} has made a payment of {amountPaid} in {currency}. Payment status is {paymentStatus}. If status is Pending, reason is {pendingReason}. Payment of {amountPaid} will go to business {business} and email {buyerEmail}. Payment Verification : {ipn.Verification} ";
+
+                //var sb = new StringBuilder();
+                //sb.Append($"Payment Notification has been received from PayPal. ");
+                //sb.AppendLine($"TransactionId: {payPalTransactionId}");
+                //sb.AppendLine($"Payment For: {product}");
+                //sb.AppendLine($" ");
+                //sb.AppendLine($" ");
+                //sb.AppendLine($"Payment status: {paymentStatus}");
+                //sb.AppendLine($" ");
+                //sb.AppendLine($" ");               
+                //sb.AppendLine($"P A Y M E N T ");
+                //sb.AppendLine($"Payment Amount: {amountPaid}");
+                //sb.AppendLine($"Payment Currency: {currency}");
+                //sb.AppendLine($" ");
+                //sb.AppendLine($" ");
+                //sb.AppendLine($"B U Y E R ");
+                //sb.AppendLine($"Buyer Name: {payerFirstName} {payerLastName}");
+                //sb.AppendLine($"Buyer Email: {payerEmail}");
+                //sb.AppendLine($"Buyer PayPalId:  {payerId} ");
+                //sb.AppendLine($" ");
+                //sb.AppendLine($" ");
+
+
+                //message = sb.ToString();
+
+                message = $"Payment recieved at {paymentDate} for Transaction type ({transactionType})" + Environment.NewLine +
+                    $" and transaction Id:{payPalTransactionId} Product:{product}. " + Environment.NewLine +
+                    $"Payer {payerFirstName} {payerLastName} who's PayPalId is {payerId}) and " + Environment.NewLine +
+                    $"PayPal email is {payerEmail} has made a payment of {amountPaid} in {currency}. Payment status is {paymentStatus}. If status is Pending, reason is {pendingReason}. Payment of {amountPaid} will go to business {business} and email {buyerEmail}. Payment Verification : {ipn.Verification} ";
+
+
+            }
+
+            return message;
         }
 
         private void ProcessVerificationResponse(IPNLocalContext ipnContext)
