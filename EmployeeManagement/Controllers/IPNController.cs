@@ -79,7 +79,9 @@ namespace EmployeeManagement.Controllers
         {
             try
             {
-                var verificationRequest = System.Net.WebRequest.Create("https://ipnpb.sandbox.paypal.com/cgi-bin/webscr");
+                //var verificationRequest = System.Net.WebRequest.Create("https://ipnpb.sandbox.paypal.com/cgi-bin/webscr");
+
+                var verificationRequest = System.Net.WebRequest.Create("https://ipnpb.paypal.com/cgi-bin/webscr");
 
                 //Send response messages back to PayPal:
 
@@ -138,14 +140,47 @@ namespace EmployeeManagement.Controllers
 
             //send email
             var message = BuildEmailMessage(ipn);
-            await EmailAdmin(message);
+            var subject = BuildEmailSubject(ipn);
+            await EmailAdmin(message, subject);
         }
 
-        private async Task EmailAdmin(string message)
+        private async Task EmailAdmin(string message, string subject)
         {
             //notify Me, when this gets.
             var sendGridKey = _configuration.GetValue<string>("SendGridApi");
-            await Emailer.SendEmail("fazahmed786@hotmail.com", "IPN Notification",message, sendGridKey);
+            await Emailer.SendEmail("fazahmed786@hotmail.com", subject, message, sendGridKey);
+            await Emailer.SendEmail("a.thorndyke@hotmail.co.uk", subject, message, sendGridKey);
+        }
+
+        private string BuildEmailSubject(IPNContext ipn)
+        {
+            var subject = "IPN Notification: ";
+
+            if (ipn != null && ipn.RequestBody != null)
+            {
+                var response = ipn.RequestBody;
+
+                var keys = response.Split('&');
+
+
+                var data = new Dictionary<string, string>();
+
+                foreach (var key in keys)
+                {
+                    //payment_type = instant
+                    var field = key.Split('=');
+                    data.Add(field[0], field[1]);                  
+                }
+
+                var firstName = data["first_name"];
+                var lastName = data["last_name"];
+                var email = data["payer_email"].Replace("%40", "@");
+
+                subject = $"{subject} : {firstName} {lastName} : {email}";
+            }
+
+            return subject;
+
         }
 
         private string BuildEmailMessage(IPNContext ipn)
@@ -158,67 +193,103 @@ namespace EmployeeManagement.Controllers
 
                 var keys = response.Split('&');
 
+
                 var data = new Dictionary<string, string>();
+
                 foreach (var key in keys)
                 {
                     //payment_type = instant
                     var field = key.Split('=');
                     data.Add(field[0], field[1]);
+                    var param = field[0] + " :  " + field[1] + Environment.NewLine;
+                    message += String.Concat(param);
                 }
 
-                var paymentDate = DateTime.Now;
-                var paymentStatus = data["payment_status"];
-
-                var payerId = data["payer_id"];
-                var payerFirstName = data["first_name"];
-                var payerLastName = data["last_name"];
-                var payerEmail = data["payer_email"];
-
-                var amountPaid = data["mc_gross"];
-                var currency = data["mc_currency"];
-                var payPalTransactionId = data["txn_id"];
-                var transactionType = data["txn_type"];
-                var product = data["item_name"];
-
-                var business = data["business"];
-                var buyerEmail = data["receiver_email"];
-                var pendingReason = "Not pending";
-
-                if (paymentStatus == "Pending")
-                {
-                    pendingReason = data["pending_reason"];
-                }
-
-                //message = $"Payment recieved at {paymentDate} for Transaction type ({transactionType}) and transaction Id:{payPalTransactionId} Product:{product}. Payer {payerFirstName} {payerLastName} who's PayPalId is {payerId}) and PayPal email is {payerEmail} has made a payment of {amountPaid} in {currency}. Payment status is {paymentStatus}. If status is Pending, reason is {pendingReason}. Payment of {amountPaid} will go to business {business} and email {buyerEmail}. Payment Verification : {ipn.Verification} ";
-
-                //var sb = new StringBuilder();
-                //sb.Append($"Payment Notification has been received from PayPal. ");
-                //sb.AppendLine($"TransactionId: {payPalTransactionId}");
-                //sb.AppendLine($"Payment For: {product}");
-                //sb.AppendLine($" ");
-                //sb.AppendLine($" ");
-                //sb.AppendLine($"Payment status: {paymentStatus}");
-                //sb.AppendLine($" ");
-                //sb.AppendLine($" ");               
-                //sb.AppendLine($"P A Y M E N T ");
-                //sb.AppendLine($"Payment Amount: {amountPaid}");
-                //sb.AppendLine($"Payment Currency: {currency}");
-                //sb.AppendLine($" ");
-                //sb.AppendLine($" ");
-                //sb.AppendLine($"B U Y E R ");
-                //sb.AppendLine($"Buyer Name: {payerFirstName} {payerLastName}");
-                //sb.AppendLine($"Buyer Email: {payerEmail}");
-                //sb.AppendLine($"Buyer PayPalId:  {payerId} ");
-                //sb.AppendLine($" ");
-                //sb.AppendLine($" ");
 
 
-                //message = sb.ToString();
+                var firstName = data["first_name"];
+                var lastName = data["last_name"];
+                var email = data["payer_email"].Replace("%40", "@");
 
-                message = $"Payment recieved at {paymentDate} for Transaction type ({transactionType})" + Environment.NewLine +
-                    $" and transaction Id:{payPalTransactionId} Product:{product}. " + Environment.NewLine +
-                    $"Payer {payerFirstName} {payerLastName} who's PayPalId is {payerId}) and " + Environment.NewLine +
-                    $"PayPal email is {payerEmail} has made a payment of {amountPaid} in {currency}. Payment status is {paymentStatus}. If status is Pending, reason is {pendingReason}. Payment of {amountPaid} will go to business {business} and email {buyerEmail}. Payment Verification : {ipn.Verification} ";
+                var subject = $"{firstName} {lastName} : {email}";
+
+
+
+
+                ////check the transaction type
+                //// recurring_payment_profile_created
+                //// recurring_payment
+                //// recurring_payment_failed
+                //// recurring_payment_profile_cancel
+                //// recurring_payment_suspended_due_to_max_failed_payment
+
+                //var transactionType = data["txn_type"];
+
+                //var transactionAlert = "";
+                //var paymentStatus = "";
+                //var amountPaid = "";
+                //var currency = "";
+                //var payPalTransactionId = "";
+                //var product = "";
+                //var business = "";
+
+                //if (transactionType == "recurring_payment_profile_created")
+                //{
+                //    transactionAlert = "A new customer recurring payment profile has been created.";
+                //    paymentStatus = data["initial_payment_status"].ToUpper();
+                //    amountPaid = data["initial_payment_amount"];
+                //    currency = data["currency_code"];
+                //    payPalTransactionId = data["initial_payment_txn_id"];
+                //    product = data["product_name"].Replace("+", " ");
+                //}
+                //else if (transactionType == "recurring_payment")
+                //{
+                //    transactionAlert = "An existing customer has paid a recurring payment.";
+                //    paymentStatus = data["payment_status"].ToUpper();
+                //    amountPaid = data["mc_gross"];
+                //    currency = data["mc_currency"];
+                //    payPalTransactionId = data["txn_id"];
+                //    product = data["transaction_subject"].Replace("+", " ");
+                //    business = data["business"];
+                //}
+                //else if (transactionType == "recurring_payment_failed")
+                //{
+                //    transactionAlert = "A recurring payment has failed";
+                //}
+                //else if (transactionType == "recurring_payment_profile_cancel")
+                //{
+                //    transactionAlert = "A recurring payment profile has been cancelled.";
+                //}
+                //else if (transactionType == "recurring_payment_suspended_due_to_max_failed_payment")
+                //{
+                //    transactionAlert = "A recurring payment has been suspended due to max failed payments.";
+                //}
+                //else
+                //{
+                //    transactionAlert = "unknown event.";
+                //}
+
+                //var paymentDate = DateTime.Now;
+
+                //var payerId = data["payer_id"];
+                //var payerFirstName = data["first_name"];
+                //var payerLastName = data["last_name"];
+                //var payerEmail = data["payer_email"].Replace("%40", "@");
+
+                //var buyerEmail = data["receiver_email"].Replace("%40", "@");
+                //var pendingReason = "Not pending";
+
+                //if (paymentStatus == "Pending")
+                //{
+                //    pendingReason = data["pending_reason"];
+                //}
+
+
+                //message = $"{transactionAlert} A Payment of {amountPaid} recieved with status of {paymentStatus}. (TransactionId: {payPalTransactionId} ). " +
+                //    $"Payer {payerFirstName} {payerLastName} with PayPal Email {payerEmail} has PayPal Id {payerId}. " +
+                //    $"Payment of {amountPaid} is for product: {product} " +
+                //    $"Amount {amountPaid} will go to PayPal Email {buyerEmail}.";
+
 
 
             }
