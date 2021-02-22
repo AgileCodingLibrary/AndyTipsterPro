@@ -20,6 +20,7 @@ using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -66,13 +67,102 @@ namespace EmployeeManagement.Controllers
             //Store the IPN received from PayPal
             await LogAndEmailRequest(ipnContext);
 
-            //Fire and forget verification task
-            //Task.Run(() => VerifyTask(ipnContext));
+            //React backend as per IPN Received
+            await UpdateSubscription(ipnContext);
 
+            //Fire and forget verification task
             VerifyTask(ipnContext);
 
             //Reply back a 200 code
             return Ok();
+        }
+
+        private async Task UpdateSubscription(IPNLocalContext ipn)
+        {
+
+            if (ipn != null && ipn.RequestBody != null)
+            {
+                var response = ipn.RequestBody;
+                var keys = response.Split('&');
+                var data = new Dictionary<string, string>();
+                foreach (var key in keys)
+                {
+                    //payment_type = instant
+                    var field = key.Split('=');
+                    data.Add(field[0], field[1]);
+                }
+
+                if ((data["txn_type"] == "recurring_payment_profile_created") && (data["initial_payment_status"] == "Failed"))
+                {
+                    //update database
+                    var payPalAgreement = data["recurring_payment_id"];
+                    await UpdateFailedPayment(payPalAgreement);
+
+                }
+
+                if ((data["txn_type"] == "recurring_payment") && (data["payment_status"] == "Denied"))
+                {
+                    //update database
+                    var payPalAgreement = data["recurring_payment_id"];
+                    await UpdateDeniedPayment(payPalAgreement);
+                }
+
+                //if (data["txn_type"] == "recurring_payment_skipped")
+                //{
+                //    //update database
+                //    var payPalAgreement = data["recurring_payment_id"];
+                //    await updateSkippedPayment(payPalAgreement);
+                //}
+
+            }
+        }
+
+        private async Task UpdateDeniedPayment(string payPalAgreement)
+        {
+            //get a user with PayPal agreement.
+            var userSubscription = _dbcontext.UserSubscriptions.Where(x => x.PayPalAgreementId == payPalAgreement).FirstOrDefault();
+            if (userSubscription != null)
+            {
+                userSubscription.State = "Payment Denied";
+                await _dbcontext.SaveChangesAsync();
+
+                var message = $"PAYMENT DENIED: {userSubscription.PayerFirstName}  {userSubscription.PayerLastName} " +
+                              $": {userSubscription.PayerEmail} have denied their payment. " +
+                              $"Access to account has been suspended.";
+                await EmailAdmin(message, "PAYMENT DENIED");
+            }
+        }
+
+        private async Task UpdateSkippedPayment(string payPalAgreement)
+        {
+            //get a user with PayPal agreement.
+            var userSubscription = _dbcontext.UserSubscriptions.Where(x => x.PayPalAgreementId == payPalAgreement).FirstOrDefault();
+            if (userSubscription != null)
+            {
+                userSubscription.State = "Payment Skipped";
+                await _dbcontext.SaveChangesAsync();
+
+                var message = $"SKIPPED PAYMENT: {userSubscription.PayerFirstName}  {userSubscription.PayerLastName} " +
+                              $": {userSubscription.PayerEmail} have skipped their payment. " +
+                              $"Access to account has been suspended.";
+                await EmailAdmin(message, "PAYMENT SKIPPED");
+            }
+
+        }
+
+        private async Task UpdateFailedPayment(string payPalAgreement)
+        {
+            //get a user with PayPal agreement.
+            var userSubscription = _dbcontext.UserSubscriptions.Where(x => x.PayPalAgreementId == payPalAgreement).FirstOrDefault();
+            if (userSubscription != null)
+            {
+                userSubscription.State = "Payment Failed";
+                await _dbcontext.SaveChangesAsync();
+                var message = $"PAYMENT FAILED: {userSubscription.PayerFirstName}  {userSubscription.PayerLastName} " +
+                              $": {userSubscription.PayerEmail} have failed their payment. " +
+                              $"Access to account has been suspended.";
+                await EmailAdmin(message, "PAYMENT FAILED");
+            }
         }
 
         private void VerifyTask(IPNLocalContext ipnContext)
@@ -127,6 +217,8 @@ namespace EmployeeManagement.Controllers
 
         private async Task LogAndEmailRequest(IPNLocalContext ipnContext)
         {
+            var sendEmails = true;
+
             // Persist the request values into a database or temporary data store
 
             IPNContext ipn = new IPNContext
@@ -138,10 +230,53 @@ namespace EmployeeManagement.Controllers
             _dbcontext.IPNContexts.Add(ipn);
             _dbcontext.SaveChanges();
 
-            //send email
-            var message = BuildEmailMessage(ipn);
-            var subject = BuildEmailSubject(ipn);
-            await EmailAdmin(message, subject);
+            if (ipn != null && ipn.RequestBody != null)
+            {
+                var response = ipn.RequestBody;
+                var keys = response.Split('&');
+                var data = new Dictionary<string, string>();
+                foreach (var key in keys)
+                {
+                    //payment_type = instant
+                    var field = key.Split('=');
+                    data.Add(field[0], field[1]);
+
+                }
+
+
+                if (data["txn_type"] == "recurring_payment_profile_created")
+                {
+                    if (data.ContainsKey("initial_payment_status"))
+                    {
+                        if (data["initial_payment_status"] == "Completed")
+                        {
+                            //do not send email
+                            sendEmails = false;
+                        }
+                    }
+                }
+
+                if (data["txn_type"] == "recurring_payment")
+                {
+                    if (data.ContainsKey("payment_status"))
+                    {
+                        if (data["payment_status"] == "Completed")
+                        {
+                            //do not send email
+                            sendEmails = false;
+                        }
+                    }
+                }
+
+                if (sendEmails)
+                {
+                    //send email
+                    var message = BuildEmailMessage(ipn);
+                    var subject = BuildEmailSubject(ipn);
+                    await EmailAdmin(message, subject);
+                }
+
+            }
         }
 
         private async Task EmailAdmin(string message, string subject)
@@ -149,7 +284,7 @@ namespace EmployeeManagement.Controllers
             //notify Me, when this gets.
             var sendGridKey = _configuration.GetValue<string>("SendGridApi");
             await Emailer.SendEmail("fazahmed786@hotmail.com", subject, message, sendGridKey);
-            await Emailer.SendEmail("a.thorndyke@hotmail.co.uk", subject, message, sendGridKey);
+            await Emailer.SendEmail("andytipster99@gmail.com", subject, message, sendGridKey);
         }
 
         private string BuildEmailSubject(IPNContext ipn)
@@ -169,7 +304,7 @@ namespace EmployeeManagement.Controllers
                 {
                     //payment_type = instant
                     var field = key.Split('=');
-                    data.Add(field[0], field[1]);                  
+                    data.Add(field[0], field[1]);
                 }
 
                 var firstName = data["first_name"];
