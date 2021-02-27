@@ -536,13 +536,11 @@ namespace AndyTipsterPro.Controllers
                     //get user subscription
                     UserSubscriptions userExistingSubscription = user.Subscriptions.Where(x => x.PayPalAgreementId == Id).FirstOrDefault();
 
-                    //update user subscription status.
-                    userExistingSubscription.State = agreement.State;
-
-                    if (agreement.State == "Cancelled")
+                    //first time user is cancelling.
+                    if (agreement.State == "Cancelled" && userExistingSubscription.State != "Cancelled")
                     {
 
-                        //if this is the first canellation.
+                        //if this is the first cancellation.
                         if (userExistingSubscription.ExpiryDate.Year < 1995)
                         {
                             //set expiry date in the User Subscription to the next billing date.
@@ -555,25 +553,33 @@ namespace AndyTipsterPro.Controllers
 
                             userExistingSubscription.ExpiryDate = expiryDate;
 
-                            //only send cancellation email when Paypal first sends concellation confirmation.
+                            //update user subscription status.
+                            userExistingSubscription.State = agreement.State;
 
-                            var cancellationEmailAlreadyBeenSent = _dbContext.UserSubscriptions.Where(x => x.UserId == user.Id && x.PayPalAgreementId == agreement.Id && x.State != "Cancelled").Any();
-                            if (!cancellationEmailAlreadyBeenSent)
-                            {
-                                //Send user an email and let them know expiry date.
-                                var confirmationHtml = $"<h2>Your Subscription <strong>{userExistingSubscription.Description}</strong> has been cancelled.</h2> <p>However, you can continue enjoy your access till your paid period expired on {userExistingSubscription.ExpiryDate}.</p>";
-                                var sendGridKey = _configuration.GetValue<string>("SendGridApi");
-                                await Emailer.SendEmail(user.Email, "Andy Tipster Subscription has been cancelled", confirmationHtml, sendGridKey);
+                            //only send cancellation email when Paypal first sends cancellation confirmation.
+
+                            //var cancellationEmailAlreadyBeenSent = _dbContext.UserSubscriptions.Where(x => x.UserId == user.Id && x.PayPalAgreementId == agreement.Id && x.State != "Cancelled").Any();
+                            //if (!cancellationEmailAlreadyBeenSent)
+                            //{
+                            //    //Send user an email and let them know expiry date.
+                            //    var confirmationHtml = $"<h2>As per your request, your Subscription <strong>{userExistingSubscription.Description}</strong> has been cancelled.</h2> <p>However, you can continue enjoy your access till your paid period expired on {userExistingSubscription.ExpiryDate}.</p>";
+                            //    var sendGridKey = _configuration.GetValue<string>("SendGridApi");
+                            //    await Emailer.SendEmail(user.Email, "AndyTipster Subscription, has been cancelled", confirmationHtml, sendGridKey);
 
 
-                                //Send admin an email and let them know expiry date.
-                                var confirmationAdminHtml = $"<h2>User {user.Email} has cancelled their subscription for <strong>{userExistingSubscription.Description}</strong>.</h2> <p>However, user has access till their paid period expired on {userExistingSubscription.ExpiryDate}.</p><p>An email confirmation has been sent to user on {user.Email}</p>";
-                                await Emailer.SendEmail("andytipster99@outlook.com", "A user has cancelled a Subscription", confirmationAdminHtml, sendGridKey);
-                            }
+                            //    //Send admin an email and let them know expiry date.
+                            //    var confirmationAdminHtml = $"<h2>User {user.Email} has cancelled their subscription for <strong>{userExistingSubscription.Description}</strong>.</h2> <p>However, user has access till their paid period expired on {userExistingSubscription.ExpiryDate}.</p><p>An email confirmation has been sent to user on {user.Email}</p>";
+                            //    await Emailer.SendEmail("andytipster99@outlook.com", "A user has cancelled a Subscription", confirmationAdminHtml, sendGridKey);
+                            //}
 
 
                         }
-                        else if (agreement.State == "Cancelled" && userExistingSubscription.ExpiryDate < DateTime.Now)
+
+                    }
+                    if (agreement.State == "Cancelled" && userExistingSubscription.State == "Cancelled")
+                    {
+                        //check if subscription date has expired.
+                        if (userExistingSubscription.ExpiryDate < DateTime.Now) // user subs expired, delete their subscription.
                         {
                             //delete Subscription.
                             var subsTobeDeleted = _dbContext.Subscriptions.Where(x => x.PayPalAgreementId == agreement.Id).FirstOrDefault();
@@ -598,7 +604,7 @@ namespace AndyTipsterPro.Controllers
 
                             //Send admin an email and let them know expiry.
                             var expiredAdminHtml = $"<h2>User {user.Email} subscription for <strong>{userExistingSubscription.Description}</strong>. has now expired.</h2><p>An email confirmation has been sent to user on {user.Email}</p>";
-                            await Emailer.SendEmail("andytipster99@outlook.com", "A user has cancelled a Subscription", expiredAdminHtml, sendGridKey);
+                            await Emailer.SendEmail("andytipster99@outlook.com", $"{userExistingSubscription.PayerEmail} : Subscription has expired.", expiredAdminHtml, sendGridKey);
                         }
 
                     }
