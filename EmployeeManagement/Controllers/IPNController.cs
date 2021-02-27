@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using PayPal.v1.BillingAgreements;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -31,12 +32,16 @@ namespace EmployeeManagement.Controllers
 
         private readonly AppDbContext _dbcontext;
         private readonly IConfiguration _configuration;
+        private readonly PayPalHttpClientFactory _clientFactory;
 
 
-        public IPNController(AppDbContext dbcontext, IConfiguration configuration)
+        public IPNController(AppDbContext dbcontext,
+                             IConfiguration configuration,
+                             PayPalHttpClientFactory clientFactory)
         {
             _dbcontext = dbcontext;
             this._configuration = configuration;
+            this._clientFactory = clientFactory;
 
         }
         private class IPNLocalContext
@@ -92,76 +97,198 @@ namespace EmployeeManagement.Controllers
                     data.Add(field[0], field[1]);
                 }
 
+
+                //A new customer tried to subscribed but their payment failed.
                 if ((data["txn_type"] == "recurring_payment_profile_created") && (data["initial_payment_status"] == "Failed"))
                 {
                     //update database
                     var payPalAgreement = data["recurring_payment_id"];
-                    await UpdateFailedPayment(payPalAgreement);
+                    await NewSubscriptionFirstPaymentFailedDeleteSubscription(payPalAgreement);
 
                 }
 
+                //An existing customer has decided to cancel.
+                if ((data["txn_type"] == "recurring_payment_profile_cancel") && (data["initial_payment_status"] == "Failed"))
+                {
+                    //update database
+                    var payPalAgreement = data["recurring_payment_id"];
+                    await ExistingSubscriptionHasbeenCancelledUpdateSubscription(payPalAgreement);
+
+                }
+
+                //An existing customer has DENIED their payment. Subscription will be cancelled.
                 if ((data["txn_type"] == "recurring_payment") && (data["payment_status"] == "Denied"))
                 {
                     //update database
                     var payPalAgreement = data["recurring_payment_id"];
-                    await UpdateDeniedPayment(payPalAgreement);
+                    await ExistingSubscriptionPaymentHasbeenDeniedUpdateSubscription(payPalAgreement);
                 }
 
-                //if (data["txn_type"] == "recurring_payment_skipped")
-                //{
-                //    //update database
-                //    var payPalAgreement = data["recurring_payment_id"];
-                //    await updateSkippedPayment(payPalAgreement);
-                //}
+
+                //An existing customer has FAILED their payment. Subscription will be cancelled.
+                //if ((data["txn_type"] == "recurring_payment_failed") && (data["payment_status"] == "Denied"))
+                if (data["txn_type"] == "recurring_payment_failed")
+                {
+                    //update database
+                    var payPalAgreement = data["recurring_payment_id"];
+                    await ExistingSubscriptionPaymentFailedUpdateSubscription(payPalAgreement);
+                }
+
+                //An existing customer has SKIPPED their payment. Subscription will be cancelled.
+                if (data["txn_type"] == "recurring_payment_skipped")
+                {
+                    //update database
+                    var payPalAgreement = data["recurring_payment_id"];
+                    await ExistingSubscriptionPaymentSkippedUpdateSubscription(payPalAgreement);
+                }
 
             }
         }
 
-        private async Task UpdateDeniedPayment(string payPalAgreement)
+     
+        private async Task NewSubscriptionFirstPaymentFailedDeleteSubscription(string payPalAgreement)
         {
             //get a user with PayPal agreement.
             var userSubscription = _dbcontext.UserSubscriptions.Where(x => x.PayPalAgreementId == payPalAgreement).FirstOrDefault();
             if (userSubscription != null)
             {
-                userSubscription.State = "Payment Denied";
+                _dbcontext.UserSubscriptions.Remove(userSubscription);
                 await _dbcontext.SaveChangesAsync();
 
-                var message = $"PAYMENT DENIED: {userSubscription.PayerFirstName}  {userSubscription.PayerLastName} " +
-                              $": {userSubscription.PayerEmail} have denied their payment. " +
-                              $"Access to account has been suspended.";
-                await EmailAdmin(message, "PAYMENT DENIED");
+
+                await EmailCustomer(userSubscription.PayerEmail,
+                                    "Thanks for trying to Subscribe at AndyTipster. Your initial Payment has failed, you will not have access to subscription. Please try again.",
+                                    "Payment for AndyTipster Failed");
+
+
+                var message = $"A new Subscription, FIRST PAYMENT FAILED: {userSubscription.PayerFirstName}  {userSubscription.PayerLastName} " +
+                              $": {userSubscription.PayerEmail} have failed their payment. They have no Access to this subscription.";
+
+                await EmailAdmin(message, "A new Subscription, FIRST PAYMENT FAILED, Subscription DELETED.");
             }
         }
 
-        private async Task UpdateSkippedPayment(string payPalAgreement)
+        private async Task ExistingSubscriptionHasbeenCancelledUpdateSubscription(string payPalAgreement)
         {
             //get a user with PayPal agreement.
             var userSubscription = _dbcontext.UserSubscriptions.Where(x => x.PayPalAgreementId == payPalAgreement).FirstOrDefault();
             if (userSubscription != null)
             {
-                userSubscription.State = "Payment Skipped";
+
+                //get user subscription
+                var client = _clientFactory.GetClient();
+                AgreementGetRequest request = new AgreementGetRequest(userSubscription.PayPalAgreementId);
+                BraintreeHttp.HttpResponse result = await client.Execute(request);
+                Agreement agreement = result.Result<Agreement>();
+
+                string expiryDateAsString = agreement.AgreementDetails.NextBillingDate.Substring(0, 10);
+                DateTime expiryDate = DateTime.ParseExact(expiryDateAsString, "yyyy-MM-dd", null);
+
+                userSubscription.ExpiryDate = expiryDate;
+                userSubscription.State = "Cancelled";
+                _dbcontext.UserSubscriptions.Update(userSubscription);
                 await _dbcontext.SaveChangesAsync();
 
-                var message = $"SKIPPED PAYMENT: {userSubscription.PayerFirstName}  {userSubscription.PayerLastName} " +
-                              $": {userSubscription.PayerEmail} have skipped their payment. " +
-                              $"Access to account has been suspended.";
-                await EmailAdmin(message, "PAYMENT SKIPPED");
-            }
+                var userMessage = $"Your subscription for {userSubscription.Description} has been cancelled. You will have access until {userSubscription.ExpiryDate}.";
+                await EmailCustomer(userSubscription.PayerEmail, userMessage, "AndyTipster subscription has been cancelled");
 
+                var adminMessage = $"Regular Subscription CANCELLED: {userSubscription.PayerFirstName}  {userSubscription.PayerLastName} " +
+                              $": {userSubscription.PayerEmail} have CANCELLED {userSubscription.Description}. They will have access until : {userSubscription.ExpiryDate}.";
+
+                await EmailAdmin(adminMessage, "Regular Subscription CANCELLED, Subscription UPDATED.");
+            }
         }
 
-        private async Task UpdateFailedPayment(string payPalAgreement)
+        private async Task ExistingSubscriptionPaymentHasbeenDeniedUpdateSubscription(string payPalAgreement)
         {
             //get a user with PayPal agreement.
             var userSubscription = _dbcontext.UserSubscriptions.Where(x => x.PayPalAgreementId == payPalAgreement).FirstOrDefault();
             if (userSubscription != null)
             {
-                userSubscription.State = "Payment Failed";
+
+                //get user subscription
+                var client = _clientFactory.GetClient();
+                AgreementGetRequest request = new AgreementGetRequest(userSubscription.PayPalAgreementId);
+                BraintreeHttp.HttpResponse result = await client.Execute(request);
+                Agreement agreement = result.Result<Agreement>();
+
+                string expiryDateAsString = agreement.AgreementDetails.NextBillingDate.Substring(0, 10);
+                DateTime expiryDate = DateTime.ParseExact(expiryDateAsString, "yyyy-MM-dd", null);
+
+                userSubscription.ExpiryDate = expiryDate;
+                userSubscription.State = "Cancelled";
+                _dbcontext.UserSubscriptions.Update(userSubscription);
                 await _dbcontext.SaveChangesAsync();
-                var message = $"PAYMENT FAILED: {userSubscription.PayerFirstName}  {userSubscription.PayerLastName} " +
-                              $": {userSubscription.PayerEmail} have failed their payment. " +
-                              $"Access to account has been suspended.";
-                await EmailAdmin(message, "PAYMENT FAILED");
+
+                var userMessage = $"Your subscription for {userSubscription.Description} has been cancelled due to DENIED payment. You will have access until {userSubscription.ExpiryDate}.";
+                await EmailCustomer(userSubscription.PayerEmail, userMessage, "AndyTipster subscription has been cancelled due to DENIED payment.");
+
+                var adminMessage = $"Regular Subscription PAYMENT DENIED: {userSubscription.PayerFirstName}  {userSubscription.PayerLastName} " +
+                              $": {userSubscription.PayerEmail} have DENIED PAYMENT {userSubscription.Description}. They will have access until : {userSubscription.ExpiryDate}.";
+
+                await EmailAdmin(adminMessage, "Regular Subscription DENIED PAYMENT, Subscription UPDATED.");
+            }
+        }
+
+        private async Task ExistingSubscriptionPaymentFailedUpdateSubscription(string payPalAgreement)
+        {
+            //get a user with PayPal agreement.
+            var userSubscription = _dbcontext.UserSubscriptions.Where(x => x.PayPalAgreementId == payPalAgreement).FirstOrDefault();
+            if (userSubscription != null)
+            {
+
+                //get user subscription
+                var client = _clientFactory.GetClient();
+                AgreementGetRequest request = new AgreementGetRequest(userSubscription.PayPalAgreementId);
+                BraintreeHttp.HttpResponse result = await client.Execute(request);
+                Agreement agreement = result.Result<Agreement>();
+
+                string expiryDateAsString = agreement.AgreementDetails.NextBillingDate.Substring(0, 10);
+                DateTime expiryDate = DateTime.ParseExact(expiryDateAsString, "yyyy-MM-dd", null);
+
+                userSubscription.ExpiryDate = expiryDate;
+                userSubscription.State = "Cancelled";
+                _dbcontext.UserSubscriptions.Update(userSubscription);
+                await _dbcontext.SaveChangesAsync();
+
+                var userMessage = $"Your subscription for {userSubscription.Description} has been cancelled due to FAILED payment. You will have access until {userSubscription.ExpiryDate}.";
+                await EmailCustomer(userSubscription.PayerEmail, userMessage, "AndyTipster subscription has been cancelled due to FAILED payment.");
+
+                var adminMessage = $"Regular Subscription PAYMENT FAILED: {userSubscription.PayerFirstName}  {userSubscription.PayerLastName} " +
+                              $": {userSubscription.PayerEmail} have FAILED PAYMENT {userSubscription.Description}. They will have access until : {userSubscription.ExpiryDate}.";
+
+                await EmailAdmin(adminMessage, "Regular Subscription FAILED PAYMENT, Subscription UPDATED.");
+            }
+        }
+
+        private async Task ExistingSubscriptionPaymentSkippedUpdateSubscription(string payPalAgreement)
+        {
+            //get a user with PayPal agreement.
+            var userSubscription = _dbcontext.UserSubscriptions.Where(x => x.PayPalAgreementId == payPalAgreement).FirstOrDefault();
+            if (userSubscription != null)
+            {
+
+                //get user subscription
+                var client = _clientFactory.GetClient();
+                AgreementGetRequest request = new AgreementGetRequest(userSubscription.PayPalAgreementId);
+                BraintreeHttp.HttpResponse result = await client.Execute(request);
+                Agreement agreement = result.Result<Agreement>();
+
+                string expiryDateAsString = agreement.AgreementDetails.NextBillingDate.Substring(0, 10);
+                DateTime expiryDate = DateTime.ParseExact(expiryDateAsString, "yyyy-MM-dd", null);
+
+                userSubscription.ExpiryDate = expiryDate;
+                userSubscription.State = "Cancelled";
+                _dbcontext.UserSubscriptions.Update(userSubscription);
+                await _dbcontext.SaveChangesAsync();
+
+                var userMessage = $"Your subscription for {userSubscription.Description} has been cancelled due to SKIPPED payment. You will have access until {userSubscription.ExpiryDate}.";
+                await EmailCustomer(userSubscription.PayerEmail, userMessage, "AndyTipster subscription has been cancelled due to SKIPPED payment.");
+
+                var adminMessage = $"Regular Subscription PAYMENT SKIPPED: {userSubscription.PayerFirstName}  {userSubscription.PayerLastName} " +
+                              $": {userSubscription.PayerEmail} have SKIPPED PAYMENT {userSubscription.Description}. They will have access until : {userSubscription.ExpiryDate}.";
+
+                await EmailAdmin(adminMessage, "Regular Subscription SKIPPED PAYMENT, Subscription UPDATED.");
             }
         }
 
@@ -213,7 +340,6 @@ namespace EmployeeManagement.Controllers
 
             ProcessVerificationResponse(ipnContext);
         }
-
 
         private async Task LogAndEmailRequest(IPNLocalContext ipnContext)
         {
@@ -285,6 +411,13 @@ namespace EmployeeManagement.Controllers
             var sendGridKey = _configuration.GetValue<string>("SendGridApi");
             await Emailer.SendEmail("fazahmed786@hotmail.com", subject, message, sendGridKey);
             await Emailer.SendEmail("andytipster99@gmail.com", subject, message, sendGridKey);
+        }
+
+        private async Task EmailCustomer(string emailAddress, string message, string subject)
+        {
+            //notify Me, when this gets.
+            var sendGridKey = _configuration.GetValue<string>("SendGridApi");
+            await Emailer.SendEmail(emailAddress, subject, message, sendGridKey);
         }
 
         private string BuildEmailSubject(IPNContext ipn)
@@ -451,5 +584,39 @@ namespace EmployeeManagement.Controllers
                 //Log error
             }
         }
+
+   
+        //private async Task UpdateDeniedPayment(string payPalAgreement)
+        //{
+        //    //get a user with PayPal agreement.
+        //    var userSubscription = _dbcontext.UserSubscriptions.Where(x => x.PayPalAgreementId == payPalAgreement).FirstOrDefault();
+        //    if (userSubscription != null)
+        //    {
+        //        userSubscription.State = "Payment Denied";
+        //        await _dbcontext.SaveChangesAsync();
+
+        //        var message = $"PAYMENT DENIED: {userSubscription.PayerFirstName}  {userSubscription.PayerLastName} " +
+        //                      $": {userSubscription.PayerEmail} have denied their payment. " +
+        //                      $"Access to account has been suspended.";
+        //        await EmailAdmin(message, "PAYMENT DENIED");
+        //    }
+        //}
+
+        //private async Task UpdateSkippedPayment(string payPalAgreement)
+        //{
+        //    //get a user with PayPal agreement.
+        //    var userSubscription = _dbcontext.UserSubscriptions.Where(x => x.PayPalAgreementId == payPalAgreement).FirstOrDefault();
+        //    if (userSubscription != null)
+        //    {
+        //        userSubscription.State = "Payment Skipped";
+        //        await _dbcontext.SaveChangesAsync();
+
+        //        var message = $"SKIPPED PAYMENT: {userSubscription.PayerFirstName}  {userSubscription.PayerLastName} " +
+        //                      $": {userSubscription.PayerEmail} have skipped their payment. " +
+        //                      $"Access to account has been suspended.";
+        //        await EmailAdmin(message, "PAYMENT SKIPPED");
+        //    }
+
+        //}
     }
 }

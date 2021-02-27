@@ -15,7 +15,7 @@ namespace AndyTipsterPro.ViewModels
         public string PayerFirstName { get; set; }
         public string PayerLastName { get; set; }
         public string PayerEmail { get; set; }
-        public DateTime StartDate { get; set; } = new DateTime(2020, 01, 01);
+        public DateTime StartDate { get; set; } = DateTime.Now;
         public string PayPalPlanId { get; set; }      
         public string PayPalAgreementId { get; set; }
         public string PayPalPlanDescription { get; set; }
