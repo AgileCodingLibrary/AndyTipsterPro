@@ -98,7 +98,7 @@ namespace EmployeeManagement.Controllers
                 }
 
 
-                //A new customer tried to subscribed but their payment failed.
+                //A new customer tried to subscribed but their payment failed. Delete their subscription.
                 if ((data["txn_type"] == "recurring_payment_profile_created") && (data["initial_payment_status"] == "Failed"))
                 {
                     //update database
@@ -107,8 +107,8 @@ namespace EmployeeManagement.Controllers
 
                 }
 
-                //An existing customer has decided to cancel.
-                if ((data["txn_type"] == "recurring_payment_profile_cancel") && (data["initial_payment_status"] == "Failed"))
+                //An existing customer has decided to cancel. Set Expiry date on the subscription.
+                if (data["txn_type"] == "recurring_payment_profile_cancel")
                 {
                     //update database
                     var payPalAgreement = data["recurring_payment_id"];
@@ -116,7 +116,7 @@ namespace EmployeeManagement.Controllers
 
                 }
 
-                //An existing customer has DENIED their payment. Subscription will be cancelled.
+                //An existing customer has DENIED their payment. DEELTE Subscription.
                 if ((data["txn_type"] == "recurring_payment") && (data["payment_status"] == "Denied"))
                 {
                     //update database
@@ -125,8 +125,7 @@ namespace EmployeeManagement.Controllers
                 }
 
 
-                //An existing customer has FAILED their payment. Subscription will be cancelled.
-                //if ((data["txn_type"] == "recurring_payment_failed") && (data["payment_status"] == "Denied"))
+                //An existing customer has FAILED 3 PAYMENTS. Delete Subscription.                
                 if (data["txn_type"] == "recurring_payment_failed")
                 {
                     //update database
@@ -134,12 +133,15 @@ namespace EmployeeManagement.Controllers
                     await ExistingSubscriptionPaymentFailedUpdateSubscription(payPalAgreement);
                 }
 
-                //An existing customer has SKIPPED their payment. Subscription will be cancelled.
+                //An existing customer has SKIPPED their payment. NO ACTION REQUIRED AT THE MOMENT..
                 if (data["txn_type"] == "recurring_payment_skipped")
                 {
+
+                    // NO ACTION REQURIED.
+
                     //update database
-                    var payPalAgreement = data["recurring_payment_id"];
-                    await ExistingSubscriptionPaymentSkippedUpdateSubscription(payPalAgreement);
+                    //var payPalAgreement = data["recurring_payment_id"];
+                    //await ExistingSubscriptionPaymentSkippedUpdateSubscription(payPalAgreement);
                 }
 
             }
@@ -157,7 +159,7 @@ namespace EmployeeManagement.Controllers
 
 
                 await EmailCustomer(userSubscription.PayerEmail,
-                                    "Thanks for trying to Subscribe at AndyTipster. Your initial Payment has failed, you will not have access to subscription. Please try again.",
+                                    "Thanks for trying to Subscribe at AndyTipster. However your payment failed. Please try again.",
                                     "Payment for AndyTipster Failed");
 
 
@@ -206,27 +208,16 @@ namespace EmployeeManagement.Controllers
             if (userSubscription != null)
             {
 
-                //get user subscription
-                var client = _clientFactory.GetClient();
-                AgreementGetRequest request = new AgreementGetRequest(userSubscription.PayPalAgreementId);
-                BraintreeHttp.HttpResponse result = await client.Execute(request);
-                Agreement agreement = result.Result<Agreement>();
-
-                string expiryDateAsString = agreement.AgreementDetails.NextBillingDate.Substring(0, 10);
-                DateTime expiryDate = DateTime.ParseExact(expiryDateAsString, "yyyy-MM-dd", null);
-
-                userSubscription.ExpiryDate = expiryDate;
-                userSubscription.State = "Cancelled";
-                _dbcontext.UserSubscriptions.Update(userSubscription);
+                _dbcontext.UserSubscriptions.Remove(userSubscription);
                 await _dbcontext.SaveChangesAsync();
 
-                var userMessage = $"Your subscription for {userSubscription.Description} has been cancelled due to DENIED payment. You will have access until {userSubscription.ExpiryDate}.";
+                var userMessage = $"Your subscription for {userSubscription.Description} has been cancelled due to DENIED payment.";
                 await EmailCustomer(userSubscription.PayerEmail, userMessage, "AndyTipster subscription has been cancelled due to DENIED payment.");
 
                 var adminMessage = $"Regular Subscription PAYMENT DENIED: {userSubscription.PayerFirstName}  {userSubscription.PayerLastName} " +
-                              $": {userSubscription.PayerEmail} have DENIED PAYMENT {userSubscription.Description}. They will have access until : {userSubscription.ExpiryDate}.";
+                              $": {userSubscription.PayerEmail} have DENIED PAYMENT {userSubscription.Description}. Subscription has been removed.";
 
-                await EmailAdmin(adminMessage, "Regular Subscription DENIED PAYMENT, Subscription UPDATED.");
+                await EmailAdmin(adminMessage, "Regular Subscription DENIED PAYMENT, Subscription REMOVED.");
             }
         }
 
@@ -237,27 +228,16 @@ namespace EmployeeManagement.Controllers
             if (userSubscription != null)
             {
 
-                //get user subscription
-                var client = _clientFactory.GetClient();
-                AgreementGetRequest request = new AgreementGetRequest(userSubscription.PayPalAgreementId);
-                BraintreeHttp.HttpResponse result = await client.Execute(request);
-                Agreement agreement = result.Result<Agreement>();
-
-                string expiryDateAsString = agreement.AgreementDetails.NextBillingDate.Substring(0, 10);
-                DateTime expiryDate = DateTime.ParseExact(expiryDateAsString, "yyyy-MM-dd", null);
-
-                userSubscription.ExpiryDate = expiryDate;
-                userSubscription.State = "Cancelled";
-                _dbcontext.UserSubscriptions.Update(userSubscription);
+                _dbcontext.UserSubscriptions.Remove(userSubscription);
                 await _dbcontext.SaveChangesAsync();
 
-                var userMessage = $"Your subscription for {userSubscription.Description} has been cancelled due to FAILED payment. You will have access until {userSubscription.ExpiryDate}.";
-                await EmailCustomer(userSubscription.PayerEmail, userMessage, "AndyTipster subscription has been cancelled due to FAILED payment.");
+                var userMessage = $"Your subscription for {userSubscription.Description} has been cancelled due to FAILED payments.";
+                await EmailCustomer(userSubscription.PayerEmail, userMessage, "AndyTipster subscription has been cancelled due to FAILED payments.");
 
-                var adminMessage = $"Regular Subscription PAYMENT FAILED: {userSubscription.PayerFirstName}  {userSubscription.PayerLastName} " +
-                              $": {userSubscription.PayerEmail} have FAILED PAYMENT {userSubscription.Description}. They will have access until : {userSubscription.ExpiryDate}.";
+                var adminMessage = $"Regular Subscription PAYMENTS FAILED: {userSubscription.PayerFirstName}  {userSubscription.PayerLastName} " +
+                              $": {userSubscription.PayerEmail} have FAILED PAYMENTs {userSubscription.Description}. Subscription has been removed.";
 
-                await EmailAdmin(adminMessage, "Regular Subscription FAILED PAYMENT, Subscription UPDATED.");
+                await EmailAdmin(adminMessage, "Regular Subscription FAILED PAYMENT, Subscription REMOVED.");
             }
         }
 
@@ -343,18 +323,15 @@ namespace EmployeeManagement.Controllers
 
         private async Task LogAndEmailRequest(IPNLocalContext ipnContext)
         {
-            var sendEmails = true;
+            var sendEmailsAndLog = true;
 
             // Persist the request values into a database or temporary data store
-
             IPNContext ipn = new IPNContext
             {
                 RequestBody = ipnContext.RequestBody,
                 Verification = ipnContext.Verification
             };
 
-            _dbcontext.IPNContexts.Add(ipn);
-            _dbcontext.SaveChanges();
 
             if (ipn != null && ipn.RequestBody != null)
             {
@@ -377,7 +354,7 @@ namespace EmployeeManagement.Controllers
                         if (data["initial_payment_status"] == "Completed")
                         {
                             //do not send email
-                            sendEmails = false;
+                            sendEmailsAndLog = false;
                         }
                     }
                 }
@@ -389,17 +366,38 @@ namespace EmployeeManagement.Controllers
                         if (data["payment_status"] == "Completed")
                         {
                             //do not send email
-                            sendEmails = false;
+                            sendEmailsAndLog = false;
                         }
                     }
                 }
 
-                if (sendEmails)
+
+                //An existing customer has decided to cancel. Set Expiry date on the subscription.
+                if (data["txn_type"] == "recurring_payment_profile_cancel")
+                {
+                    //do not send email
+                    sendEmailsAndLog = false;
+
+                }
+
+                //An existing customer has SKIPPED their payment. NO ACTION REQUIRED AT THE MOMENT..
+                if (data["txn_type"] == "recurring_payment_skipped")
+                {
+                    //do not send email
+                    sendEmailsAndLog = false;
+
+                }
+
+
+                if (sendEmailsAndLog)
                 {
                     //send email
                     var message = BuildEmailMessage(ipn);
                     var subject = BuildEmailSubject(ipn);
                     await EmailAdmin(message, subject);
+
+                    _dbcontext.IPNContexts.Add(ipn);
+                    _dbcontext.SaveChanges();
                 }
 
             }

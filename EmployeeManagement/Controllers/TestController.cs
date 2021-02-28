@@ -10,6 +10,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using PayPal.v1.BillingAgreements;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using Newtonsoft.Json;
 
 namespace EmployeeManagement.Controllers
 {
@@ -26,15 +30,61 @@ namespace EmployeeManagement.Controllers
             _dbContext = dbContext;
         }
 
-       
-        public IActionResult Index()
+
+        public async Task<IActionResult> Index()
         {
+            //get user subscription
+            var client = _clientFactory.GetClient();
+            AgreementGetRequest request = new AgreementGetRequest("I-GY2WH34CHXR5");
+            BraintreeHttp.HttpResponse result = await client.Execute(request);
+            Agreement agreement = result.Result<Agreement>();
+
+            var payPalCancelSubscription = System.Net.WebRequest.Create("https://api.paypal.com/v1/payments/billing-agreements/I-GY2WH34CHXR5/cancel");
+
+            //Set values for the verification request
+            payPalCancelSubscription.Method = "POST";
+
+            var response = payPalCancelSubscription.GetResponse();
+
+            //await AddEmailtoList("testing12345@testing.com");
+
             return View();
         }
 
+        //private async Task AddEmailtoList(string email)
+        //{
+        //    const string url = "https://api.aweber.com/1.0/accounts/{accountId}/lists/{listId}/subscribers";
+        //    var customFields = new Dictionary<string, string>
+        //        {
+        //          {"apple", "fuji"},
+        //          {"pear", "bosc"}
+        //        };
+        //    var tags = new string[3] { "slow", "fast", "lightspeed" };
+        //    var payload = new Dictionary<string, object>
+        //                        {
+        //                          {"ad_tracking", "ebook"},
+        //                          {"custom_fields", customFields},
+        //                          {"email", "user@example.com"},
+        //                          {"ip_address", "192.168.0.1"},
+        //                          {"last_followup_message_number_sent", "0"},
+        //                          {"misc_notes", "string"},
+        //                          {"name", "John Doe"},
+        //                          {"strict_custom_fields", "true"},
+        //                          {"tags", tags}
+        //                        };
+        //    HttpRequestMessage request = new HttpRequestMessage(System.Net.Http.HttpMethod.Post, url);
+        //    request.Headers.Accept = new MediaTypeHeaderValue("application/json");
+        //    request.Content = JsonConvert.SerializeObject(payload);
+        //    request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+        //    request.Headers.UserAgent = new MediaTypeHeaderValue("AWeber-CSharp-code-sample/1.0");
+        //    var response = await Client.SendAsync(request);
+        //    Console.Write(response.Headers.Location);
+
+        //}
+
 
         //public async Task<IActionResult> Index()
-        
+
         //{
 
 
@@ -70,10 +120,10 @@ namespace EmployeeManagement.Controllers
         //        {
         //            list.Plans.Add(plan);
         //        }
-                
+
         //    }
 
-            
+
         //    if (list == null)
         //    {
         //        return RedirectToAction("Index", "Home");
@@ -85,208 +135,208 @@ namespace EmployeeManagement.Controllers
         //    return View(list);
         //}
 
-        private async Task CreateBillingPlans(PlanList list)
-        {
-            //clear all billing plans, if any.
-            var existingBillingPlans = _dbContext.BillingPlans.ToList();
+        //private async Task CreateBillingPlans(PlanList list)
+        //{
+        //    //clear all billing plans, if any.
+        //    var existingBillingPlans = _dbContext.BillingPlans.ToList();
 
-            var plans = list.Plans.Where(x => x.Name.Contains("092020")).ToList();
+        //    var plans = list.Plans.Where(x => x.Name.Contains("092020")).ToList();
 
-            foreach (var plan in plans)
-            {
-                if (plan != null)
-                {
-                    //add Billing plans in the database
-                    var billingPlan = new BillingPlan();
+        //    foreach (var plan in plans)
+        //    {
+        //        if (plan != null)
+        //        {
+        //            //add Billing plans in the database
+        //            var billingPlan = new BillingPlan();
 
-                    billingPlan.PayPalPlanId = plan.Id;
-                    billingPlan.Type = plan.Type;
-                    billingPlan.Name = plan.Name;
-                    billingPlan.Description = plan.Description;
-                    billingPlan.State = plan.State;
+        //            billingPlan.PayPalPlanId = plan.Id;
+        //            billingPlan.Type = plan.Type;
+        //            billingPlan.Name = plan.Name;
+        //            billingPlan.Description = plan.Description;
+        //            billingPlan.State = plan.State;
 
-                    if (plan.PaymentDefinitions != null)
-                    {
-                        billingPlan.PaymentFrequency = plan.PaymentDefinitions.FirstOrDefault().Frequency;
-                        billingPlan.PaymentInterval = plan.PaymentDefinitions.FirstOrDefault().FrequencyInterval;
-                    }
-                    else
-                    {
-                        billingPlan.PaymentFrequency = "Not Provided";
-                        billingPlan.PaymentInterval = "Not Provided";
-                    }
+        //            if (plan.PaymentDefinitions != null)
+        //            {
+        //                billingPlan.PaymentFrequency = plan.PaymentDefinitions.FirstOrDefault().Frequency;
+        //                billingPlan.PaymentInterval = plan.PaymentDefinitions.FirstOrDefault().FrequencyInterval;
+        //            }
+        //            else
+        //            {
+        //                billingPlan.PaymentFrequency = "Not Provided";
+        //                billingPlan.PaymentInterval = "Not Provided";
+        //            }
 
-                    billingPlan.ReturnURL = "https://www.andytipsterpro.com/";
-                    billingPlan.CancelURL = "https://www.andytipsterpro.com/";
-                    billingPlan.CreateTime = plan.CreateTime;
-                    billingPlan.UpdateTime = plan.UpdateTime;
+        //            billingPlan.ReturnURL = "https://www.andytipsterpro.com/";
+        //            billingPlan.CancelURL = "https://www.andytipsterpro.com/";
+        //            billingPlan.CreateTime = plan.CreateTime;
+        //            billingPlan.UpdateTime = plan.UpdateTime;
 
-                    _dbContext.BillingPlans.Add(billingPlan);
-
-
-
-                    await _dbContext.SaveChangesAsync();
-                }
-            }
-
-                     
-
-        }
-
-        private async Task CreateProducts()
-        {
-
-            var billingPlans = _dbContext.BillingPlans.ToList();
-
-            var EliteMonthlyBillingPlan = billingPlans.Where(x => x.Name == "Elite Package - Monthly (092020)").FirstOrDefault();
-            var EliteQuarterBillingPlan = billingPlans.Where(x => x.Name == "Elite Package - 3 Months (092020)").FirstOrDefault();
-            var CombinationMonthlyBillingPlan = billingPlans.Where(x => x.Name == "Combination Package UK/IRE - Monthly (092020)").FirstOrDefault();
-            var CombinationQuarterBillingPlan = billingPlans.Where(x => x.Name == "Combination Package UK/IRE -  3 Months (092020)").FirstOrDefault();
-            var UKRacingMonthlyBillingPlan = billingPlans.Where(x => x.Name == "UK Racing Only Package - Monthly (092020)").FirstOrDefault();
-            var UKRacingQuarterBillingPlan = billingPlans.Where(x => x.Name == "UK Racing Only Package - 3 Months (092020)").FirstOrDefault();
-
-            List<Product> products = new List<Product>();
-
-            var EliteMonthlyProduct = new Product()
-            {
-                Name = EliteMonthlyBillingPlan.Name,
-                Description = EliteMonthlyBillingPlan.Description,
-                PayPalPlanId = EliteMonthlyBillingPlan.PayPalPlanId,
-                Price = 2800,
-                PaymentFrequency = "1 Month"
-            };
-            products.Add(EliteMonthlyProduct);
-
-            var EliteQuarterProduct = new Product()
-            {
-                Name = EliteQuarterBillingPlan.Name,
-                Description = EliteQuarterBillingPlan.Description,
-                PayPalPlanId = EliteQuarterBillingPlan.PayPalPlanId,
-                Price = 7000,
-                PaymentFrequency = "3 Months"
-            };
-            products.Add(EliteQuarterProduct);
-
-            var CombinationMonthlyProduct = new Product()
-            {
-                Name = CombinationMonthlyBillingPlan.Name,
-                Description = CombinationMonthlyBillingPlan.Description,
-                PayPalPlanId = CombinationMonthlyBillingPlan.PayPalPlanId,
-                Price = 2400,
-                PaymentFrequency = "1 Month"
-            };
-            products.Add(CombinationMonthlyProduct);
-
-            var CombinationQuarterProduct = new Product()
-            {
-                Name = CombinationQuarterBillingPlan.Name,
-                Description = CombinationQuarterBillingPlan.Description,
-                PayPalPlanId = CombinationQuarterBillingPlan.PayPalPlanId,
-                Price = 6000,
-                PaymentFrequency = "3 Months"
-            };
-            products.Add(CombinationQuarterProduct);
-
-            var UKRacingMonthlyProduct = new Product()
-            {
-                Name = UKRacingMonthlyBillingPlan.Name,
-                Description = UKRacingMonthlyBillingPlan.Description,
-                PayPalPlanId = UKRacingMonthlyBillingPlan.PayPalPlanId,
-                Price = 1900,
-                PaymentFrequency = "1 Month"
-            };
-            products.Add(UKRacingMonthlyProduct);
+        //            _dbContext.BillingPlans.Add(billingPlan);
 
 
-            var UKRacingQuarterProduct = new Product()
-            {
-                Name = UKRacingQuarterBillingPlan.Name,
-                Description = UKRacingQuarterBillingPlan.Description,
-                PayPalPlanId = UKRacingQuarterBillingPlan.PayPalPlanId,
-                Price = 5000,
-                PaymentFrequency = "3 Months"
-            };
-            products.Add(UKRacingQuarterProduct);
 
-            _dbContext.Products.AddRange(products);
-            await _dbContext.SaveChangesAsync();
-
-            //var TestPlan = billingPlans.Where(x => x.Name.Contains("092020")).FirstOrDefault();
-
-            //if (TestPlan != null)
-            //{
-            //    List<Product> products = new List<Product>();
-
-            //    var TestProduct = new Product()
-            //    {
-            //        Name = TestPlan.Name,
-            //        Description = TestPlan.Description,
-            //        PayPalPlanId = TestPlan.PayPalPlanId,
-            //        Price = 1,
-            //        PaymentFrequency = "3 Days"
-            //    };
-            //    products.Add(TestProduct);
+        //            await _dbContext.SaveChangesAsync();
+        //        }
+        //    }
 
 
-            //    _dbContext.Products.AddRange(products);
-            //    await _dbContext.SaveChangesAsync();
-            //}
+
+        //}
+
+        //private async Task CreateProducts()
+        //{
+
+        //    var billingPlans = _dbContext.BillingPlans.ToList();
+
+        //    var EliteMonthlyBillingPlan = billingPlans.Where(x => x.Name == "Elite Package - Monthly (092020)").FirstOrDefault();
+        //    var EliteQuarterBillingPlan = billingPlans.Where(x => x.Name == "Elite Package - 3 Months (092020)").FirstOrDefault();
+        //    var CombinationMonthlyBillingPlan = billingPlans.Where(x => x.Name == "Combination Package UK/IRE - Monthly (092020)").FirstOrDefault();
+        //    var CombinationQuarterBillingPlan = billingPlans.Where(x => x.Name == "Combination Package UK/IRE -  3 Months (092020)").FirstOrDefault();
+        //    var UKRacingMonthlyBillingPlan = billingPlans.Where(x => x.Name == "UK Racing Only Package - Monthly (092020)").FirstOrDefault();
+        //    var UKRacingQuarterBillingPlan = billingPlans.Where(x => x.Name == "UK Racing Only Package - 3 Months (092020)").FirstOrDefault();
+
+        //    List<Product> products = new List<Product>();
+
+        //    var EliteMonthlyProduct = new Product()
+        //    {
+        //        Name = EliteMonthlyBillingPlan.Name,
+        //        Description = EliteMonthlyBillingPlan.Description,
+        //        PayPalPlanId = EliteMonthlyBillingPlan.PayPalPlanId,
+        //        Price = 2800,
+        //        PaymentFrequency = "1 Month"
+        //    };
+        //    products.Add(EliteMonthlyProduct);
+
+        //    var EliteQuarterProduct = new Product()
+        //    {
+        //        Name = EliteQuarterBillingPlan.Name,
+        //        Description = EliteQuarterBillingPlan.Description,
+        //        PayPalPlanId = EliteQuarterBillingPlan.PayPalPlanId,
+        //        Price = 7000,
+        //        PaymentFrequency = "3 Months"
+        //    };
+        //    products.Add(EliteQuarterProduct);
+
+        //    var CombinationMonthlyProduct = new Product()
+        //    {
+        //        Name = CombinationMonthlyBillingPlan.Name,
+        //        Description = CombinationMonthlyBillingPlan.Description,
+        //        PayPalPlanId = CombinationMonthlyBillingPlan.PayPalPlanId,
+        //        Price = 2400,
+        //        PaymentFrequency = "1 Month"
+        //    };
+        //    products.Add(CombinationMonthlyProduct);
+
+        //    var CombinationQuarterProduct = new Product()
+        //    {
+        //        Name = CombinationQuarterBillingPlan.Name,
+        //        Description = CombinationQuarterBillingPlan.Description,
+        //        PayPalPlanId = CombinationQuarterBillingPlan.PayPalPlanId,
+        //        Price = 6000,
+        //        PaymentFrequency = "3 Months"
+        //    };
+        //    products.Add(CombinationQuarterProduct);
+
+        //    var UKRacingMonthlyProduct = new Product()
+        //    {
+        //        Name = UKRacingMonthlyBillingPlan.Name,
+        //        Description = UKRacingMonthlyBillingPlan.Description,
+        //        PayPalPlanId = UKRacingMonthlyBillingPlan.PayPalPlanId,
+        //        Price = 1900,
+        //        PaymentFrequency = "1 Month"
+        //    };
+        //    products.Add(UKRacingMonthlyProduct);
 
 
-        }
+        //    var UKRacingQuarterProduct = new Product()
+        //    {
+        //        Name = UKRacingQuarterBillingPlan.Name,
+        //        Description = UKRacingQuarterBillingPlan.Description,
+        //        PayPalPlanId = UKRacingQuarterBillingPlan.PayPalPlanId,
+        //        Price = 5000,
+        //        PaymentFrequency = "3 Months"
+        //    };
+        //    products.Add(UKRacingQuarterProduct);
+
+        //    _dbContext.Products.AddRange(products);
+        //    await _dbContext.SaveChangesAsync();
+
+        //    //var TestPlan = billingPlans.Where(x => x.Name.Contains("092020")).FirstOrDefault();
+
+        //    //if (TestPlan != null)
+        //    //{
+        //    //    List<Product> products = new List<Product>();
+
+        //    //    var TestProduct = new Product()
+        //    //    {
+        //    //        Name = TestPlan.Name,
+        //    //        Description = TestPlan.Description,
+        //    //        PayPalPlanId = TestPlan.PayPalPlanId,
+        //    //        Price = 1,
+        //    //        PaymentFrequency = "3 Days"
+        //    //    };
+        //    //    products.Add(TestProduct);
+
+
+        //    //    _dbContext.Products.AddRange(products);
+        //    //    await _dbContext.SaveChangesAsync();
+        //    //}
+
+
+        //}
 
 
         /// <summary>
         /// Create the default billing plans for this website
         /// </summary>
-        private async Task CreatePayPalPlans()
-        {
+        //private async Task CreatePayPalPlans()
+        //{
 
-            var client = _clientFactory.GetClient();
+        //    var client = _clientFactory.GetClient();
 
-            foreach (var plan in BillingPlanSeedTest.PayPalPlans("https://www.andytipster.com/Subscription/Return", "https://www.andytipster.com/Subscription/Cancel"))
+        //    foreach (var plan in BillingPlanSeedTest.PayPalPlans("https://www.andytipster.com/Subscription/Return", "https://www.andytipster.com/Subscription/Cancel"))
 
-            //foreach (var plan in BillingPlanSeed.PayPalPlans("https://localhost:44376/Subscription/Return", "https://localhost:44376/Subscription/Cancel"))
+        //    //foreach (var plan in BillingPlanSeed.PayPalPlans("https://localhost:44376/Subscription/Return", "https://localhost:44376/Subscription/Cancel"))
 
-            {
-                // Create Plan
-                var request = new PlanCreateRequest().RequestBody(plan);
-                BraintreeHttp.HttpResponse result = await client.Execute(request);
-                var obj = result.Result<Plan>();
+        //    {
+        //        // Create Plan
+        //        var request = new PlanCreateRequest().RequestBody(plan);
+        //        BraintreeHttp.HttpResponse result = await client.Execute(request);
+        //        var obj = result.Result<Plan>();
 
-                // Activate Plan
-                var activateRequest = new PlanUpdateRequest<Plan>(obj.Id)
-                    .RequestBody(GetActivatePlanBody());
+        //        // Activate Plan
+        //        var activateRequest = new PlanUpdateRequest<Plan>(obj.Id)
+        //            .RequestBody(GetActivatePlanBody());
 
-                await client.Execute(activateRequest);
+        //        await client.Execute(activateRequest);
 
-            }
+        //    }
 
-        }
+        //}
 
-        private static List<JsonPatch<Plan>> GetActivatePlanBody()
-        {
-            return new List<JsonPatch<Plan>>()
-            {
-                new JsonPatch<Plan>()
-                {
-                    Op = "replace",
-                    Path = "/",
-                    Value = new Plan()
-                    {
-                        State = "ACTIVE"
-                    }
-                }
-            };
-        }
+        //private static List<JsonPatch<Plan>> GetActivatePlanBody()
+        //{
+        //    return new List<JsonPatch<Plan>>()
+        //    {
+        //        new JsonPatch<Plan>()
+        //        {
+        //            Op = "replace",
+        //            Path = "/",
+        //            Value = new Plan()
+        //            {
+        //                State = "ACTIVE"
+        //            }
+        //        }
+        //    };
+        //}
 
-        private APIContext GetApiContext()
-        {
-            // Authenticate with PayPal
-            var config = ConfigManager.Instance.GetProperties();
-            var accessToken = new OAuthTokenCredential("", "").GetAccessToken();
-            var apiContext = new APIContext(accessToken);
-            return apiContext;
-        }
+        //private APIContext GetApiContext()
+        //{
+        //    // Authenticate with PayPal
+        //    var config = ConfigManager.Instance.GetProperties();
+        //    var accessToken = new OAuthTokenCredential("", "").GetAccessToken();
+        //    var apiContext = new APIContext(accessToken);
+        //    return apiContext;
+        //}
     }
 }
