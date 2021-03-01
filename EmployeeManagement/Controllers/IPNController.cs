@@ -104,6 +104,7 @@ namespace EmployeeManagement.Controllers
                     //update database
                     var payPalAgreement = data["recurring_payment_id"];
                     await NewSubscriptionFirstPaymentFailedDeleteSubscription(payPalAgreement);
+                    await TellPayPalToCancelSubscription(payPalAgreement);
 
                 }
 
@@ -122,6 +123,7 @@ namespace EmployeeManagement.Controllers
                     //update database
                     var payPalAgreement = data["recurring_payment_id"];
                     await ExistingSubscriptionPaymentHasbeenDeniedUpdateSubscription(payPalAgreement);
+                    await TellPayPalToCancelSubscription(payPalAgreement);
                 }
 
 
@@ -131,6 +133,7 @@ namespace EmployeeManagement.Controllers
                     //update database
                     var payPalAgreement = data["recurring_payment_id"];
                     await ExistingSubscriptionPaymentFailedUpdateSubscription(payPalAgreement);
+                    await TellPayPalToCancelSubscription(payPalAgreement);
                 }
 
                 //An existing customer has SKIPPED their payment. NO ACTION REQUIRED AT THE MOMENT..
@@ -139,15 +142,54 @@ namespace EmployeeManagement.Controllers
 
                     // NO ACTION REQURIED.
 
-                    //update database
-                    //var payPalAgreement = data["recurring_payment_id"];
-                    //await ExistingSubscriptionPaymentSkippedUpdateSubscription(payPalAgreement);
                 }
 
             }
         }
 
-     
+        private async Task TellPayPalToCancelSubscription(string payPalAgreement)
+        {
+            try
+            {
+                var client = _clientFactory.GetClient();
+
+                var requestForPayPalAgreement = new AgreementGetRequest(payPalAgreement);
+                var result = await client.Execute(requestForPayPalAgreement);
+                var agreement = result.Result<Agreement>();
+
+                var request = new AgreementCancelRequest(payPalAgreement).RequestBody(new AgreementStateDescriptor()
+                {
+                    Note = "Cancelled"
+                });
+
+                await client.Execute(request);
+
+                var message = $"PayPal has been notified to cancel Subscription :{agreement.Id} for the package : {agreement.Description} under {agreement.Name}.";
+                var subject = $"PayPal has been notified to Cancel Subscription :{agreement.Id}";
+                await EmailAdmin(message, subject);
+
+                await EmailSuperAdmin("Notify PayPal to Cancel Subscription SUCCESS", "Notify PayPal to Cancel Subscription SUCCESS");
+
+            }
+            catch (Exception ex)
+            {
+
+                // save error in the database.
+                PaypalErrors payPalReturnedError = new PaypalErrors()
+                {
+                    Exception = ex.Message,
+                    DateTime = DateTime.Now
+
+                };
+
+                _dbcontext.PaypalErrors.Add(payPalReturnedError);
+                await _dbcontext.SaveChangesAsync();
+
+                await EmailSuperAdmin("Notify PayPal to Cancel Subscription Failed", "Notify PayPal to Cancel Subscription Failed");
+            }
+
+        }
+
         private async Task NewSubscriptionFirstPaymentFailedDeleteSubscription(string payPalAgreement)
         {
             //get a user with PayPal agreement.
@@ -371,7 +413,6 @@ namespace EmployeeManagement.Controllers
                     }
                 }
 
-
                 //An existing customer has decided to cancel. Set Expiry date on the subscription.
                 if (data["txn_type"] == "recurring_payment_profile_cancel")
                 {
@@ -409,6 +450,13 @@ namespace EmployeeManagement.Controllers
             var sendGridKey = _configuration.GetValue<string>("SendGridApi");
             await Emailer.SendEmail("fazahmed786@hotmail.com", subject, message, sendGridKey);
             await Emailer.SendEmail("andytipster99@gmail.com", subject, message, sendGridKey);
+        }
+
+        private async Task EmailSuperAdmin(string message, string subject)
+        {
+            //notify Me, when this gets.
+            var sendGridKey = _configuration.GetValue<string>("SendGridApi");
+            await Emailer.SendEmail("fazahmed786@hotmail.com", subject, message, sendGridKey);
         }
 
         private async Task EmailCustomer(string emailAddress, string message, string subject)
@@ -583,38 +631,5 @@ namespace EmployeeManagement.Controllers
             }
         }
 
-   
-        //private async Task UpdateDeniedPayment(string payPalAgreement)
-        //{
-        //    //get a user with PayPal agreement.
-        //    var userSubscription = _dbcontext.UserSubscriptions.Where(x => x.PayPalAgreementId == payPalAgreement).FirstOrDefault();
-        //    if (userSubscription != null)
-        //    {
-        //        userSubscription.State = "Payment Denied";
-        //        await _dbcontext.SaveChangesAsync();
-
-        //        var message = $"PAYMENT DENIED: {userSubscription.PayerFirstName}  {userSubscription.PayerLastName} " +
-        //                      $": {userSubscription.PayerEmail} have denied their payment. " +
-        //                      $"Access to account has been suspended.";
-        //        await EmailAdmin(message, "PAYMENT DENIED");
-        //    }
-        //}
-
-        //private async Task UpdateSkippedPayment(string payPalAgreement)
-        //{
-        //    //get a user with PayPal agreement.
-        //    var userSubscription = _dbcontext.UserSubscriptions.Where(x => x.PayPalAgreementId == payPalAgreement).FirstOrDefault();
-        //    if (userSubscription != null)
-        //    {
-        //        userSubscription.State = "Payment Skipped";
-        //        await _dbcontext.SaveChangesAsync();
-
-        //        var message = $"SKIPPED PAYMENT: {userSubscription.PayerFirstName}  {userSubscription.PayerLastName} " +
-        //                      $": {userSubscription.PayerEmail} have skipped their payment. " +
-        //                      $"Access to account has been suspended.";
-        //        await EmailAdmin(message, "PAYMENT SKIPPED");
-        //    }
-
-        //}
     }
 }
