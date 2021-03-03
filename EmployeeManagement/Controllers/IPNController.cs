@@ -98,15 +98,40 @@ namespace EmployeeManagement.Controllers
                 }
 
 
-                //A new customer tried to subscribed but their payment failed. Delete their subscription.
-                if ((data["txn_type"] == "recurring_payment_profile_created") && (data["initial_payment_status"] == "Failed"))
+                //A new customer tried to subscribed but their payment failed. Delete their subscription on the website and on PayPal side.
+                if (data["txn_type"] == "recurring_payment_profile_created")
                 {
-                    //update database
-                    var payPalAgreement = data["recurring_payment_id"];
-                    await NewSubscriptionFirstPaymentFailedDeleteSubscription(payPalAgreement);
-                    await TellPayPalToCancelSubscription(payPalAgreement);
+
+                    if (data.ContainsKey("initial_payment_status"))
+                    {
+                        if (data["initial_payment_status"] == "Failed")
+                        {
+                            //update database
+                            var payPalAgreement = data["recurring_payment_id"];
+                            await NewSubscriptionFirstPaymentFailedDeleteSubscription(payPalAgreement);
+                            await TellPayPalToCancelSubscription(payPalAgreement);
+
+                        }
+                    }
 
                 }
+
+
+                //A new customer tried to subscribed but their payment is PENDING. Delete their subscription on the website and on PayPal side.
+                if (data["txn_type"] == "recurring_payment_profile_created")
+                {
+                    if (data.ContainsKey("initial_payment_status"))
+                    {
+                        if (data["initial_payment_status"] == "Pending")
+                        {
+                            //update database
+                            var payPalAgreement = data["recurring_payment_id"];
+                            await NewSubscriptionFirstPaymentPendingDeleteSubscription(payPalAgreement);
+                            await TellPayPalToCancelSubscription(payPalAgreement);
+                        }
+                    }
+                }
+
 
                 //An existing customer has decided to cancel. Set Expiry date on the subscription.
                 if (data["txn_type"] == "recurring_payment_profile_cancel")
@@ -135,6 +160,7 @@ namespace EmployeeManagement.Controllers
                     await ExistingSubscriptionPaymentFailedUpdateSubscription(payPalAgreement);
                     await TellPayPalToCancelSubscription(payPalAgreement);
                 }
+
 
                 //An existing customer has SKIPPED their payment. NO ACTION REQUIRED AT THE MOMENT..
                 if (data["txn_type"] == "recurring_payment_skipped")
@@ -212,6 +238,28 @@ namespace EmployeeManagement.Controllers
             }
         }
 
+        private async Task NewSubscriptionFirstPaymentPendingDeleteSubscription(string payPalAgreement)
+        {
+            //get a user with PayPal agreement.
+            var userSubscription = _dbcontext.UserSubscriptions.Where(x => x.PayPalAgreementId == payPalAgreement).FirstOrDefault();
+            if (userSubscription != null)
+            {
+                _dbcontext.UserSubscriptions.Remove(userSubscription);
+                await _dbcontext.SaveChangesAsync();
+
+
+                await EmailCustomer(userSubscription.PayerEmail,
+                                    "Thanks for trying to Subscribe at AndyTipster. However your payment is still PENDING. Please try again.",
+                                    "Payment for AndyTipster Pending");
+
+
+                var message = $"A new Subscription, FIRST PAYMENT PENDING: {userSubscription.PayerFirstName}  {userSubscription.PayerLastName} " +
+                              $": {userSubscription.PayerEmail} first payment is have PENDING.. They have no Access to this subscription.";
+
+                await EmailAdmin(message, "A new Subscription, FIRST PAYMENT PENDING, Subscription Cancelled.");
+            }
+        }
+
         private async Task ExistingSubscriptionHasbeenCancelledUpdateSubscription(string payPalAgreement)
         {
             //get a user with PayPal agreement.
@@ -282,6 +330,7 @@ namespace EmployeeManagement.Controllers
                 await EmailAdmin(adminMessage, "Regular Subscription FAILED PAYMENT, Subscription REMOVED.");
             }
         }
+
 
         private async Task ExistingSubscriptionPaymentSkippedUpdateSubscription(string payPalAgreement)
         {
@@ -429,6 +478,19 @@ namespace EmployeeManagement.Controllers
 
                 }
 
+
+                //A new customer tried to subscribed but their payment is PENDING. Delete their subscription on the website and on PayPal side.
+                if (data["txn_type"] == "recurring_payment_profile_created")
+                {
+                    if (data.ContainsKey("initial_payment_status"))
+                    {
+                        if (data["initial_payment_status"] == "Pending")
+                        {
+                            //do not send email
+                            sendEmailsAndLog = false;
+                        }
+                    }
+                }
 
                 if (sendEmailsAndLog)
                 {
