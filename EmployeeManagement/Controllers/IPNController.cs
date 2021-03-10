@@ -116,6 +116,34 @@ namespace EmployeeManagement.Controllers
 
                 }
 
+                //A new customer has just successfully subscribed.
+                if (data["txn_type"] == "recurring_payment_profile_created")
+                {
+                    if (data.ContainsKey("initial_payment_status"))
+                    {
+                        if (data["initial_payment_status"] == "Completed")
+                        {
+                            //update database for start date.
+                            var payPalAgreement = data["recurring_payment_id"];
+                            await NewSubscriptionUpdateStartDate(payPalAgreement);
+                        }
+                    }
+                }
+
+                //An existing customer has just renewed their subscription.
+                if (data["txn_type"] == "recurring_payment")
+                {
+                    if (data.ContainsKey("payment_status"))
+                    {
+                        if (data["payment_status"] == "Completed")
+                        {
+                            //update database for start date.
+                            var payPalAgreement = data["recurring_payment_id"];
+                            await NewSubscriptionUpdateStartDate(payPalAgreement);
+                        }
+                    }
+                }
+
 
                 //A new customer tried to subscribed but their payment is PENDING. Delete their subscription on the website and on PayPal side.
                 if (data["txn_type"] == "recurring_payment_profile_created")
@@ -170,6 +198,18 @@ namespace EmployeeManagement.Controllers
 
                 }
 
+            }
+        }
+
+        private async Task NewSubscriptionUpdateStartDate(string payPalAgreement)
+        {
+            //get a user with PayPal agreement.
+            var userSubscription = _dbcontext.UserSubscriptions.Where(x => x.PayPalAgreementId == payPalAgreement).FirstOrDefault();
+            if (userSubscription != null)
+            {
+                userSubscription.StartDate = DateTime.Now;
+                _dbcontext.UserSubscriptions.Update(userSubscription);
+                await _dbcontext.SaveChangesAsync();
             }
         }
 

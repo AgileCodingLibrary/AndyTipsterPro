@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using PayPal.v1.BillingAgreements;
 using ReflectionIT.Mvc.Paging;
 using System;
 using System.Collections.Generic;
@@ -27,18 +28,21 @@ namespace AndyTipsterPro.Controllers
         private readonly ILogger<AdministrationController> logger;
         private readonly IConfiguration _configuration;
         private readonly AppDbContext _dbContext;
+        private readonly PayPalHttpClientFactory _clientFactory;
 
         public AdministrationController(RoleManager<IdentityRole> roleManager,
                                         UserManager<ApplicationUser> userManager,
                                         ILogger<AdministrationController> logger,
                                         IConfiguration configuration,
-                                        AppDbContext dbContext)
+                                        AppDbContext dbContext,
+                                        PayPalHttpClientFactory clientFactory)
         {
             this.roleManager = roleManager;
             this.userManager = userManager;
             this.logger = logger;
             _configuration = configuration;
             this._dbContext = dbContext;
+            this._clientFactory = clientFactory;
         }
 
         [HttpGet]
@@ -705,8 +709,8 @@ namespace AndyTipsterPro.Controllers
                 BlockComboPackage = user.BlockComboPackage,
                 BlockUKRacingPackage = user.BlockUKRacingPackage,
                 BlockElitePackage = user.BlockElitePackage
-                
-                
+
+
 
             };
 
@@ -793,12 +797,49 @@ namespace AndyTipsterPro.Controllers
                                                 x.UserName.Contains(filter)).AsNoTracking().OrderBy(x => x.Email);
             }
 
-           
 
-            var model = await PagingList.CreateAsync(query, pageSize, page);
+            PagingList<ApplicationUser> model = await PagingList.CreateAsync(query, pageSize, page);
             model.Action = "UserDashboard";
             return View(model);
         }
+
+        [HttpGet]
+        [Authorize(Roles = "superadmin, admin")]
+        public async Task<IActionResult> SubscribedUserDashboard(string filter, int page = 1, int pageSize = 25)
+        {
+            var user = await userManager.GetUserAsync(HttpContext.User);
+
+            if (user == null)
+            {
+                ViewBag.ErrorMessage = $"User cannot be found";
+                return View("NotFound");
+            }
+
+
+            IOrderedQueryable<UserSubscriptions> query = null;
+            query = _dbContext.UserSubscriptions.Include(x => x.User).AsNoTracking().OrderBy(x => x.PayerEmail);
+
+
+            if (!string.IsNullOrWhiteSpace(filter))
+            {
+                query = _dbContext.UserSubscriptions.Include(x => x.User).Where(x => x.PayerEmail.Contains(filter) ||
+                                                x.PayerFirstName.Contains(filter) ||
+                                                x.PayerLastName.Contains(filter) ||
+                                                x.User.UserName.Contains(filter) ||
+                                                x.User.Email.Contains(filter) ||
+                                                x.User.FirstName.Contains(filter) ||
+                                                x.User.LastName.Contains(filter) ||
+                                                x.User.UserName.Contains(filter)
+                                                ).AsNoTracking().OrderBy(x => x.PayerEmail);
+            }
+
+
+            PagingList<UserSubscriptions> model = await PagingList.CreateAsync(query, pageSize, page);
+            model.Action = "SubscribedUserDashboard";
+            return View(model);
+        }
+
+
 
         [HttpGet]
         [Authorize(Roles = "superadmin, admin")]
@@ -811,8 +852,11 @@ namespace AndyTipsterPro.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            var today = DateTime.Now;
-            var customerSubs = _dbContext.UserSubscriptions.Where(x => x.UserId == userId && x.ExpiryDate >= today).ToList();
+            var today = DateTime.Now.Date;
+            //var customerSubs = _dbContext.UserSubscriptions.Where(x => x.UserId == userId && x.ExpiryDate.Date >= today.Date).ToList();
+
+            var customerSubs = _dbContext.UserSubscriptions.Where(x => x.UserId == userId && x.State == "Active" ||
+                                                                  (x.UserId == userId && x.State == "Cancelled" && x.ExpiryDate.Year > 1994 && x.ExpiryDate > DateTime.Now.Date)).ToList();
 
             var model = new UserDetailsViewModel
             {
@@ -823,6 +867,7 @@ namespace AndyTipsterPro.Controllers
 
             return View(model);
         }
+
 
         [HttpGet]
         [Authorize(Roles = "superadmin, admin")]
@@ -860,18 +905,69 @@ namespace AndyTipsterPro.Controllers
 
             //List<string> emails = new List<string>();
             //emails.Add("fazahmed786@hotmail.com");           
-            
 
-              var sendGridKey = _configuration.GetValue<string>("SendGridApi");
+
+            var sendGridKey = _configuration.GetValue<string>("SendGridApi");
 
             foreach (var email in emails)
             {
-               await Emailer.SendBroadCastEmail(email, model.Subject, model.Message, sendGridKey);
+                await Emailer.SendBroadCastEmail(email, model.Subject, model.Message, sendGridKey);
             }
 
             return View("MessageBroadCasted");
         }
 
+        [HttpGet]
+        [Authorize(Roles = "superadmin, admin")]
+        public async Task<IActionResult> DeleteSubscription(string agreementId, string userId)
+        {
+            var client = _clientFactory.GetClient();
 
+            var request = new AgreementCancelRequest(agreementId).RequestBody(new AgreementStateDescriptor()
+            {
+                Note = "Cancelled"
+            });
+            await client.Execute(request);
+
+            await TellPayPalToCancelSubscription(agreementId);
+
+            return RedirectToAction("UserDetails", new { userId });
+
+        }
+
+        private async Task TellPayPalToCancelSubscription(string payPalAgreement)
+        {
+            try
+            {
+                var client = _clientFactory.GetClient();
+
+                var requestForPayPalAgreement = new AgreementGetRequest(payPalAgreement);
+                var result = await client.Execute(requestForPayPalAgreement);
+                var agreement = result.Result<Agreement>();
+
+                var request = new AgreementCancelRequest(payPalAgreement).RequestBody(new AgreementStateDescriptor()
+                {
+                    Note = "Cancelled"
+                });
+
+                await client.Execute(request);
+
+            }
+            catch (Exception ex)
+            {
+
+                // save error in the database.
+                PaypalErrors payPalReturnedError = new PaypalErrors()
+                {
+                    Exception = ex.Message,
+                    DateTime = DateTime.Now
+
+                };
+
+                this._dbContext.PaypalErrors.Add(payPalReturnedError);
+                await this._dbContext.SaveChangesAsync();
+            }
+
+        }
     }
 }

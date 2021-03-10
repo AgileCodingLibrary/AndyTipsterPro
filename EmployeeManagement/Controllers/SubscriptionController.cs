@@ -241,7 +241,7 @@ namespace AndyTipsterPro.Controllers
                 var startDate = DateTime.UtcNow;
                 if (plan.Name.Contains("Monthly"))
                 {
-                    startDate = DateTime.UtcNow.AddMonths(1);                    
+                    startDate = DateTime.UtcNow.AddMonths(1);
                 }
 
                 if (plan.Name.Contains("3 Months"))

@@ -28,12 +28,12 @@
 
                     @if (@Model.CustomerSubscriptions.Count() > 0)
                     {
-                    <br />
-                    <h4 class="section-title">Paid Subscriptions</h4>
-                    <ul class="list-unstyled">
-                        <li>User has <strong>@Model.CustomerSubscriptions.Count()</strong> paid, active subscriptions.</li>
+                        <br />
+                        <h4 class="section-title">Paid Subscriptions</h4>
+                        <ul class="list-unstyled">
+                            <li>User has <strong>@Model.CustomerSubscriptions.Count()</strong> paid, active subscriptions.</li>
 
-                    </ul>
+                        </ul>
                     }
 
                 </div>
@@ -47,67 +47,66 @@
 
 @if (Model.CustomerSubscriptions != null && Model.CustomerSubscriptions.Count() > 0)
 {
-<section class="animated fadeInDown animation-delay-8">
-    <h2>Subscription (via PayPal) Details</h2>
-    <p>PayPal has provided following details.</p>
-    <p><strong>Customers can manage their subscriptions direct in their Paypal account.</strong></p>
-</section>
+    <section class="animated fadeInDown animation-delay-8">
+        <h2>Subscription (via PayPal) Details</h2>
+        <p>PayPal has provided following details.</p>
+        <p><strong>Customers can manage their subscriptions direct in their Paypal account.</strong></p>
+    </section>
     foreach (var sub in Model.CustomerSubscriptions)
     {
-<div class="row">
-    <div class="col-md-12">
-        <section class="animated fadeIn animation-delay-10">
+        <div class="row">
+            <div class="col-md-12">
+                <section class="animated fadeIn animation-delay-10">
 
-            <div class="panel-group" id='@(sub.Id)accordion'>
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h4 class="panel-title">
-                            <a data-toggle="collapse" data-parent='#@(sub.Id)accordion' href="#collapseOne">
-                                @sub.Description
-                            </a>
-                        </h4>
-                    </div>
-                    <div id="collapseOne" class="panel-collapse collapse in">
-                        <div class="panel-body">
+                    <div class="panel-group" id='@(sub.Id)accordion'>
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h4 class="panel-title">
+                                    <a data-toggle="collapse" data-parent='#@(sub.Id)accordion' href="#collapseOne">
+                                        @sub.Description
+                                    </a>
+                                </h4>
+                            </div>
+                            <div id="collapseOne" class="panel-collapse collapse in">
+                                <div class="panel-body">
 
-                            @*<section class="animated fadeInDown animation-delay-8">
-                                    <h2>Subscription (via PayPal) Details</h2>
-                                    <p>PayPal has provided us following details.</p>
-                                </section>*@
+                                    <ul>
+                                        <li>PayPal Subscription:  @sub.Description</li>
 
-
-
-                            <ul>
-                                <li>PayPal Subscription:  @sub.Description</li>
-
-                                @if (sub.State == "Cancelled")
+                                        @if (sub.State == "Cancelled")
                                         {
-                                <li>
-                                    Status:           @sub.State <span style="background-color:yellow"><strong>Your access will expire on @sub.ExpiryDate.</strong></span>
-                                </li>
+                                            <li>
+                                                Status:           @sub.State <span style="background-color:yellow"><strong>Your access will expire on @sub.ExpiryDate.</strong></span>
+                                            </li>
                                         }
                                         else
-                                {
-                                <li>Status:           @sub.State</li>
+                                        {
+                                            <li>Status:           @sub.State</li>
                                         }
 
-                                <li>PayPal Agreement:     @sub.PayPalAgreementId</li>
-                                <li>Payer First Name:     @sub.PayerFirstName</li>
-                                <li>Payer Last Name:      @sub.PayerLastName</li>
-                                <li>Payer Email:          @sub.PayerEmail</li>
-
-                            </ul>
+                                        <li>PayPal Agreement:     @sub.PayPalAgreementId</li>
+                                        <li>Payer First Name:     @sub.PayerFirstName</li>
+                                        <li>Payer Last Name:      @sub.PayerLastName</li>
+                                        <li>Payer Email:          @sub.PayerEmail</li>
+                                        <li>
+                                            <a asp-controller="Administration"
+                                               asp-action="DeleteSubscription"
+                                               asp-route-agreementId="@sub.PayPalAgreementId"
+                                               asp-route-userId="@sub.UserId"
+                                               class="btn btn-danger">Delete Subscription</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </div>
 
+                    </div>
+                </section>
             </div>
-        </section>
-    </div>
-</div>
+        </div>
     }
 }
 else
 {
-<h3>If customer has any paid subscriptions, details will appear here.</h3>
+    <h3>If customer has any paid subscriptions, details will appear here.</h3>
 }

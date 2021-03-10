@@ -1,6 +1,6 @@
-﻿@*@model PaginatedList<ApplicationUser>*@
+﻿
 
-@model ReflectionIT.Mvc.Paging.PagingList<ApplicationUser>
+@model ReflectionIT.Mvc.Paging.PagingList<UserSubscriptions>
 @using ReflectionIT.Mvc.Paging
 @addTagHelper *, ReflectionIT.Mvc.Paging
 
@@ -40,7 +40,7 @@
 
 
 <nav class="pagenav">
-    @await this.Component.InvokeAsync("Pager", new { PagingList = this.Model })    
+    @await this.Component.InvokeAsync("Pager", new { PagingList = this.Model })
 </nav>
 
 
@@ -54,30 +54,27 @@
                     <table class="table table-striped table-responsive" style="font-size:small;">
                         <thead>
                             <tr>
-                                <th>Full Name</th>
-                                <th>Email</th>
                                 <th>User Name</th>
-                                <th>Send Emails</th>
-                                <th>Elite (Admin) Allowed</th>
-                                <th>Combo (Admin) Allowed</th>
-                                <th>UK-Racing (Admin) Allowed</th>
+                                <th>User Email</th>
+                                <th>Payer Name</th>
+                                <th>Payer Email</th>                                
                                 <th></th>
+                               
 
                             </tr>
                         </thead>
                         <tbody>
                             @foreach (var customer in Model)
                             {
-                                <tr>
-                                    <td>@customer.FirstName  @customer.LastName </td>
-                                    <td><a asp-action="UserDetails" asp-controller="Administration" asp-route-userId="@customer.Id">@customer.Email</a></td>
-                                    <td>@customer.UserName</td>
-                                    <td>@customer.SendEmails</td>
-                                    <td>@customer.CanSeeElitePackage</td>
-                                    <td>@customer.CanSeeComboPackage</td>
-                                    <td>@customer.CanSeeUKRacingPackage</td>
+                            <tr>
+                                <td>@customer.User.FirstName  @customer.User.LastName </td>
+                                <td><a asp-action="UserDetails" asp-controller="Administration" asp-route-userId="@customer.User.Id">@customer.User.Email</a></td>
+                                <td>@customer.PayerFirstName  @customer.PayerLastName</td>
+                                <td>@customer.PayerEmail</td>
 
-                                </tr>
+                                <td><a class="btn btn-primary" asp-action="UserDetails" asp-controller="Administration" asp-route-userId="@customer.User.Id">Details</a></td>
+
+                            </tr>
                             }
                         </tbody>
                     </table>
@@ -97,19 +94,4 @@ else
     @await this.Component.InvokeAsync("Pager", new { PagingList = this.Model })
 </nav>
 
-@*@{
-        var prevDisabled = !Model.PreviousPage ? "disabled" : "";
-        var nextDisabled = !Model.NextPage ? "disabled" : "";
-    }
 
-    <a asp-action="UserDashboard"
-       asp-route-pageNumber="@(Model.PageIndex - 1)"
-       class="btn btn-default @prevDisabled">
-        Previous
-    </a>
-
-    <a asp-action="UserDashboard"
-       asp-route-pageNumber="@(Model.PageIndex + 1)"
-       class="btn btn-default @nextDisabled">
-        Next
-    </a>*@
