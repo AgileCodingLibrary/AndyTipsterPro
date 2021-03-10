@@ -57,24 +57,24 @@
                                 <th>User Name</th>
                                 <th>User Email</th>
                                 <th>Payer Name</th>
-                                <th>Payer Email</th>                                
+                                <th>Payer Email</th>
                                 <th></th>
-                               
+
 
                             </tr>
                         </thead>
                         <tbody>
                             @foreach (var customer in Model)
                             {
-                            <tr>
-                                <td>@customer.User.FirstName  @customer.User.LastName </td>
-                                <td><a asp-action="UserDetails" asp-controller="Administration" asp-route-userId="@customer.User.Id">@customer.User.Email</a></td>
-                                <td>@customer.PayerFirstName  @customer.PayerLastName</td>
-                                <td>@customer.PayerEmail</td>
+                                <tr>
+                                    <td>@customer.User.FirstName  @customer.User.LastName </td>
+                                    <td><a asp-action="UserDetails" asp-controller="Administration" asp-route-userId="@customer.User.Id">@customer.User.Email</a></td>
+                                    <td>@customer.PayerFirstName  @customer.PayerLastName</td>
+                                    <td>@customer.PayerEmail</td>
 
-                                <td><a class="btn btn-primary" asp-action="UserDetails" asp-controller="Administration" asp-route-userId="@customer.User.Id">Details</a></td>
+                                    <td><a class="btn btn-primary" asp-action="UserDetails" asp-controller="Administration" asp-route-userId="@customer.User.Id">Details</a></td>
 
-                            </tr>
+                                </tr>
                             }
                         </tbody>
                     </table>
@@ -85,7 +85,13 @@
 }
 else
 {
-    <h2>There are no Customers.</h2>
+    <h2>User has no Active or Cancelled subscriptions.</h2>
+    <h3>
+        You can find more details for this customer in <a asp-controller="Administration"
+                                                          asp-action="UserDashboard"
+                                                          class="btn btn-primary">Website users dashboard</a>
+    </h3>
+
 }
 
 

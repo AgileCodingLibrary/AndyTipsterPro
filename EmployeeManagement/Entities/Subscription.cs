@@ -9,7 +9,7 @@ namespace AndyTipsterPro.Entities
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Email { get; set; }
-        public DateTime StartDate { get; set; } = new DateTime(2020, 01, 01);
+        public DateTime StartDate { get; set; } = DateTime.Now;
         public string PayPalPlanId { get; set; }
         public string PayPalAgreementToken { get; set; }
         public string PayPalAgreementId { get; set; }

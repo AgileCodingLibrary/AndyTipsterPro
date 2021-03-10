@@ -33,19 +33,19 @@
                 </h3>
             </div>
             @*<div class="pricing-box-content">
-                <ul>
-                    <li> @Model.Plan.Description</li>
-                    <li><i class="fa fa-cloud-download"></i> Exercitation in id in officia.</li>
-                    <li><i class="fa fa-dashboard"></i> Exercitation in id in officia.</li>
-                    <li><i class="fa fa-sitemap"></i> Exercitation in id in officia.</li>
-                    <li><i class="fa fa-shopping-cart"></i> Exercitation in id in officia.</li>
-                </ul>
-            </div>*@
+                    <ul>
+                        <li> @Model.Plan.Description</li>
+                        <li><i class="fa fa-cloud-download"></i> Exercitation in id in officia.</li>
+                        <li><i class="fa fa-dashboard"></i> Exercitation in id in officia.</li>
+                        <li><i class="fa fa-sitemap"></i> Exercitation in id in officia.</li>
+                        <li><i class="fa fa-shopping-cart"></i> Exercitation in id in officia.</li>
+                    </ul>
+                </div>*@
             <div class="pricing-box-footer">
-               
+
                 @using (Html.BeginForm("PurchaseSubscription", "Subscription", FormMethod.Post, new { @class = "form-horizontal" }))
                 {
-                    @Html.HiddenFor(x => x.Product.PayPalPlanId)                 
+                    @Html.HiddenFor(x => x.Product.PayPalPlanId)
                     <button type="submit" class="btn btn-primary">Pay £1 with PayPal</button>
                 }
             </div>
@@ -54,3 +54,13 @@
 </div>
 
 
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-190625507-1">
+</script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-190625507-1');
+</script>

@@ -84,10 +84,28 @@
                                             <li>Status:           @sub.State</li>
                                         }
 
-                                        <li>PayPal Agreement:     @sub.PayPalAgreementId</li>
-                                        <li>Payer First Name:     @sub.PayerFirstName</li>
-                                        <li>Payer Last Name:      @sub.PayerLastName</li>
-                                        <li>Payer Email:          @sub.PayerEmail</li>
+                                        @{
+                                            var verifiedDate = true;
+                                            if ((sub.StartDate.Date - DateTime.Now).Days < -60)
+                                            {
+                                                verifiedDate = false;
+                                            }
+                                        }
+
+
+                                        @if (verifiedDate)
+                                        {
+                                            <li>Agreement Start Date:     @sub.StartDate</li>
+                                        }
+                                        else
+                                        {
+                                            <li>Agreement Start Date:     "Not Verified."</li>
+                                        }
+
+                                        <li>PayPal Agreement:         @sub.PayPalAgreementId</li>
+                                        <li>Payer First Name:         @sub.PayerFirstName</li>
+                                        <li>Payer Last Name:          @sub.PayerLastName</li>
+                                        <li>Payer Email:              @sub.PayerEmail</li>
                                         <li>
                                             <a asp-controller="Administration"
                                                asp-action="DeleteSubscription"

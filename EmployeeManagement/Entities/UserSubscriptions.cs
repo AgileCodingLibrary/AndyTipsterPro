@@ -11,7 +11,7 @@ namespace AndyTipsterPro.Entities
         public string SubscriptionId { get; set; }
         public string Description { get; set; }
         public string State { get; set; }
-        public DateTime StartDate { get; set; } = new DateTime(2020, 01, 01);
+        public DateTime StartDate { get; set; } = DateTime.Now;
 
         //Payer info
         public string PayerEmail { get; set; }
