@@ -854,7 +854,7 @@ namespace AndyTipsterPro.Controllers
             }
 
             var today = DateTime.Now.Date;
-            
+
             var customerSubs = _dbContext.UserSubscriptions.Where(x => x.UserId == userId && x.State == "Active" ||
                                    (x.UserId == userId && x.State == "Cancelled" && x.ExpiryDate.Year > 1994 && x.ExpiryDate > DateTime.Now.Date)).ToList();
 
@@ -921,17 +921,15 @@ namespace AndyTipsterPro.Controllers
         [Authorize(Roles = "superadmin, admin")]
         public async Task<IActionResult> DeleteSubscription(string agreementId, string userId)
         {
-            var client = _clientFactory.GetClient();
 
-            var request = new AgreementCancelRequest(agreementId).RequestBody(new AgreementStateDescriptor()
-            {
-                Note = "Cancelled"
-            });
-            await client.Execute(request);
+            var userSubscription = _dbContext.UserSubscriptions.Where(x => x.UserId == userId && x.PayPalAgreementId == agreementId).FirstOrDefault();
 
-            await TellPayPalToCancelSubscription(agreementId);
+                await TellPayPalToCancelSubscription(agreementId);
 
+                _dbContext.UserSubscriptions.Remove(userSubscription);
+                _dbContext.SaveChanges();
 
+           
             var today = DateTime.Now.Date;
 
             var customerSubs = _dbContext.UserSubscriptions.Where(x => x.UserId == userId && x.State == "Active" ||

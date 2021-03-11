@@ -287,7 +287,7 @@ namespace EmployeeManagement.Controllers
         private async Task NewSubscriptionFirstPaymentFailedDeleteSubscription(string payPalAgreement)
         {
             //get a user with PayPal agreement.
-            var userSubscription = _dbcontext.UserSubscriptions.Where(x => x.PayPalAgreementId == payPalAgreement).FirstOrDefault();
+            var userSubscription = _dbcontext.UserSubscriptions.Where(x => x.PayPalAgreementId == payPalAgreement && !String.IsNullOrEmpty(x.PayPalAgreementId)).FirstOrDefault();
             if (userSubscription != null)
             {
                 _dbcontext.UserSubscriptions.Remove(userSubscription);
@@ -309,7 +309,7 @@ namespace EmployeeManagement.Controllers
         private async Task NewSubscriptionFirstPaymentPendingDeleteSubscription(string payPalAgreement)
         {
             //get a user with PayPal agreement.
-            var userSubscription = _dbcontext.UserSubscriptions.Where(x => x.PayPalAgreementId == payPalAgreement).FirstOrDefault();
+            var userSubscription = _dbcontext.UserSubscriptions.Where(x => x.PayPalAgreementId == payPalAgreement && !String.IsNullOrEmpty(x.PayPalAgreementId)).FirstOrDefault();
             if (userSubscription != null)
             {
                 _dbcontext.UserSubscriptions.Remove(userSubscription);
@@ -331,8 +331,8 @@ namespace EmployeeManagement.Controllers
         private async Task ExistingSubscriptionHasbeenCancelledUpdateSubscription(string payPalAgreement)
         {
             //get a user with PayPal agreement.
-            var userSubscription = _dbcontext.UserSubscriptions.Where(x => x.PayPalAgreementId == payPalAgreement).FirstOrDefault();
-            if (userSubscription != null && !String.IsNullOrEmpty(payPalAgreement))
+            var userSubscription = _dbcontext.UserSubscriptions.Where(x => x.PayPalAgreementId == payPalAgreement && !String.IsNullOrEmpty(x.PayPalAgreementId)).FirstOrDefault();
+            if (userSubscription != null)
             {
 
                 //get user subscription
@@ -362,7 +362,7 @@ namespace EmployeeManagement.Controllers
         private async Task ExistingSubscriptionPaymentHasbeenDeniedUpdateSubscription(string payPalAgreement)
         {
             //get a user with PayPal agreement.
-            var userSubscription = _dbcontext.UserSubscriptions.Where(x => x.PayPalAgreementId == payPalAgreement).FirstOrDefault();
+            var userSubscription = _dbcontext.UserSubscriptions.Where(x => x.PayPalAgreementId == payPalAgreement && !String.IsNullOrEmpty(x.PayPalAgreementId)).FirstOrDefault();
             if (userSubscription != null)
             {
 
@@ -382,7 +382,7 @@ namespace EmployeeManagement.Controllers
         private async Task ExistingSubscriptionPaymentFailedUpdateSubscription(string payPalAgreement)
         {
             //get a user with PayPal agreement.
-            var userSubscription = _dbcontext.UserSubscriptions.Where(x => x.PayPalAgreementId == payPalAgreement).FirstOrDefault();
+            var userSubscription = _dbcontext.UserSubscriptions.Where(x => x.PayPalAgreementId == payPalAgreement && !String.IsNullOrEmpty(x.PayPalAgreementId)).FirstOrDefault();
             if (userSubscription != null)
             {
 
@@ -403,7 +403,7 @@ namespace EmployeeManagement.Controllers
         private async Task ExistingSubscriptionPaymentSkippedUpdateSubscription(string payPalAgreement)
         {
             //get a user with PayPal agreement.
-            var userSubscription = _dbcontext.UserSubscriptions.Where(x => x.PayPalAgreementId == payPalAgreement).FirstOrDefault();
+            var userSubscription = _dbcontext.UserSubscriptions.Where(x => x.PayPalAgreementId == payPalAgreement && !String.IsNullOrEmpty(x.PayPalAgreementId)).FirstOrDefault();
             if (userSubscription != null)
             {
 
