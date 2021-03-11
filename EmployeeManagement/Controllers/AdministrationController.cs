@@ -822,15 +822,16 @@ namespace AndyTipsterPro.Controllers
 
             if (!string.IsNullOrWhiteSpace(filter))
             {
-                query = _dbContext.UserSubscriptions.Include(x => x.User).Where(x => x.PayerEmail.Contains(filter) ||
-                                                x.PayerFirstName.Contains(filter) ||
-                                                x.PayerLastName.Contains(filter) ||
-                                                x.User.UserName.Contains(filter) ||
-                                                x.User.Email.Contains(filter) ||
-                                                x.User.FirstName.Contains(filter) ||
-                                                x.User.LastName.Contains(filter) ||
-                                                x.User.UserName.Contains(filter)
-                                                ).AsNoTracking().OrderBy(x => x.PayerEmail);
+                query = _dbContext.UserSubscriptions.Include(x => x.User).Where(x =>
+                                                (x.PayerEmail.Contains(filter) && x.PayPalAgreementId != null) ||
+                                                (x.PayerFirstName.Contains(filter) && x.PayPalAgreementId != null) ||
+                                                (x.PayerLastName.Contains(filter) && x.PayPalAgreementId != null) ||
+                                                (x.User.UserName.Contains(filter) && x.PayPalAgreementId != null) ||
+                                                (x.User.Email.Contains(filter) && x.PayPalAgreementId != null) ||
+                                                (x.User.FirstName.Contains(filter) && x.PayPalAgreementId != null) ||
+                                                (x.User.LastName.Contains(filter) && x.PayPalAgreementId != null) ||
+                                                (x.User.UserName.Contains(filter) && x.PayPalAgreementId != null))
+                                                 .AsNoTracking().OrderBy(x => x.PayerEmail);
             }
 
 
@@ -847,16 +848,15 @@ namespace AndyTipsterPro.Controllers
         {
             var currentUser = await userManager.GetUserAsync(HttpContext.User);
 
-            if (!User.IsInRole("admin") || !User.IsInRole("superadmin"))
+            if (!User.IsInRole("admin"))
             {
                 return RedirectToAction("Index", "Home");
             }
 
             var today = DateTime.Now.Date;
-            //var customerSubs = _dbContext.UserSubscriptions.Where(x => x.UserId == userId && x.ExpiryDate.Date >= today.Date).ToList();
-
+            
             var customerSubs = _dbContext.UserSubscriptions.Where(x => x.UserId == userId && x.State == "Active" ||
-                                                                  (x.UserId == userId && x.State == "Cancelled" && x.ExpiryDate.Year > 1994 && x.ExpiryDate > DateTime.Now.Date)).ToList();
+                                   (x.UserId == userId && x.State == "Cancelled" && x.ExpiryDate.Year > 1994 && x.ExpiryDate > DateTime.Now.Date)).ToList();
 
             var model = new UserDetailsViewModel
             {
@@ -931,7 +931,20 @@ namespace AndyTipsterPro.Controllers
 
             await TellPayPalToCancelSubscription(agreementId);
 
-            return RedirectToAction("UserDetails", new { userId });
+
+            var today = DateTime.Now.Date;
+
+            var customerSubs = _dbContext.UserSubscriptions.Where(x => x.UserId == userId && x.State == "Active" ||
+                                   (x.UserId == userId && x.State == "Cancelled" && x.ExpiryDate.Year > 1994 && x.ExpiryDate > DateTime.Now.Date)).ToList();
+
+            var model = new UserDetailsViewModel
+            {
+                Customer = userManager.Users.Where(x => x.Id == userId).FirstOrDefault(),
+
+                CustomerSubscriptions = customerSubs
+            };
+
+            return View("~/Views/Administration/UserDetails.cshtml", model);
 
         }
 

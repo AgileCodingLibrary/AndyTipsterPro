@@ -108,8 +108,12 @@ namespace EmployeeManagement.Controllers
                         {
                             //update database
                             var payPalAgreement = data["recurring_payment_id"];
-                            await NewSubscriptionFirstPaymentFailedDeleteSubscription(payPalAgreement);
-                            await TellPayPalToCancelSubscription(payPalAgreement);
+
+                            if (!String.IsNullOrEmpty(payPalAgreement))
+                            {
+                                await NewSubscriptionFirstPaymentFailedDeleteSubscription(payPalAgreement);
+                                await TellPayPalToCancelSubscription(payPalAgreement);
+                            }
 
                         }
                     }
@@ -125,7 +129,11 @@ namespace EmployeeManagement.Controllers
                         {
                             //update database for start date.
                             var payPalAgreement = data["recurring_payment_id"];
-                            await NewSubscriptionUpdateStartDate(payPalAgreement);
+
+                            if (!String.IsNullOrEmpty(payPalAgreement))
+                            {
+                                await NewSubscriptionUpdateStartDate(payPalAgreement);
+                            }
                         }
                     }
                 }
@@ -139,7 +147,11 @@ namespace EmployeeManagement.Controllers
                         {
                             //update database for start date.
                             var payPalAgreement = data["recurring_payment_id"];
-                            await NewSubscriptionUpdateStartDate(payPalAgreement);
+
+                            if (!String.IsNullOrEmpty(payPalAgreement))
+                            {
+                                await NewSubscriptionUpdateStartDate(payPalAgreement);
+                            }
                         }
                     }
                 }
@@ -154,8 +166,12 @@ namespace EmployeeManagement.Controllers
                         {
                             //update database
                             var payPalAgreement = data["recurring_payment_id"];
-                            await NewSubscriptionFirstPaymentPendingDeleteSubscription(payPalAgreement);
-                            await TellPayPalToCancelSubscription(payPalAgreement);
+
+                            if (!String.IsNullOrEmpty(payPalAgreement))
+                            {
+                                await NewSubscriptionFirstPaymentPendingDeleteSubscription(payPalAgreement);
+                                await TellPayPalToCancelSubscription(payPalAgreement);
+                            }
                         }
                     }
                 }
@@ -166,7 +182,11 @@ namespace EmployeeManagement.Controllers
                 {
                     //update database
                     var payPalAgreement = data["recurring_payment_id"];
-                    await ExistingSubscriptionHasbeenCancelledUpdateSubscription(payPalAgreement);
+
+                    if (!String.IsNullOrEmpty(payPalAgreement))
+                    {
+                        await ExistingSubscriptionHasbeenCancelledUpdateSubscription(payPalAgreement);
+                    }
 
                 }
 
@@ -175,8 +195,12 @@ namespace EmployeeManagement.Controllers
                 {
                     //update database
                     var payPalAgreement = data["recurring_payment_id"];
-                    await ExistingSubscriptionPaymentHasbeenDeniedUpdateSubscription(payPalAgreement);
-                    await TellPayPalToCancelSubscription(payPalAgreement);
+
+                    if (!String.IsNullOrEmpty(payPalAgreement))
+                    {
+                        await ExistingSubscriptionPaymentHasbeenDeniedUpdateSubscription(payPalAgreement);
+                        await TellPayPalToCancelSubscription(payPalAgreement);
+                    }
                 }
 
 
@@ -185,8 +209,12 @@ namespace EmployeeManagement.Controllers
                 {
                     //update database
                     var payPalAgreement = data["recurring_payment_id"];
-                    await ExistingSubscriptionPaymentFailedUpdateSubscription(payPalAgreement);
-                    await TellPayPalToCancelSubscription(payPalAgreement);
+
+                    if (!String.IsNullOrEmpty(payPalAgreement))
+                    {
+                        await ExistingSubscriptionPaymentFailedUpdateSubscription(payPalAgreement);
+                        await TellPayPalToCancelSubscription(payPalAgreement);
+                    }
                 }
 
 
@@ -234,7 +262,7 @@ namespace EmployeeManagement.Controllers
                 var subject = $"PayPal has been notified to Cancel Subscription :{agreement.Id}";
                 await EmailAdmin(message, subject);
 
-                await EmailSuperAdmin("Notify PayPal to Cancel Subscription SUCCESS", "Notify PayPal to Cancel Subscription SUCCESS");
+                //await EmailSuperAdmin("Notify PayPal to Cancel Subscription SUCCESS", "Notify PayPal to Cancel Subscription SUCCESS");
 
             }
             catch (Exception ex)
@@ -251,7 +279,7 @@ namespace EmployeeManagement.Controllers
                 _dbcontext.PaypalErrors.Add(payPalReturnedError);
                 await _dbcontext.SaveChangesAsync();
 
-                await EmailSuperAdmin("Notify PayPal to Cancel Subscription Failed", "Notify PayPal to Cancel Subscription Failed");
+                await EmailSuperAdmin($"Notify PayPal ({payPalAgreement}) to Cancel Subscription Failed", "Notify PayPal to Cancel Subscription Failed");
             }
 
         }
@@ -304,7 +332,7 @@ namespace EmployeeManagement.Controllers
         {
             //get a user with PayPal agreement.
             var userSubscription = _dbcontext.UserSubscriptions.Where(x => x.PayPalAgreementId == payPalAgreement).FirstOrDefault();
-            if (userSubscription != null)
+            if (userSubscription != null && !String.IsNullOrEmpty(payPalAgreement))
             {
 
                 //get user subscription
@@ -485,7 +513,7 @@ namespace EmployeeManagement.Controllers
                         if (data["initial_payment_status"] == "Completed")
                         {
                             //do not send email
-                            sendEmailsAndLog = false;
+                            sendEmailsAndLog = true;
                         }
                     }
                 }
@@ -497,7 +525,7 @@ namespace EmployeeManagement.Controllers
                         if (data["payment_status"] == "Completed")
                         {
                             //do not send email
-                            sendEmailsAndLog = false;
+                            sendEmailsAndLog = true;
                         }
                     }
                 }
@@ -506,7 +534,7 @@ namespace EmployeeManagement.Controllers
                 if (data["txn_type"] == "recurring_payment_profile_cancel")
                 {
                     //do not send email
-                    sendEmailsAndLog = false;
+                    sendEmailsAndLog = true;
 
                 }
 
@@ -514,7 +542,7 @@ namespace EmployeeManagement.Controllers
                 if (data["txn_type"] == "recurring_payment_skipped")
                 {
                     //do not send email
-                    sendEmailsAndLog = false;
+                    sendEmailsAndLog = true;
 
                 }
 
@@ -527,7 +555,7 @@ namespace EmployeeManagement.Controllers
                         if (data["initial_payment_status"] == "Pending")
                         {
                             //do not send email
-                            sendEmailsAndLog = false;
+                            sendEmailsAndLog = true;
                         }
                     }
                 }
@@ -550,7 +578,7 @@ namespace EmployeeManagement.Controllers
         {
             //notify Me, when this gets.
             var sendGridKey = _configuration.GetValue<string>("SendGridApi");
-            await Emailer.SendEmail("fazahmed786@hotmail.com", subject, message, sendGridKey);
+            //await Emailer.SendEmail("fazahmed786@hotmail.com", subject, message, sendGridKey);
             await Emailer.SendEmail("andytipster99@gmail.com", subject, message, sendGridKey);
         }
 
