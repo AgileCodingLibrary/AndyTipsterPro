@@ -48,6 +48,7 @@ namespace AndyTipsterPro.Controllers
             var model = _db.LandingPages.FirstOrDefault();
 
             return View(model);
+            //return View("HomeMaster");
         }
 
         [AllowAnonymous]

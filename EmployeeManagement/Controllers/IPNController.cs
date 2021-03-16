@@ -134,6 +134,12 @@ namespace EmployeeManagement.Controllers
                             {
                                 await NewSubscriptionUpdateStartDate(payPalAgreement);
                             }
+                            else
+                            {
+                                var type = data["txn_type"];
+                                var status = data["initial_payment_status"];
+                                await EmailSuperAdmin($"Null Agreement: IPN Type: {type}  Payment Status : {status}", "Null Agreement");
+                            }
                         }
                     }
                 }
@@ -177,15 +183,52 @@ namespace EmployeeManagement.Controllers
                 }
 
 
-                //An existing customer has decided to cancel. Set Expiry date on the subscription.
+                //An existing customer has cancelled. Either Update or delete Subscription               
+
                 if (data["txn_type"] == "recurring_payment_profile_cancel")
                 {
-                    //update database
-                    var payPalAgreement = data["recurring_payment_id"];
 
-                    if (!String.IsNullOrEmpty(payPalAgreement))
+                    if ((!data.ContainsKey("initial_payment_status")))
                     {
-                        await ExistingSubscriptionHasbeenCancelledUpdateSubscription(payPalAgreement);
+                        if ((data.ContainsKey("profile_status")))
+                        {
+                            if (data["profile_status"] == "Cancelled")
+                            {
+                                var payPalAgreement = data["recurring_payment_id"];
+
+                                //update profile and allow access until expired.
+                                if (!String.IsNullOrEmpty(payPalAgreement))
+                                {
+                                    await ExistingSubscriptionHasbeenCancelledUpdateSubscription(payPalAgreement);
+                                }
+                                else
+                                {
+                                    var type = data["txn_type"];
+                                    var status = data["initial_payment_status"];
+                                    await EmailSuperAdmin($"Null Agreement: IPN Type: {type}  Payment Status : {status}", "Update failed due to Null Agreement");
+                                }
+                            }
+                        }
+                    }
+
+                    if ((data.ContainsKey("initial_payment_status")))
+                    {
+                        if (data["initial_payment_status"] == "Failed")
+                        {
+                            var payPalAgreement = data["recurring_payment_id"];
+
+                            //ACTION : Remove subscription completly.
+                            if (!String.IsNullOrEmpty(payPalAgreement))
+                            {
+                                await ExistingSubscriptionPaymentFailedUpdateSubscription(payPalAgreement);
+                            }
+                            else
+                            {
+                                var type = data["txn_type"];
+                                var status = data["initial_payment_status"];
+                                await EmailSuperAdmin($"Null Agreement: IPN Type: {type}  Payment Status : {status}", "Delete failed due to Null Agreement");
+                            }
+                        }
                     }
 
                 }
@@ -396,6 +439,13 @@ namespace EmployeeManagement.Controllers
                               $": {userSubscription.PayerEmail} have FAILED PAYMENTs {userSubscription.Description}. Subscription has been removed.";
 
                 await EmailAdmin(adminMessage, "Regular Subscription FAILED PAYMENT, Subscription REMOVED.");
+            }
+
+            if (userSubscription == null)
+            {
+                var superAdminMessage = $"Regular Subscription PAYMENTS FAILED, However, system not able to find user subscription with id {payPalAgreement}";
+
+                await EmailSuperAdmin(superAdminMessage, "Regular Subscription FAILED PAYMENT, Subscription  NOT REMOVED.");
             }
         }
 
