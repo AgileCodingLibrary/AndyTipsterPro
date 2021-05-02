@@ -59,27 +59,47 @@ namespace EmployeeManagement.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Receive()
         {
-            IPNLocalContext ipnContext = new IPNLocalContext()
+            try
             {
-                IPNRequest = Request
-            };
+                IPNLocalContext ipnContext = new IPNLocalContext()
+                {
+                    IPNRequest = Request
+                };
 
-            using (StreamReader reader = new StreamReader(ipnContext.IPNRequest.Body, Encoding.ASCII))
+                using (StreamReader reader = new StreamReader(ipnContext.IPNRequest.Body, Encoding.ASCII))
+                {
+                    ipnContext.RequestBody = reader.ReadToEnd();
+                }
+
+                //Store the IPN received from PayPal
+                await LogAndEmailRequest(ipnContext);
+
+                //React backend as per IPN Received
+                await UpdateSubscription(ipnContext);
+
+                //Fire and forget verification task
+                VerifyTask(ipnContext);
+
+                //Reply back a 200 code
+                return Ok();
+            }
+            catch (Exception)
             {
-                ipnContext.RequestBody = reader.ReadToEnd();
+                await EmailSuperAdmin(Request.ToString(), "IPN Send back PayPal failed");
+
+                PaypalErrors error = new PaypalErrors
+                {
+                    Exception = Request.ToString(),
+                    DateTime = DateTime.Now
+                };
+
+                _dbcontext.PaypalErrors.Add(error);
+                _dbcontext.SaveChanges();
+
+                return Ok();
             }
 
-            //Store the IPN received from PayPal
-            await LogAndEmailRequest(ipnContext);
 
-            //React backend as per IPN Received
-            await UpdateSubscription(ipnContext);
-
-            //Fire and forget verification task
-            VerifyTask(ipnContext);
-
-            //Reply back a 200 code
-            return Ok();
         }
 
         private async Task UpdateSubscription(IPNLocalContext ipn)
@@ -98,10 +118,27 @@ namespace EmployeeManagement.Controllers
                 }
 
 
-                //A new customer tried to subscribed but their payment failed. Delete their subscription on the website and on PayPal side.
+                //cancel Reversed transactions.
+                if (data.ContainsKey("payment_status"))
+                {
+                    if (data["payment_status"] == "Reversed")
+                    {
+                        //update database
+                        var payPalAgreement = data["recurring_payment_id"];
+
+                        if (!String.IsNullOrEmpty(payPalAgreement))
+                        {
+                            await ReversedPaymentFound(payPalAgreement);
+                            await TellPayPalToCancelSubscription(payPalAgreement);
+                        }
+                    }
+
+                }
+
+
                 if (data["txn_type"] == "recurring_payment_profile_created")
                 {
-
+                    //A new customer tried to subscribed but their payment failed. Delete their subscription on the website and on PayPal side.
                     if (data.ContainsKey("initial_payment_status"))
                     {
                         if (data["initial_payment_status"] == "Failed")
@@ -116,15 +153,8 @@ namespace EmployeeManagement.Controllers
                             }
 
                         }
-                    }
 
-                }
-
-                //A new customer has just successfully subscribed.
-                if (data["txn_type"] == "recurring_payment_profile_created")
-                {
-                    if (data.ContainsKey("initial_payment_status"))
-                    {
+                        //A new customer has just successfully subscribed.
                         if (data["initial_payment_status"] == "Completed")
                         {
                             //update database for start date.
@@ -141,8 +171,65 @@ namespace EmployeeManagement.Controllers
                                 await EmailSuperAdmin($"Null Agreement: IPN Type: {type}  Payment Status : {status}", "Null Agreement");
                             }
                         }
+
+                        //A new customer tried to subscribed but their payment is PENDING. Delete their subscription on the website and on PayPal side.
+                        if (data["initial_payment_status"] == "Pending")
+                        {
+                            //update database
+                            var payPalAgreement = data["recurring_payment_id"];
+
+                            if (!String.IsNullOrEmpty(payPalAgreement))
+                            {
+                                await NewSubscriptionFirstPaymentPendingDeleteSubscription(payPalAgreement);
+                                await TellPayPalToCancelSubscription(payPalAgreement);
+                            }
+                        }
                     }
+
                 }
+
+                ////A new customer has just successfully subscribed.
+                //if (data["txn_type"] == "recurring_payment_profile_created")
+                //{
+                //    if (data.ContainsKey("initial_payment_status"))
+                //    {
+                //        if (data["initial_payment_status"] == "Completed")
+                //        {
+                //            //update database for start date.
+                //            var payPalAgreement = data["recurring_payment_id"];
+
+                //            if (!String.IsNullOrEmpty(payPalAgreement))
+                //            {
+                //                await NewSubscriptionUpdateStartDate(payPalAgreement);
+                //            }
+                //            else
+                //            {
+                //                var type = data["txn_type"];
+                //                var status = data["initial_payment_status"];
+                //                await EmailSuperAdmin($"Null Agreement: IPN Type: {type}  Payment Status : {status}", "Null Agreement");
+                //            }
+                //        }
+                //    }
+                //}
+
+                ////A new customer tried to subscribed but their payment is PENDING. Delete their subscription on the website and on PayPal side.
+                //if (data["txn_type"] == "recurring_payment_profile_created")
+                //{
+                //    if (data.ContainsKey("initial_payment_status"))
+                //    {
+                //        if (data["initial_payment_status"] == "Pending")
+                //        {
+                //            //update database
+                //            var payPalAgreement = data["recurring_payment_id"];
+
+                //            if (!String.IsNullOrEmpty(payPalAgreement))
+                //            {
+                //                await NewSubscriptionFirstPaymentPendingDeleteSubscription(payPalAgreement);
+                //                await TellPayPalToCancelSubscription(payPalAgreement);
+                //            }
+                //        }
+                //    }
+                //}
 
                 //An existing customer has just renewed their subscription.
                 if (data["txn_type"] == "recurring_payment")
@@ -161,27 +248,6 @@ namespace EmployeeManagement.Controllers
                         }
                     }
                 }
-
-
-                //A new customer tried to subscribed but their payment is PENDING. Delete their subscription on the website and on PayPal side.
-                if (data["txn_type"] == "recurring_payment_profile_created")
-                {
-                    if (data.ContainsKey("initial_payment_status"))
-                    {
-                        if (data["initial_payment_status"] == "Pending")
-                        {
-                            //update database
-                            var payPalAgreement = data["recurring_payment_id"];
-
-                            if (!String.IsNullOrEmpty(payPalAgreement))
-                            {
-                                await NewSubscriptionFirstPaymentPendingDeleteSubscription(payPalAgreement);
-                                await TellPayPalToCancelSubscription(payPalAgreement);
-                            }
-                        }
-                    }
-                }
-
 
                 //An existing customer has cancelled. Either Update or delete Subscription               
 
@@ -247,7 +313,7 @@ namespace EmployeeManagement.Controllers
                 }
 
 
-                //An existing customer has FAILED 3 PAYMENTS. Delete Subscription.                
+                //An existing customer has FAILED 3 PAYMENTS. Delete Subscription.                  
                 if (data["txn_type"] == "recurring_payment_failed")
                 {
                     //update database
@@ -261,6 +327,19 @@ namespace EmployeeManagement.Controllers
                 }
 
 
+                //An existing customer has FAILED 3 PAYMENTS. Delete Subscription. 
+                if (data["txn_type"] == "recurring_payment_suspended_due_to_max_failed_payment")
+                {
+                    //update database
+                    var payPalAgreement = data["recurring_payment_id"];
+
+                    if (!String.IsNullOrEmpty(payPalAgreement))
+                    {
+                        await ExistingSubscriptionPaymentFailedMaxFailedPaymentsUpdateSubscription(payPalAgreement);
+                        await TellPayPalToCancelSubscription(payPalAgreement);
+                    }
+                }
+
                 //An existing customer has SKIPPED their payment. NO ACTION REQUIRED AT THE MOMENT..
                 if (data["txn_type"] == "recurring_payment_skipped")
                 {
@@ -269,8 +348,10 @@ namespace EmployeeManagement.Controllers
 
                 }
 
+
             }
         }
+
 
         private async Task NewSubscriptionUpdateStartDate(string payPalAgreement)
         {
@@ -422,10 +503,31 @@ namespace EmployeeManagement.Controllers
             }
         }
 
-        private async Task ExistingSubscriptionPaymentFailedUpdateSubscription(string payPalAgreement)
+
+        private async Task ReversedPaymentFound(string payPalAgreement)
         {
             //get a user with PayPal agreement.
             var userSubscription = _dbcontext.UserSubscriptions.Where(x => x.PayPalAgreementId == payPalAgreement && !String.IsNullOrEmpty(x.PayPalAgreementId)).FirstOrDefault();
+            if (userSubscription != null)
+            {
+
+                _dbcontext.UserSubscriptions.Remove(userSubscription);
+                await _dbcontext.SaveChangesAsync();
+
+                var userMessage = $"Your subscription for {userSubscription.Description} has been cancelled due to REVERSED payment.";
+                await EmailCustomer(userSubscription.PayerEmail, userMessage, "AndyTipster subscription has been cancelled due to REVERSED payment.");
+
+                var adminMessage = $"Regular Subscription PAYMENT REVERSED: {userSubscription.PayerFirstName}  {userSubscription.PayerLastName} " +
+                              $": {userSubscription.PayerEmail} have REVERSED PAYMENT {userSubscription.Description}. Subscription has been removed.";
+
+                await EmailAdmin(adminMessage, "Regular Subscription REVERSED PAYMENT, Subscription REMOVED.");
+            }
+        }
+
+        private async Task ExistingSubscriptionPaymentFailedUpdateSubscription(string payPalAgreement)
+        {
+            //get a user with PayPal agreement.
+            var userSubscription = _dbcontext.UserSubscriptions.Where(x => x.PayPalAgreementId == payPalAgreement).FirstOrDefault();
             if (userSubscription != null)
             {
 
@@ -440,15 +542,27 @@ namespace EmployeeManagement.Controllers
 
                 await EmailAdmin(adminMessage, "Regular Subscription FAILED PAYMENT, Subscription REMOVED.");
             }
-
-            if (userSubscription == null)
-            {
-                var superAdminMessage = $"Regular Subscription PAYMENTS FAILED, However, system not able to find user subscription with id {payPalAgreement}";
-
-                await EmailSuperAdmin(superAdminMessage, "Regular Subscription FAILED PAYMENT, Subscription  NOT REMOVED.");
-            }
         }
 
+        private async Task ExistingSubscriptionPaymentFailedMaxFailedPaymentsUpdateSubscription(string payPalAgreement)
+        {
+            //get a user with PayPal agreement.
+            var userSubscription = _dbcontext.UserSubscriptions.Where(x => x.PayPalAgreementId == payPalAgreement).FirstOrDefault();
+            if (userSubscription != null)
+            {
+
+                _dbcontext.UserSubscriptions.Remove(userSubscription);
+                await _dbcontext.SaveChangesAsync();
+
+                var userMessage = $"Your subscription for {userSubscription.Description} has been cancelled due to FAILED payments.";
+                await EmailCustomer(userSubscription.PayerEmail, userMessage, "AndyTipster subscription has been cancelled due to FAILED payments.");
+
+                var adminMessage = $"recurring_payment_suspended_due_to_max_failed_payment: {userSubscription.PayerFirstName}  {userSubscription.PayerLastName} " +
+                              $": {userSubscription.PayerEmail} have recurring_payment_suspended_due_to_max_failed_payment {userSubscription.Description}. Subscription has been removed.";
+
+                await EmailAdmin(adminMessage, "recurring_payment_suspended_due_to_max_failed_payment, Subscription REMOVED.");
+            }
+        }
 
         private async Task ExistingSubscriptionPaymentSkippedUpdateSubscription(string payPalAgreement)
         {
@@ -516,6 +630,7 @@ namespace EmployeeManagement.Controllers
             }
             catch (Exception ex)
             {
+                               
                 PaypalErrors error = new PaypalErrors
                 {
                     Exception = ex.Message,
