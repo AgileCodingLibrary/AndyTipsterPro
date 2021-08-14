@@ -85,17 +85,28 @@ namespace EmployeeManagement.Controllers
             }
             catch (Exception)
             {
-                await EmailSuperAdmin(Request.ToString(), "IPN Send back PayPal failed");
 
-                PaypalErrors error = new PaypalErrors
+                using (Stream Body = Request.Body)
                 {
-                    Exception = Request.ToString(),
-                    DateTime = DateTime.Now
-                };
+                    byte[] result;
+                    result = new byte[Request.Body.Length];
+                    await Request.Body.ReadAsync(result, 0, (int)Request.Body.Length);
 
-                _dbcontext.PaypalErrors.Add(error);
-                _dbcontext.SaveChanges();
+                    String body = System.Text.Encoding.UTF8.GetString(result).TrimEnd('\0');
 
+                    PaypalErrors error = new PaypalErrors
+                    {
+                        Exception = body,
+                        DateTime = DateTime.Now
+                    };
+
+                    _dbcontext.PaypalErrors.Add(error);
+                    _dbcontext.SaveChanges();
+
+                    await EmailSuperAdmin(body, "Receive method failed");
+                }
+
+                await EmailSuperAdmin("Body", "Receive method failed, did you get the body");
                 return Ok();
             }
 
@@ -121,7 +132,7 @@ namespace EmployeeManagement.Controllers
                 //cancel Reversed transactions.
                 if (data.ContainsKey("payment_status"))
                 {
-                    if (data["payment_status"] == "Reversed")
+                    if (data["payment_status"] == "Reversed" || data["payment_status"] == "Canceled_Reversal")
                     {
                         //update database
                         var payPalAgreement = data["recurring_payment_id"];
@@ -133,6 +144,7 @@ namespace EmployeeManagement.Controllers
                         }
                     }
 
+                   
                 }
 
 
@@ -349,6 +361,20 @@ namespace EmployeeManagement.Controllers
                 }
 
 
+                //txn_type = new_case
+                //CASE CREATED- (They’ve created a case to get there money back, these also can be instantly removed)                  
+                if (data["txn_type"] == "new_case")
+                {
+                    //update database
+                    var payPalAgreement = data["recurring_payment_id"];
+
+                    if (!String.IsNullOrEmpty(payPalAgreement))
+                    {
+                        await CaseCreatedDeleteSubscription(payPalAgreement);
+                        await TellPayPalToCancelSubscription(payPalAgreement);
+                    }
+                }
+
             }
         }
 
@@ -514,13 +540,13 @@ namespace EmployeeManagement.Controllers
                 _dbcontext.UserSubscriptions.Remove(userSubscription);
                 await _dbcontext.SaveChangesAsync();
 
-                var userMessage = $"Your subscription for {userSubscription.Description} has been cancelled due to REVERSED payment.";
-                await EmailCustomer(userSubscription.PayerEmail, userMessage, "AndyTipster subscription has been cancelled due to REVERSED payment.");
+                var userMessage = $"Your subscription for {userSubscription.Description} has been cancelled due to REVERSED or Canceled_Reversal payment.";
+                await EmailCustomer(userSubscription.PayerEmail, userMessage, "AndyTipster subscription has been cancelled due to REVERSED or Canceled_Reversal payment.");
 
-                var adminMessage = $"Regular Subscription PAYMENT REVERSED: {userSubscription.PayerFirstName}  {userSubscription.PayerLastName} " +
-                              $": {userSubscription.PayerEmail} have REVERSED PAYMENT {userSubscription.Description}. Subscription has been removed.";
+                var adminMessage = $"Regular Subscription PAYMENT REVERSED or Canceled_Reversal: {userSubscription.PayerFirstName}  {userSubscription.PayerLastName} " +
+                              $": {userSubscription.PayerEmail} have REVERSED or Canceled_Reversal PAYMENT {userSubscription.Description}. Subscription has been removed.";
 
-                await EmailAdmin(adminMessage, "Regular Subscription REVERSED PAYMENT, Subscription REMOVED.");
+                await EmailAdmin(adminMessage, "Regular Subscription REVERSED or Canceled_Reversal PAYMENT, Subscription REMOVED.");
             }
         }
 
@@ -595,6 +621,27 @@ namespace EmployeeManagement.Controllers
             }
         }
 
+        private async Task CaseCreatedDeleteSubscription(string payPalAgreement)
+        {
+            //get a user with PayPal agreement.
+            var userSubscription = _dbcontext.UserSubscriptions.Where(x => x.PayPalAgreementId == payPalAgreement).FirstOrDefault();
+            if (userSubscription != null)
+            {
+
+                _dbcontext.UserSubscriptions.Remove(userSubscription);
+                await _dbcontext.SaveChangesAsync();
+
+                var userMessage = $"Your subscription for {userSubscription.Description} has been cancelled due to FAILED payments.";
+                await EmailCustomer(userSubscription.PayerEmail, userMessage, "AndyTipster subscription has been cancelled due to CASE CREATED payments.");
+
+                var adminMessage = $"Regular Subscription PAYMENTS FAILED and CASE CREATED: {userSubscription.PayerFirstName}  {userSubscription.PayerLastName} " +
+                              $": {userSubscription.PayerEmail} have FAILED PAYMENTs and CASE CREATED {userSubscription.Description}. Subscription has been removed.";
+
+                await EmailAdmin(adminMessage, "Regular Subscription FAILED PAYMENT and CASE CREATED, Subscription REMOVED.");
+            }
+        }
+
+
         private void VerifyTask(IPNLocalContext ipnContext)
         {
             try
@@ -630,7 +677,7 @@ namespace EmployeeManagement.Controllers
             }
             catch (Exception ex)
             {
-                               
+
                 PaypalErrors error = new PaypalErrors
                 {
                     Exception = ex.Message,
